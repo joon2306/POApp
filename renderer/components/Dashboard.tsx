@@ -55,8 +55,8 @@ export default function Dashboard({ dashboardContent, activeDashboardBtn }: { da
     return (
         <>
             <div className="flex h-screen">
-                <div className="bg-purple-dashboard w-1/3 rounded-tr-[40px] rounded-br-[40px]">
-                    <div className="flex flex-col items-center w-full h-screen mt-5 pb-2.5 ml-[-10%] lg:ml-[-20%]">
+                <div className="bg-purple-dashboard w-[25%] lg:w-[20%] rounded-tr-[40px] rounded-br-[40px]">
+                    <div className="flex flex-col items-center w-full h-screen mt-5 pb-2.5">
                         <Image src="/images/productOwnerLogo.png" width="150" height="150" alt="anything" />
                         <div className='flex-1 flex'>
                             <div className='text-white'>
@@ -68,7 +68,7 @@ export default function Dashboard({ dashboardContent, activeDashboardBtn }: { da
                     </div>
                 </div>
 
-                <div className="flex-1 bg-white rounded-tl-[40px] rounded-bl-[40px] ml-[-8%] lg:ml-[-15%]">
+                <div className="flex-1 bg-white rounded-tl-[40px] rounded-bl-[40px]">
                     {/* Content for the right side */}
                     {
                         renderDashboardContent()
@@ -85,13 +85,13 @@ function DashboardButton({ title, icon: Icon, active, handleClick }) {
 
 
     return (
-        <div className={`flex p-3 mt-5 mb-5 ${active ? 'bg-white' : ''} ${active ? 'rounded-tl-[10px] rounded-bl-[10px] rounded-tr-[10px] rounded-br-[10px]' : ''} cursor-pointer`}
+        <div className={`flex p-3 mt-5 mb-5 ${active ? 'bg-white' : ''} ${active ? 'rounded-tl-[10px] rounded-bl-[10px] rounded-tr-[10px] rounded-br-[10px]' : ''} cursor-pointer w-[200px] md:2-[225px] lg:w-[250px]`}
             onClick={handleClick}>
             <div className={`flex flex-col justify-center pl-2`}>
-                <Icon className={`${active ? 'text-purple-dashboard' : ''}`} />
+                <Icon className={`${active ? 'text-purple-dashboard font-bold' : ''}`} />
             </div>
             <div className={`flex flex-col justify-center`}>
-                <div className={`pl-10 ${active ? 'text-purple-dashboard' : ''} pr-5`}> {title} </div>
+                <div className={`pl-10 ${active ? 'text-purple-dashboard font-bold' : ''} pr-5`}> {title} </div>
             </div>
         </div>
     );
