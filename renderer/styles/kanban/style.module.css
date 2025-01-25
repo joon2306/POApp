@@ -1,0 +1,42 @@
+.card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    margin-bottom: 20px;
+}
+
+.cardtitle {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.cardmeta {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.cardpriority {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 3px;
+    background-color: lightgreen;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.cardowner {
+    display: flex;
+    align-items: center;
+}
+
+.cardowner img {
+    width: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.cardownerinfo {
+    font-size: 14px;
+}

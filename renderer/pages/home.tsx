@@ -1,5 +1,6 @@
 import React from 'react';
-import Dashboard, {DashboardContent} from "../components/Dashboard";
+import Dashboard, { DashboardContent } from "../components/Dashboard";
+import Kanban from '../components/Kanban';
 
 export default function HomePage() {
 
@@ -20,14 +21,6 @@ export default function HomePage() {
     </>
   )
 }
-
-
-function Kanban() {
-  return <>
-    <div>Kanban</div>
-  </>
-}
-
 
 function Kanban2() {
   return <>

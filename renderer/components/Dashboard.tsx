@@ -16,6 +16,7 @@ export default function Dashboard({ dashboardContent, activeDashboardBtn }: { da
     const [activeDashboard, setActiveDashboard] = useState(activeDashboardBtn);
 
     const handleClick = (title: string) => {
+        // window.ipc.send("insert-data", "");
         setActiveDashboard(title);
     }
 
