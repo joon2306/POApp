@@ -8,18 +8,15 @@ interface DashboardItem {
 }
 
 export interface DashboardContent {
-    [key: string]: DashboardItem; 
+    [key: string]: DashboardItem;
 }
 
 export default function Dashboard({ dashboardContent, activeDashboardBtn }: { dashboardContent: DashboardContent; activeDashboardBtn: string }) {
-
     const [activeDashboard, setActiveDashboard] = useState(activeDashboardBtn);
 
     const handleClick = (title: string) => {
-        // window.ipc.send("insert-data", "");
         setActiveDashboard(title);
     }
-
 
     function renderDashboardContent() {
         const getActiveContent = () => {
@@ -51,29 +48,22 @@ export default function Dashboard({ dashboardContent, activeDashboardBtn }: { da
         );
     };
 
-
-
     return (
         <>
-            <div className="flex h-screen">
+            <div className="flex">
                 <div className="bg-purple-dashboard w-[25%] lg:w-[20%] rounded-tr-[40px] rounded-br-[40px]">
-                    <div className="flex flex-col items-center w-full h-screen mt-5 pb-2.5">
+                    <div className="flex flex-col items-center w-full min-h-screen pt-5 pb-2.5">
                         <Image src="/images/productOwnerLogo.png" width="150" height="150" alt="anything" />
                         <div className='flex-1 flex'>
                             <div className='text-white'>
-                                {
-                                    renderDashboardBtnList()
-                                }
+                                {renderDashboardBtnList()}
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex-1 bg-white rounded-tl-[40px] rounded-bl-[40px]">
-                    {/* Content for the right side */}
-                    {
-                        renderDashboardContent()
-                    }
+                <div className="flex-1 bg-white rounded-tl-[40px] rounded-bl-[40px] overflow-y-auto">
+                    {renderDashboardContent()}
                 </div>
             </div>
         </>

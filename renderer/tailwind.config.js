@@ -28,6 +28,8 @@ module.exports = {
         "text-critical-priority": "#CC0000",
         "text-medium-priority": "#2B6662",
         "text-high-priority": "#CC00B8",
+        "grey-text": "#888888",
+        "title-text": "#417991"
       }
     },
   },
