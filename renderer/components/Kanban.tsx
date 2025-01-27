@@ -3,7 +3,7 @@ import styles from "../styles/kanban/style.module.css";
 import React, { useState } from "react";
 
 type KanbanCard = {
-    id: number,
+    id?: string,
     title: string,
     description: string,
     priority: number,
@@ -29,48 +29,61 @@ const kanbanHeaderColors = {
 
 const kanbanPendingCards: KanbanCard[] = [
     {
-        id: 1,
-        title: "first title",
-        description: "description of the first title",
+        title: "Meeting with Rohan",
+        description: "discuss backend",
         priority: 1
+    },
+    {
+        title: "Meeting with kisshan",
+        description: "prepare questions",
+        priority: 2
+    },
+    {
+        title: "Meeting with Christine",
+        description: "discuss issue ADTCUST-356",
+        priority: 3
+    },
+    {
+        title: "do feature estimation",
+        description: "break into content backend and front",
+        priority: 4
     }
 ]
 
 const kanbanInProgressCards: KanbanCard[] = [
-    {
-        id: 1,
-        title: "first title",
-        description: "description of the first title",
-        priority: 1
-    },
-    {
-        id: 2,
-        title: "second title",
-        description: "description of the second title",
-        priority: 2
-    },
-    {
-        id: 3,
-        title: "first title",
-        description: "description of the first title",
-        priority: 1
-    },
-    {
-        id: 4,
-        title: "second title",
-        description: "description of the second title",
-        priority: 2
-    }
+    
 ]
 
 const kanbanOnHoldCards: KanbanCard[] = [
-    {
-        id: 1,
-        title: "first title",
-        description: "description of the first title",
-        priority: 1
-    }
+    
 ]
+
+const sortKanbanCards = (cards: KanbanCard[]) => {
+    return cards.sort((a, b) => b.priority - a.priority);
+}
+
+const buildKanbanCards = () => {
+    const assignIds = (prefix: string, cards: KanbanCard[]) => {
+        let index = 0;
+        cards.map(card => {
+            card.id = `${prefix}_${++index}`;
+        })
+    }
+
+    const kanbanCardsObj = {
+        "pending": kanbanPendingCards,
+        "inProgress": kanbanInProgressCards,
+        "onHold": kanbanOnHoldCards
+    }
+
+    Object.entries(kanbanCardsObj).map(([k,v]) => {
+        assignIds(k,v);
+        sortKanbanCards(v);
+    });
+
+}
+
+buildKanbanCards();
 
 export default function Kanban() {
 
@@ -84,15 +97,15 @@ export default function Kanban() {
             return;
         }
 
-        const [cardId, cardStatus] = activeCard.split("_");
+        const [cardStatus, cardId] = activeCard.split("-");
         if (cardStatus === status) {
             return;
         }
 
         const cards = {
-            pending: kanbanPendingCards,
-            inProgress: kanbanInProgressCards,
-            onHold: kanbanOnHoldCards
+            pending: pendingCards,
+            inProgress: inProgressCards,
+            onHold: onHoldCards
         }
 
         const statusObj = {
@@ -105,19 +118,20 @@ export default function Kanban() {
         const statusColumn = statusObj[cardStatus];
 
         const selectedCard = cards[statusColumn].find((card: { id: number }) => {
-            console.log(card.id === +cardId);
-            return card.id === +cardId;
+            return card.id === cardId;
         });
-        console.log("selectedCard: ", selectedCard);
         if (!selectedCard) {
             return;
         }
 
         cards[newStatusColumn].push(selectedCard);
-        cards[statusColumn].pop(selectedCard);
-        setPendingCards(cards.pending);
-        setInProgressCards(cards.inProgress);
-        setOnHoldCards(cards.onHold);
+        const statusColumnCards = cards[statusColumn].filter(card => card.id !== cardId);
+        cards[statusColumn] = statusColumnCards;
+
+
+        setPendingCards(sortKanbanCards(cards.pending));
+        setInProgressCards(sortKanbanCards(cards.inProgress));
+        setOnHoldCards(sortKanbanCards(cards.onHold));
 
     };
 
@@ -139,7 +153,7 @@ function KanbanHeader({ title, color }: { title: string, color: keyof typeof kan
     const bgColor = kanbanHeaderColors[color];
     return (
         <>
-            <div className={`${bgColor} py-2 px-10 text-white font-bold rounded-tl-[7px] rounded-tr-[7px] rounded-bl-[7px] rounded-br-[7px] w-[175px] lg:w-[200px] text-center h-[40px] mb-4`}>
+            <div className={`${bgColor} py-2 px-10 text-white font-bold rounded-tl-[7px] rounded-tr-[7px] rounded-bl-[7px] rounded-br-[7px] w-[175px] lg:w-[200px] text-center h-[40px]`}>
                 {title}
             </div>
         </>
@@ -147,7 +161,7 @@ function KanbanHeader({ title, color }: { title: string, color: keyof typeof kan
 }
 
 
-function KanbanCard({ title, description, priority, status, setActiveCard, index }: KanbanCard) {
+function KanbanCard({ title, description, priority, status, setActiveCard, index, id }: KanbanCard) {
     const priorityObj = {
         1: {
             color: "bg-low-priority",
@@ -177,8 +191,8 @@ function KanbanCard({ title, description, priority, status, setActiveCard, index
     const borderColor = status === 1 ? "border-pending-kanban" : status === 2 ? "border-inprogress-kanban" : "border-onhold-kanban";
 
     return (
-        <div className="w-[175px] lg:w-[200px] my-3 text-[10px] cursor-pointer" onDoubleClick={() => console.log("Arjoon")} draggable="true"
-            onDragStart={() => setActiveCard(index)} onDragEnd={() => setActiveCard(null)}>
+        <div className="w-[175px] lg:w-[200px] mb-3 text-[10px] cursor-pointer" onDoubleClick={() => console.log("Arjoon")} draggable="true"
+            onDragStart={() => setActiveCard(`${status}-${id}`)} onDragEnd={() => setActiveCard(null)}>
             <div className={`border ${borderColor} rounded-lg p-6 max-w-sm  
                   hover:border-blue-500 hover:ring-4 hover:ring-blue-500/50 
                   transition duration-300 ease-in-out`}>
@@ -234,7 +248,7 @@ function Droppable({ onDrop }) {
             transition-all duration-200 ease-in-out 
             focus:outline-none focus:ring-2 focus:ring-blue-200 
             my-2 px-4 py-3 opacity-100`;
-    const hideDroppableClassNames = "w-[200px] h-[20px] bg-gray-950 opacity-0";
+    const hideDroppableClassNames = "w-[200px] h-[30px] bg-gray-950 opacity-0";
 
     return (
         <div
