@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { KanbanCardType, KanbanStatus } from "../types/KanbanTypes"
-import { KanbanService } from "../services/impl/KanbanService";
+import { KanbanCardType, KanbanStatus } from "../types/KanbanTypes";
 import { IKanbanService } from "../services/IKanbanService";
 import { sortKanbanCards } from "../utils/KanbanUtils";
 
