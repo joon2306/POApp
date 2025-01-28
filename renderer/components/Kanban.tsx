@@ -6,9 +6,9 @@ import { KanbanService } from "../services/impl/KanbanService";
 import { useKanban } from "../hooks/useKanban";
 
 
-export default function Kanban() {
+export default function Kanban({ calculateHeight }) {
 
-    const { handleDragStart, handleDrop, kanbanCards } = useKanban(new KanbanService());
+    const { handleDragStart, handleDrop, kanbanCards, heightDifference, divRef } = useKanban(new KanbanService(), calculateHeight);
 
     return <>
         <div className={`flex justify-around my-10`}>
@@ -22,6 +22,8 @@ export default function Kanban() {
                         cards={kanbanCards}
                         setActiveCard={handleDragStart}
                         onDrop={handleDrop}
+                        divRef={divRef}
+                        heightDifference={heightDifference}
                     />
                 ))
             }
@@ -83,7 +85,7 @@ function KanbanCard({ title, description, priority, status, setActiveCard, id }:
 }
 
 
-function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop }: HeaderSwimLane) {
+function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, divRef, heightDifference }: HeaderSwimLane) {
 
     const applicableCards = cards.filter(card => +card.status === +status);
 
@@ -91,15 +93,18 @@ function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop }: H
         <div className="flex flex-col">
 
             <KanbanHeader title={headerTitle} status={status} />
-            <Droppable onDrop={() => onDrop(status)} />
+            <Droppable onDrop={() => onDrop(status)} isBottom={false} heightDifference={0} />
+            <div ref={divRef}>
 
-            {
-                applicableCards.map((card, index) => (
-                    <React.Fragment key={card.id}>
-                        <KanbanCard description={card.description} priority={card.priority} title={card.title} status={status} setActiveCard={setActiveCard} id={card.id} />
-                    </React.Fragment>
-                ))
-            }
+                {
+                    applicableCards.map((card, index) => (
+                        <div key={card.id}>
+                            <KanbanCard description={card.description} priority={card.priority} title={card.title} status={status} setActiveCard={setActiveCard} id={card.id} />
+                        </div>
+                    ))
+                }
+            </div>
+            <Droppable onDrop={() => onDrop(status)} isBottom={true} heightDifference={heightDifference} />
 
         </div>
     );
@@ -107,7 +112,7 @@ function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop }: H
 
 
 
-function Droppable({ onDrop }) {
+function Droppable({ onDrop, isBottom, heightDifference }) {
     const [show, setShow] = useState(false);
 
     const showDroppableClassNames = `w-[200px] h-[130px] bg-white border-2 border-dotted border-gray-300 
@@ -115,10 +120,18 @@ function Droppable({ onDrop }) {
             transition-all duration-200 ease-in-out 
             focus:outline-none focus:ring-2 focus:ring-blue-200 
             my-2 px-4 py-3 opacity-100`;
-    const hideDroppableClassNames = "w-[200px] h-[30px] bg-gray-950 opacity-0";
+    const hideDroppableClassNames = `w-[200px] h-[30]px bg-gray-950 opacity-0`;
 
     return (
         <div
+            style={{
+                height: isBottom
+                    ? `${heightDifference}px`
+                    : show
+                        ? '130px'
+                        : '30px'
+            }}
+
             className={show ? showDroppableClassNames : hideDroppableClassNames}
             onDragOver={(e) => e.preventDefault()}
             onDrop={() => {

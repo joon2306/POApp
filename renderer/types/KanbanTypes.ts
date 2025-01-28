@@ -8,7 +8,9 @@ export type HeaderSwimLane = {
   status: KanbanStatus,
   cards: KanbanCardType[],
   setActiveCard: (index: string) => void,
-  onDrop: (status: number) => void
+  onDrop: (status: number) => void,
+  heightDifference:number,
+  divRef: any
 }
 
 export type KanbanCardType = {

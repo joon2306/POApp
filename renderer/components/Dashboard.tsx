@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Image from 'next/image';
 import { MdOutlineViewKanban } from "react-icons/md";
 
@@ -11,8 +11,17 @@ export interface DashboardContent {
     [key: string]: DashboardItem;
 }
 
+
 export default function Dashboard({ dashboardContent, activeDashboardBtn }: { dashboardContent: DashboardContent; activeDashboardBtn: string }) {
     const [activeDashboard, setActiveDashboard] = useState(activeDashboardBtn);
+    const divRef = useRef(null);
+
+    const calculateHeight = (childDivRef) => {
+        if (divRef.current && childDivRef.current) {
+            return divRef.current.offsetHeight - childDivRef.current.offsetHeight;
+        }
+        return 0;
+    }
 
     const handleClick = (title: string) => {
         setActiveDashboard(title);
@@ -26,7 +35,7 @@ export default function Dashboard({ dashboardContent, activeDashboardBtn }: { da
         const ActiveContent = getActiveContent();
         return (
             <>
-                {<ActiveContent />}
+                {<ActiveContent {...({ calculateHeight } as any)} />}
             </>
         )
     }
@@ -62,7 +71,7 @@ export default function Dashboard({ dashboardContent, activeDashboardBtn }: { da
                     </div>
                 </div>
 
-                <div className="flex-1 bg-white rounded-tl-[40px] rounded-bl-[40px] overflow-y-auto">
+                <div className="flex-1 bg-white rounded-tl-[40px] rounded-bl-[40px] overflow-y-auto" ref={divRef}>
                     {renderDashboardContent()}
                 </div>
             </div>
