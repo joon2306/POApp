@@ -47,6 +47,11 @@ const kanbanPendingCards: KanbanCard[] = [
         title: "do feature estimation",
         description: "break into content backend and front",
         priority: 4
+    },
+    {
+        title: "Inform Hiresh about modification to be done to spike",
+        description: "discuss spike",
+        priority: 1
     }
 ]
 
@@ -62,7 +67,7 @@ const sortKanbanCards = (cards: KanbanCard[]) => {
     return cards.sort((a, b) => b.priority - a.priority);
 }
 
-const buildKanbanCards = () => {
+const buildKanbanCards = (prefix: string, kanbanCards: KanbanCard[]) => {
     const assignIds = (prefix: string, cards: KanbanCard[]) => {
         let index = 0;
         cards.map(card => {
@@ -70,27 +75,17 @@ const buildKanbanCards = () => {
         })
     }
 
-    const kanbanCardsObj = {
-        "pending": kanbanPendingCards,
-        "inProgress": kanbanInProgressCards,
-        "onHold": kanbanOnHoldCards
-    }
-
-    Object.entries(kanbanCardsObj).map(([k,v]) => {
-        assignIds(k,v);
-        sortKanbanCards(v);
-    });
-
+    assignIds(prefix, kanbanCards);
+    sortKanbanCards(kanbanCards);
+    return kanbanCards;
 }
-
-buildKanbanCards();
 
 export default function Kanban() {
 
     const [activeCard, setActiveCard] = useState(null);
-    const [pendingCards, setPendingCards] = useState(kanbanPendingCards);
-    const [inProgressCards, setInProgressCards] = useState(kanbanInProgressCards);
-    const [onHoldCards, setOnHoldCards] = useState(kanbanOnHoldCards);
+    const [pendingCards, setPendingCards] = useState(buildKanbanCards("pending", kanbanPendingCards));
+    const [inProgressCards, setInProgressCards] = useState(buildKanbanCards("inProgress", kanbanInProgressCards));
+    const [onHoldCards, setOnHoldCards] = useState(buildKanbanCards("onHold", kanbanOnHoldCards));
 
     const onDrop = (status: number) => {
         if (!activeCard) {
