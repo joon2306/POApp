@@ -1,91 +1,34 @@
 import styles from "../styles/kanban/style.module.css";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { KANBAN_SWIM_LANE_CONFIG, KanbanCardProp, KanbanCardType, KanbanStatus, PRIORITY_CONFIG } from "../types/KanbanTypes";
+import { KanbanService } from "../services/impl/KanbanService";
+import { sortKanbanCards } from "../utils/KanbanUtils";
 
-type KanbanCard = {
-    id?: string,
-    title: string,
-    description: string,
-    priority: number,
-    status?: number,
-    setActiveCard?: (index: string) => void
-    index?: string
-}
+
 type HeaderSwimLane = {
     headerTitle: string,
-    headerColor: keyof typeof kanbanHeaderColors,
-    status: number,
-    cards: KanbanCard[],
+    headerColor: string,
+    status: KanbanStatus,
+    cards: KanbanCardType[],
     setActiveCard: (index: string) => void,
     onDrop: (status: number) => void
-}
-
-const kanbanHeaderColors = {
-    pending: "bg-pending-kanban",
-    inProgress: "bg-inprogress-kanban",
-    onHold: "bg-onhold-kanban",
-    finished: "bg-finished-kanban"
-}
-
-const kanbanPendingCards: KanbanCard[] = [
-    {
-        title: "Meeting with Rohan",
-        description: "discuss backend",
-        priority: 1
-    },
-    {
-        title: "Meeting with kisshan",
-        description: "prepare questions",
-        priority: 2
-    },
-    {
-        title: "Meeting with Christine",
-        description: "discuss issue ADTCUST-356",
-        priority: 3
-    },
-    {
-        title: "do feature estimation",
-        description: "break into content backend and front",
-        priority: 4
-    },
-    {
-        title: "Inform Hiresh about modification to be done to spike",
-        description: "discuss spike",
-        priority: 1
-    }
-]
-
-const kanbanInProgressCards: KanbanCard[] = [
-    
-]
-
-const kanbanOnHoldCards: KanbanCard[] = [
-    
-]
-
-const sortKanbanCards = (cards: KanbanCard[]) => {
-    return cards.sort((a, b) => b.priority - a.priority);
-}
-
-const buildKanbanCards = (prefix: string, kanbanCards: KanbanCard[]) => {
-    const assignIds = (prefix: string, cards: KanbanCard[]) => {
-        let index = 0;
-        cards.map(card => {
-            card.id = `${prefix}_${++index}`;
-        })
-    }
-
-    assignIds(prefix, kanbanCards);
-    sortKanbanCards(kanbanCards);
-    return kanbanCards;
 }
 
 export default function Kanban() {
 
     const [activeCard, setActiveCard] = useState(null);
-    const [pendingCards, setPendingCards] = useState(buildKanbanCards("pending", kanbanPendingCards));
-    const [inProgressCards, setInProgressCards] = useState(buildKanbanCards("inProgress", kanbanInProgressCards));
-    const [onHoldCards, setOnHoldCards] = useState(buildKanbanCards("onHold", kanbanOnHoldCards));
+    const [kanbanCards, setKanbanCards] = useState<KanbanCardType[]>([]);
+    const kanbanService = new KanbanService();
+
+    useEffect(() => {
+        const loadData = async () => {
+            const cards = await kanbanService.getKanbanCards();
+            setKanbanCards(sortKanbanCards(cards));
+        };
+        loadData();
+    }, [kanbanService]);
+
 
     const onDrop = (status: number) => {
         if (!activeCard) {
@@ -96,59 +39,45 @@ export default function Kanban() {
         if (cardStatus === status) {
             return;
         }
-
-        const cards = {
-            pending: pendingCards,
-            inProgress: inProgressCards,
-            onHold: onHoldCards
-        }
-
-        const statusObj = {
-            1: "pending",
-            2: "inProgress",
-            3: "onHold"
-        }
-
-        const newStatusColumn = statusObj[status];
-        const statusColumn = statusObj[cardStatus];
-
-        const selectedCard = cards[statusColumn].find((card: { id: number }) => {
-            return card.id === cardId;
-        });
+        const selectedCard = kanbanCards.find(card => card.id === cardId);
         if (!selectedCard) {
             return;
         }
-
-        cards[newStatusColumn].push(selectedCard);
-        const statusColumnCards = cards[statusColumn].filter(card => card.id !== cardId);
-        cards[statusColumn] = statusColumnCards;
-
-
-        setPendingCards(sortKanbanCards(cards.pending));
-        setInProgressCards(sortKanbanCards(cards.inProgress));
-        setOnHoldCards(sortKanbanCards(cards.onHold));
-
+        selectedCard.status = +status as unknown as KanbanStatus;
     };
+
 
     return <>
         <div className={`flex justify-around my-10`}>
-
-            <KanbanSwimLane headerTitle="Pending" headerColor="pending" status={1} cards={pendingCards} setActiveCard={setActiveCard} onDrop={onDrop} />
-
-            <KanbanSwimLane headerTitle="In Progress" headerColor="inProgress" status={2} cards={inProgressCards} setActiveCard={setActiveCard} onDrop={onDrop} />
-
-            <KanbanSwimLane headerTitle="On Hold" headerColor="onHold" status={3} cards={onHoldCards} setActiveCard={setActiveCard} onDrop={onDrop} />
-
+            {
+                Object.entries(KANBAN_SWIM_LANE_CONFIG).map(([k, { title, color }]) => (
+                    <KanbanSwimLane
+                        key={k}
+                        headerTitle={title}
+                        headerColor={color}
+                        status={k as unknown as KanbanStatus}
+                        cards={kanbanCards}
+                        setActiveCard={setActiveCard}
+                        onDrop={onDrop}
+                    />
+                ))
+            }
         </div>
     </>
 }
 
 
-function KanbanHeader({ title, color }: { title: string, color: keyof typeof kanbanHeaderColors }) {
-    const bgColor = kanbanHeaderColors[color];
+function KanbanHeader({ title, status }: { title: string, status: KanbanStatus }) {
+    const color =
+        +status === 1
+            ? styles.bgPendingKanban
+            : +status === 2
+                ? styles.bgInProgressKanban
+                : styles.bgOnHoldKanban;
+
     return (
         <>
-            <div className={`${bgColor} py-2 px-10 text-white font-bold rounded-tl-[7px] rounded-tr-[7px] rounded-bl-[7px] rounded-br-[7px] w-[175px] lg:w-[200px] text-center h-[40px]`}>
+            <div className={`${color} py-2 px-10 text-white font-bold rounded-tl-[7px] rounded-tr-[7px] rounded-bl-[7px] rounded-br-[7px] w-[175px] lg:w-[200px] text-center h-[40px]`}>
                 {title}
             </div>
         </>
@@ -156,33 +85,11 @@ function KanbanHeader({ title, color }: { title: string, color: keyof typeof kan
 }
 
 
-function KanbanCard({ title, description, priority, status, setActiveCard, index, id }: KanbanCard) {
-    const priorityObj = {
-        1: {
-            color: "bg-low-priority",
-            text: "Low",
-            textColor: "text-text-low-priority"
-        },
-        2: {
-            color: "bg-medium-priority",
-            text: "Medium",
-            textColor: "text-text-medium-priority"
-        },
-        3: {
-            color: "bg-high-priority",
-            text: "High",
-            textColor: "text-text-high-priority"
-        },
-        4: {
-            color: "bg-critical-priority",
-            text: "Critical",
-            textColor: "text-text-critical-priority"
-        }
-    }
-
-    const priorityColor = priorityObj[priority].color || "bg-low-priority";
-    const priorityText = priorityObj[priority].text || "Low";
-    const priorityTextColor = priorityObj[priority].textColor || "text-text-low-priority";
+function KanbanCard({ title, description, priority, status, setActiveCard, id }: KanbanCardProp) {
+    status = +status as unknown as KanbanStatus;
+    const priorityColor = PRIORITY_CONFIG[priority].color || "bg-low-priority";
+    const priorityText = PRIORITY_CONFIG[priority].text || "Low";
+    const priorityTextColor = PRIORITY_CONFIG[priority].textColor || "text-text-low-priority";
     const borderColor = status === 1 ? "border-pending-kanban" : status === 2 ? "border-inprogress-kanban" : "border-onhold-kanban";
 
     return (
@@ -200,7 +107,7 @@ function KanbanCard({ title, description, priority, status, setActiveCard, index
                     <p className="text-left">{description}</p>
 
                     <p className="text-left text-grey-text">Priority</p>
-                    <div className={`text-center ${priorityColor} rounded-tl-[5px] rounded-tr-[5px] rounded-bl-[5px] rounded-br-[5px] ${priorityTextColor} font-bold`}>
+                    <div className={`text-center ${priorityColor} rounded-tl-[5px] rounded-tr-[5px] rounded-bl-[5px] rounded-br-[5px] ${priorityTextColor} font-bold p-[3px]`}>
                         {priorityText}
                     </div>
                 </div>
@@ -213,18 +120,20 @@ function KanbanCard({ title, description, priority, status, setActiveCard, index
 }
 
 
-function KanbanSwimLane({ headerTitle, headerColor, status, cards, setActiveCard, onDrop }: HeaderSwimLane) {
+function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop }: HeaderSwimLane) {
+
+    const applicableCards = cards.filter(card => +card.status === +status);
 
     return (
         <div className="flex flex-col">
 
-            <KanbanHeader title={headerTitle} color={headerColor} />
+            <KanbanHeader title={headerTitle} status={status} />
             <Droppable onDrop={() => onDrop(status)} />
 
             {
-                cards.map((card, index) => (
-                    <React.Fragment key={`${index}_${status}`}>
-                        <KanbanCard description={card.description} priority={card.priority} title={card.title} status={status} setActiveCard={setActiveCard} index={`${card.id}_${status}`} id={card.id} />
+                applicableCards.map((card, index) => (
+                    <React.Fragment key={card.id}>
+                        <KanbanCard description={card.description} priority={card.priority} title={card.title} status={status} setActiveCard={setActiveCard} id={card.id} />
                     </React.Fragment>
                 ))
             }

@@ -1,10 +1,11 @@
-/* Hide scrollbar for Chrome, Safari, and Opera */
-.scrollbarHide::-webkit-scrollbar {
-    display: none;
-  }
-  
-  /* Hide scrollbar for IE, Edge, and Firefox */
-  .scrollbarHide {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
-  }
+.bgPendingKanban {
+  background-color: #317195;
+}
+
+.bgInProgressKanban {
+  background-color: #28A067;
+}
+
+.bgOnHoldKanban {
+  background-color: #AA5E63;
+}
