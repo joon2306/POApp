@@ -4,11 +4,12 @@ import React, { useState } from "react";
 import { HeaderSwimLane, KANBAN_SWIM_LANE_CONFIG, KanbanCardProp, KanbanCardType, KanbanStatus, PRIORITY_CONFIG } from "../types/KanbanTypes";
 import { KanbanService } from "../services/impl/KanbanService";
 import { useKanban } from "../hooks/useKanban";
+import { useHeight } from "../hooks/useHeight";
 
 
 export default function Kanban({ calculateHeight }) {
 
-    const { handleDragStart, handleDrop, kanbanCards, heightDifference, divRef } = useKanban(new KanbanService(), calculateHeight);
+    const { handleDragStart, handleDrop, kanbanCards, updateCard } = useKanban(new KanbanService());
 
     return <>
         <div className={`flex justify-around my-10`}>
@@ -22,8 +23,8 @@ export default function Kanban({ calculateHeight }) {
                         cards={kanbanCards}
                         setActiveCard={handleDragStart}
                         onDrop={handleDrop}
-                        divRef={divRef}
-                        heightDifference={heightDifference}
+                        updateHeight = {updateCard}
+                        calculateHeight = {calculateHeight}
                     />
                 ))
             }
@@ -85,9 +86,11 @@ function KanbanCard({ title, description, priority, status, setActiveCard, id }:
 }
 
 
-function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, divRef, heightDifference }: HeaderSwimLane) {
+function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, updateHeight, calculateHeight }: HeaderSwimLane) {
 
     const applicableCards = cards.filter(card => +card.status === +status);
+
+    const {divRef, heightDifference} = useHeight(calculateHeight, updateHeight);
 
     return (
         <div className="flex flex-col">

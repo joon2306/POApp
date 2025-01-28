@@ -4,14 +4,11 @@ import { IKanbanService } from "../services/IKanbanService";
 import { sortKanbanCards } from "../utils/KanbanUtils";
 
 
-export const useKanban = (kanbanService: IKanbanService, calculateHeight) => {
+export const useKanban = (kanbanService: IKanbanService) => {
 
     const [activeCard, setActiveCard] = useState(null);
     const [kanbanCards, setKanbanCards] = useState<KanbanCardType[]>([]);
     const [updateCard, setUpdateCard] = useState(0);
-
-    const divRef = useRef(null);
-    const [heightDifference, setHeightDifference] = useState(0);
 
     const handleDrop = (status: number) => {
         if (!activeCard) {
@@ -26,9 +23,7 @@ export const useKanban = (kanbanService: IKanbanService, calculateHeight) => {
         if (!selectedCard) {
             return;
         }
-        const cardCount = updateCard + 1;
-        console.log(cardCount);
-        setUpdateCard(cardCount);
+        setUpdateCard(updateCard + 1);
         selectedCard.status = +status as unknown as KanbanStatus;
 
     }
@@ -45,12 +40,8 @@ export const useKanban = (kanbanService: IKanbanService, calculateHeight) => {
         loadData();
     }, [kanbanService]);
 
-    useEffect(() => {
-        if (divRef.current) {
-            setHeightDifference(calculateHeight(divRef));
-        }
-    }, [updateCard]);
+    
 
-    return { handleDrop, handleDragStart, kanbanCards, heightDifference, divRef };
+    return { handleDrop, handleDragStart, kanbanCards, updateCard};
 
 }
