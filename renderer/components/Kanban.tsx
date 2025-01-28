@@ -1,51 +1,14 @@
 import styles from "../styles/kanban/style.module.css";
 
-import React, { useEffect, useState } from "react";
-import { KANBAN_SWIM_LANE_CONFIG, KanbanCardProp, KanbanCardType, KanbanStatus, PRIORITY_CONFIG } from "../types/KanbanTypes";
+import React, { useState } from "react";
+import { HeaderSwimLane, KANBAN_SWIM_LANE_CONFIG, KanbanCardProp, KanbanCardType, KanbanStatus, PRIORITY_CONFIG } from "../types/KanbanTypes";
 import { KanbanService } from "../services/impl/KanbanService";
-import { sortKanbanCards } from "../utils/KanbanUtils";
+import { useKanban } from "../hooks/useKanban";
 
-
-type HeaderSwimLane = {
-    headerTitle: string,
-    headerColor: string,
-    status: KanbanStatus,
-    cards: KanbanCardType[],
-    setActiveCard: (index: string) => void,
-    onDrop: (status: number) => void
-}
 
 export default function Kanban() {
 
-    const [activeCard, setActiveCard] = useState(null);
-    const [kanbanCards, setKanbanCards] = useState<KanbanCardType[]>([]);
-    const kanbanService = new KanbanService();
-
-    useEffect(() => {
-        const loadData = async () => {
-            const cards = await kanbanService.getKanbanCards();
-            setKanbanCards(sortKanbanCards(cards));
-        };
-        loadData();
-    }, [kanbanService]);
-
-
-    const onDrop = (status: number) => {
-        if (!activeCard) {
-            return;
-        }
-
-        const [cardStatus, cardId] = activeCard.split("-");
-        if (cardStatus === status) {
-            return;
-        }
-        const selectedCard = kanbanCards.find(card => card.id === cardId);
-        if (!selectedCard) {
-            return;
-        }
-        selectedCard.status = +status as unknown as KanbanStatus;
-    };
-
+    const { handleDragStart, handleDrop, kanbanCards } = useKanban(new KanbanService());
 
     return <>
         <div className={`flex justify-around my-10`}>
@@ -57,8 +20,8 @@ export default function Kanban() {
                         headerColor={color}
                         status={k as unknown as KanbanStatus}
                         cards={kanbanCards}
-                        setActiveCard={setActiveCard}
-                        onDrop={onDrop}
+                        setActiveCard={handleDragStart}
+                        onDrop={handleDrop}
                     />
                 ))
             }

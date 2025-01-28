@@ -2,6 +2,15 @@ export type KanbanStatus = 1 | 2 | 3;
 export type KanbanHeaderColor = "pending" | "inProgress" | "onHold";
 export type PriorityLevel = 1 | 2 | 3 | 4;
 
+export type HeaderSwimLane = {
+  headerTitle: string,
+  headerColor: string,
+  status: KanbanStatus,
+  cards: KanbanCardType[],
+  setActiveCard: (index: string) => void,
+  onDrop: (status: number) => void
+}
+
 export type KanbanCardType = {
   id: string;
   title: string;
