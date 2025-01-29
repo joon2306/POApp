@@ -35,6 +35,11 @@ export const useKanban = (kanbanService: IKanbanService) => {
         }
     }
 
+    const deleteCard = (cardId: string) => {
+        const filteredKanbanCards = kanbanCards.filter(card => card.id !== cardId);
+        setKanbanCards(filteredKanbanCards);
+    }
+
     useEffect(() => {
         const loadData = async () => {
             const cards = await kanbanService.getKanbanCards();
@@ -45,6 +50,6 @@ export const useKanban = (kanbanService: IKanbanService) => {
 
 
 
-    return { handleDrop, handleDragStart, kanbanCards, updateHeight };
+    return { handleDrop, handleDragStart, kanbanCards, updateHeight, deleteCard };
 
 }

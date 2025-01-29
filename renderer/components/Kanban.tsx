@@ -1,15 +1,16 @@
 import styles from "../styles/kanban/style.module.css";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef } from "react";
 import { HeaderSwimLane, KANBAN_SWIM_LANE_CONFIG, KanbanCardProp, KanbanCardType, KanbanStatus, PRIORITY_CONFIG, PriorityLevel } from "../types/KanbanTypes";
 import { KanbanService } from "../services/impl/KanbanService";
 import { useKanban } from "../hooks/useKanban";
 import { useDroppable } from "../hooks/useDroppable";
+import { useKanbanCard } from "../hooks/useKanbanCard";
 
 
 export default function Kanban({ calculateHeight }) {
 
-    const { handleDragStart, handleDrop, kanbanCards, updateHeight } = useKanban(new KanbanService());
+    const { handleDragStart, handleDrop, kanbanCards, updateHeight, deleteCard } = useKanban(new KanbanService());
 
     return <>
         <div className={`flex justify-around my-10`}>
@@ -25,6 +26,7 @@ export default function Kanban({ calculateHeight }) {
                         onDrop={handleDrop}
                         updateHeight={updateHeight}
                         calculateHeight={calculateHeight}
+                        deleteCard={deleteCard}
                     />
                 ))
             }
@@ -51,7 +53,7 @@ function KanbanHeader({ title, status }: { title: string, status: KanbanStatus }
 }
 
 
-function KanbanCard({ title, description, priority, status, setActiveCard, id }: KanbanCardProp) {
+function KanbanCard({ title, description, priority, status, setActiveCard, id, deleteCard }: KanbanCardProp) {
     status = +status as unknown as KanbanStatus;
     priority = +priority as unknown as PriorityLevel;
 
@@ -79,10 +81,14 @@ function KanbanCard({ title, description, priority, status, setActiveCard, id }:
             break;
     }
 
+    const handleDeleteCard = () => deleteCard(id);
+
+    const { setIsHovered } = useKanbanCard(handleDeleteCard);
+
 
     return (
         <div className="w-[175px] lg:w-[200px] mb-3 text-[10px] cursor-pointer" onDoubleClick={() => console.log("Arjoon")} draggable="true"
-            onDragStart={() => setActiveCard(`${status}-${id}`)} onDragEnd={() => setActiveCard(null)}>
+            onDragStart={() => setActiveCard(`${status}-${id}`)} onDragEnd={() => setActiveCard(null)} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
             <div className={`border ${borderColor} rounded-lg p-6 max-w-sm  
                   hover:border-blue-500 hover:ring-4 hover:ring-blue-500/50 
                   transition duration-300 ease-in-out`}>
@@ -108,7 +114,7 @@ function KanbanCard({ title, description, priority, status, setActiveCard, id }:
 }
 
 
-function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, updateHeight, calculateHeight }: HeaderSwimLane) {
+function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, updateHeight, calculateHeight, deleteCard }: HeaderSwimLane) {
 
     const applicableCards = cards.filter(card => +card.status === +status);
     const divRef = useRef();
@@ -123,7 +129,7 @@ function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, upd
                 {
                     applicableCards.map((card, index) => (
                         <div key={card.id}>
-                            <KanbanCard description={card.description} priority={card.priority} title={card.title} status={status} setActiveCard={setActiveCard} id={card.id} />
+                            <KanbanCard description={card.description} priority={card.priority} title={card.title} status={status} setActiveCard={setActiveCard} id={card.id} deleteCard={deleteCard} />
                         </div>
                     ))
                 }
