@@ -9,3 +9,35 @@
 .bgOnHoldKanban {
   background-color: #AA5E63;
 }
+
+.bgLowPriority {
+  background-color:#BAFFD6;
+}
+
+.bgCriticalPriority {
+  background-color:#FFD5D8;
+}
+
+.bgMediumPriority {
+  background-color:#A2F5F0;
+}
+
+.bgHighPriority {
+  background-color:#FBE2FF;
+}
+
+.lowPriorityColor {
+  color: #106633
+}
+
+.mediumPriorityColor {
+  color: #2B6662
+}
+
+.highPriorityColor {
+  color: #CC00B8
+}
+
+.criticalPriorityColor {
+  color: #CC0000
+}

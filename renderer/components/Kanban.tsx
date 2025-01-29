@@ -1,10 +1,10 @@
 import styles from "../styles/kanban/style.module.css";
 
 import React, { useEffect, useRef, useState } from "react";
-import { HeaderSwimLane, KANBAN_SWIM_LANE_CONFIG, KanbanCardProp, KanbanCardType, KanbanStatus, PRIORITY_CONFIG } from "../types/KanbanTypes";
+import { HeaderSwimLane, KANBAN_SWIM_LANE_CONFIG, KanbanCardProp, KanbanCardType, KanbanStatus, PRIORITY_CONFIG, PriorityLevel } from "../types/KanbanTypes";
 import { KanbanService } from "../services/impl/KanbanService";
 import { useKanban } from "../hooks/useKanban";
-import { useHeight } from "../hooks/useHeight";
+import { useDroppable } from "../hooks/useDroppable";
 
 
 export default function Kanban({ calculateHeight }) {
@@ -53,10 +53,32 @@ function KanbanHeader({ title, status }: { title: string, status: KanbanStatus }
 
 function KanbanCard({ title, description, priority, status, setActiveCard, id }: KanbanCardProp) {
     status = +status as unknown as KanbanStatus;
-    const priorityColor = PRIORITY_CONFIG[priority].color || "bg-low-priority";
+    priority = +priority as unknown as PriorityLevel;
+
+    let priorityColor = "", priorityTextColor = "";
+
     const priorityText = PRIORITY_CONFIG[priority].text || "Low";
-    const priorityTextColor = PRIORITY_CONFIG[priority].textColor || "text-text-low-priority";
     const borderColor = status === 1 ? "border-pending-kanban" : status === 2 ? "border-inprogress-kanban" : "border-onhold-kanban";
+
+    switch (priority) {
+        case 1:
+            priorityColor = styles.bgLowPriority;
+            priorityTextColor = styles.lowPriorityColor;
+            break;
+        case 2:
+            priorityColor = styles.bgMediumPriority;
+            priorityTextColor = styles.mediumPriorityColor;
+            break;
+        case 3:
+            priorityColor = styles.bgHighPriority;
+            priorityTextColor = styles.highPriorityColor;
+            break;
+        default:
+            priorityColor = styles.bgCriticalPriority;
+            priorityTextColor = styles.criticalPriorityColor;
+            break;
+    }
+
 
     return (
         <div className="w-[175px] lg:w-[200px] mb-3 text-[10px] cursor-pointer" onDoubleClick={() => console.log("Arjoon")} draggable="true"
@@ -115,9 +137,8 @@ function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, upd
 
 
 function Droppable({ onDrop, isBottom, calculateHeight, updateHeight, divRef }) {
-    const [show, setShow] = useState(false);
 
-    const { heightDifference, showHeightButtom } = useHeight(divRef, updateHeight, calculateHeight);
+    const { getHeight, show, setShow } = useDroppable(divRef, updateHeight, calculateHeight, isBottom);
 
     const showDroppableClassNames = `w-[200px] h-[130px] bg-white border-2 border-dotted border-gray-300 
             rounded-lg shadow-sm hover:shadow-md hover:border-blue-500 
@@ -125,19 +146,6 @@ function Droppable({ onDrop, isBottom, calculateHeight, updateHeight, divRef }) 
             focus:outline-none focus:ring-2 focus:ring-blue-200 
             my-2 px-4 py-3 opacity-100`;
     const hideDroppableClassNames = `w-[200px] h-[30]px bg-gray-950 opacity-0`;
-
-    const getHeight = () => {
-        if (isBottom && showHeightButtom) {
-            return `${heightDifference}px`;
-        }
-        if (isBottom && !showHeightButtom) {
-            return '0px';
-        }
-        if (show && !isBottom) {
-            return '130px';
-        }
-        return '30px';
-    };
 
     return (
         <div
