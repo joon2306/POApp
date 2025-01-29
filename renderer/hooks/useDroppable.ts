@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-export const useDroppable = (divRef, updateHeight, calculateHeight, isBottom) => {
+export const useDroppable = (divRef, updateHeight, calculateHeight, isBottom, onDrop) => {
 
     const [showHeightButtom, setShowHeightButtom] = useState(true);
     const [heightDifference, setHeightDifference] = useState(0);
@@ -24,6 +24,21 @@ export const useDroppable = (divRef, updateHeight, calculateHeight, isBottom) =>
         return '30px';
     };
 
-    return { getHeight, show, setShow };
+    const handleDragOver = (e) => e.preventDefault();
+
+    const handleDrop = () => {
+        onDrop();
+        setShow(false);
+    }
+
+    const handleDragEnter = () => setShow(true);
+
+    const handleDragLeave = (e) => {
+        if (!e.currentTarget.contains(e.relatedTarget)) {
+            setShow(false);
+        }
+    }
+
+    return { getHeight, handleDragOver, handleDrop, handleDragEnter, handleDragLeave, show };
 
 }

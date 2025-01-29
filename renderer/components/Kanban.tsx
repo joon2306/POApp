@@ -138,7 +138,8 @@ function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, upd
 
 function Droppable({ onDrop, isBottom, calculateHeight, updateHeight, divRef }) {
 
-    const { getHeight, show, setShow } = useDroppable(divRef, updateHeight, calculateHeight, isBottom);
+    const { getHeight, show, handleDragEnter, handleDragOver, handleDrop, handleDragLeave } = useDroppable(divRef, updateHeight,
+        calculateHeight, isBottom, onDrop);
 
     const showDroppableClassNames = `w-[200px] h-[130px] bg-white border-2 border-dotted border-gray-300 
             rounded-lg shadow-sm hover:shadow-md hover:border-blue-500 
@@ -151,19 +152,10 @@ function Droppable({ onDrop, isBottom, calculateHeight, updateHeight, divRef }) 
         <div
             style={{ height: getHeight() }}
             className={show ? showDroppableClassNames : hideDroppableClassNames}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={() => {
-                onDrop();
-                setShow(false);
-            }}
-            onDragEnter={() => {
-                setShow(true)
-            }}
-            onDragLeave={(e) => {
-                if (!e.currentTarget.contains(e.relatedTarget)) {
-                    setShow(false);
-                }
-            }}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
         >
             {
                 show && <section className="flex justify-center items-center h-[100%]">Drop here</section>
