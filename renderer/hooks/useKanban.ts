@@ -8,9 +8,10 @@ export const useKanban = (kanbanService: IKanbanService) => {
 
     const [activeCard, setActiveCard] = useState(null);
     const [kanbanCards, setKanbanCards] = useState<KanbanCardType[]>([]);
-    const [updateCard, setUpdateCard] = useState(0);
+    const [updateHeight, setUpdateHeight] = useState(0);
 
     const handleDrop = (status: number) => {
+        setUpdateHeight(updateHeight + 1);
         if (!activeCard) {
             return;
         }
@@ -23,13 +24,15 @@ export const useKanban = (kanbanService: IKanbanService) => {
         if (!selectedCard) {
             return;
         }
-        setUpdateCard(updateCard + 1);
         selectedCard.status = +status as unknown as KanbanStatus;
 
     }
 
     const handleDragStart = (cardId: string) => {
-        setActiveCard(cardId)
+        setActiveCard(cardId);
+        if (cardId !== null) {
+            setUpdateHeight(updateHeight + 1);
+        }
     }
 
     useEffect(() => {
@@ -40,8 +43,8 @@ export const useKanban = (kanbanService: IKanbanService) => {
         loadData();
     }, [kanbanService]);
 
-    
 
-    return { handleDrop, handleDragStart, kanbanCards, updateCard};
+
+    return { handleDrop, handleDragStart, kanbanCards, updateHeight };
 
 }

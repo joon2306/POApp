@@ -1,16 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 
-export const useHeight = (calculateHeight, updateHeight) => {
-    const divRef = useRef(null);
+export const useHeight = (divRef, updateHeight, calculateHeight) => {
+
+    const [showHeightButtom, setShowHeightButtom] = useState(true);
     const [heightDifference, setHeightDifference] = useState(0);
 
     useEffect(() => {
-        if (divRef.current) {
-            setHeightDifference(calculateHeight(divRef));
-        }
-    }, [updateHeight]);
+        setShowHeightButtom(!showHeightButtom);
+        setHeightDifference(calculateHeight(divRef));
+    }, [updateHeight])
 
-    return { divRef, heightDifference };
-
+    return { heightDifference, showHeightButtom };
 
 }

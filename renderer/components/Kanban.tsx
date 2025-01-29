@@ -1,6 +1,6 @@
 import styles from "../styles/kanban/style.module.css";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { HeaderSwimLane, KANBAN_SWIM_LANE_CONFIG, KanbanCardProp, KanbanCardType, KanbanStatus, PRIORITY_CONFIG } from "../types/KanbanTypes";
 import { KanbanService } from "../services/impl/KanbanService";
 import { useKanban } from "../hooks/useKanban";
@@ -9,7 +9,7 @@ import { useHeight } from "../hooks/useHeight";
 
 export default function Kanban({ calculateHeight }) {
 
-    const { handleDragStart, handleDrop, kanbanCards, updateCard } = useKanban(new KanbanService());
+    const { handleDragStart, handleDrop, kanbanCards, updateHeight } = useKanban(new KanbanService());
 
     return <>
         <div className={`flex justify-around my-10`}>
@@ -23,8 +23,8 @@ export default function Kanban({ calculateHeight }) {
                         cards={kanbanCards}
                         setActiveCard={handleDragStart}
                         onDrop={handleDrop}
-                        updateHeight = {updateCard}
-                        calculateHeight = {calculateHeight}
+                        updateHeight={updateHeight}
+                        calculateHeight={calculateHeight}
                     />
                 ))
             }
@@ -89,14 +89,13 @@ function KanbanCard({ title, description, priority, status, setActiveCard, id }:
 function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, updateHeight, calculateHeight }: HeaderSwimLane) {
 
     const applicableCards = cards.filter(card => +card.status === +status);
-
-    const {divRef, heightDifference} = useHeight(calculateHeight, updateHeight);
+    const divRef = useRef();
 
     return (
         <div className="flex flex-col">
 
             <KanbanHeader title={headerTitle} status={status} />
-            <Droppable onDrop={() => onDrop(status)} isBottom={false} heightDifference={0} />
+            <Droppable onDrop={() => onDrop(status)} isBottom={false} calculateHeight={calculateHeight} divRef={divRef} updateHeight={updateHeight} />
             <div ref={divRef}>
 
                 {
@@ -107,7 +106,7 @@ function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, upd
                     ))
                 }
             </div>
-            <Droppable onDrop={() => onDrop(status)} isBottom={true} heightDifference={heightDifference} />
+            <Droppable onDrop={() => onDrop(status)} isBottom={true} calculateHeight={calculateHeight} divRef={divRef} updateHeight={updateHeight} />
 
         </div>
     );
@@ -115,8 +114,10 @@ function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, upd
 
 
 
-function Droppable({ onDrop, isBottom, heightDifference }) {
+function Droppable({ onDrop, isBottom, calculateHeight, updateHeight, divRef }) {
     const [show, setShow] = useState(false);
+
+    const { heightDifference, showHeightButtom } = useHeight(divRef, updateHeight, calculateHeight);
 
     const showDroppableClassNames = `w-[200px] h-[130px] bg-white border-2 border-dotted border-gray-300 
             rounded-lg shadow-sm hover:shadow-md hover:border-blue-500 
@@ -125,16 +126,22 @@ function Droppable({ onDrop, isBottom, heightDifference }) {
             my-2 px-4 py-3 opacity-100`;
     const hideDroppableClassNames = `w-[200px] h-[30]px bg-gray-950 opacity-0`;
 
+    const getHeight = () => {
+        if (isBottom && showHeightButtom) {
+            return `${heightDifference}px`;
+        }
+        if (isBottom && !showHeightButtom) {
+            return '0px';
+        }
+        if (show && !isBottom) {
+            return '130px';
+        }
+        return '30px';
+    };
+
     return (
         <div
-            style={{
-                height: isBottom
-                    ? `${heightDifference}px`
-                    : show
-                        ? '130px'
-                        : '30px'
-            }}
-
+            style={{ height: getHeight() }}
             className={show ? showDroppableClassNames : hideDroppableClassNames}
             onDragOver={(e) => e.preventDefault()}
             onDrop={() => {
