@@ -7,6 +7,7 @@ import { useKanban } from "../hooks/useKanban";
 import { useDroppable } from "../hooks/useDroppable";
 import { useKanbanCard } from "../hooks/useKanbanCard";
 import { useGlobalUI } from "../provider/GlobalUiProvider";
+import ValidationForm from "./ValidatioForm";
 
 
 export default function Kanban({ calculateHeight }) {
@@ -96,39 +97,24 @@ function KanbanCard({ title, description, priority, status, setActiveCard, id, d
     const openSaveModal = () => {
         showModal({
             title: "Save Card",
-            content: (
-                <form style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                    <input
-                        type="text"
-                        name="title"
-                        placeholder="Title"
-                        onChange={() => console.log("title")}
-                        style={{ padding: "0.5rem", border: "1px solid #ccc", borderRadius: "0.375rem" }}
-                    />
-                    <input
-                        type="text"
-                        name="description"
-                        placeholder="Description"
-                        onChange={() => console.log("description")}
-                        style={{ padding: "0.5rem", border: "1px solid #ccc", borderRadius: "0.375rem" }}
-                    />
-                    <select
-                        name="priority"
-                        onChange={() => console.log("priority")}
-                        style={{ padding: "0.5rem", border: "1px solid #ccc", borderRadius: "0.375rem" }}
-                    >
-                        <option value="Low">Low</option>
-                        <option value="Medium">Medium</option>
-                        <option value="High">High</option>
-                        <option value="Critical">Critical</option>
-                    </select>
-                </form>
-            ),
+            content: <ValidationForm onValidSubmit={hideModal} />,
             buttons: [
-                { label: "Cancel", className: "bg-gray-200 hover:bg-gray-300", onClick: () => console.log("Modal closed") },
-                { label: "Save", className: "bg-blue-500 hover:bg-blue-600 text-white", onClick: () => console.log("Modal saved") }
+              { 
+                label: "Cancel", 
+                onClick: hideModal,
+                className: "bg-gray-200 hover:bg-gray-300" 
+              },
+              { 
+                label: "Save",
+                onClick: () => {
+                  // Programmatically submit the form
+                  const form = document.querySelector('form');
+                  if (form) form.requestSubmit();
+                },
+                className: "bg-blue-500 hover:bg-blue-600 text-white"
+              }
             ]
-        });
+          });
     }
 
 
