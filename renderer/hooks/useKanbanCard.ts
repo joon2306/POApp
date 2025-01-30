@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 
-export const useKanbanCard = (handleDeleteCard: () => void) => {
+export const useKanbanCard = (deleteCard: (id: string) => void, id: string) => {
     const [isHovered, setIsHovered] = useState(false);
+
+    const handleDeleteCard = () => deleteCard(id);
 
     useEffect(() => {
         const handleKeyDown = (event) => {

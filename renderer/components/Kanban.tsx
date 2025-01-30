@@ -81,9 +81,8 @@ function KanbanCard({ title, description, priority, status, setActiveCard, id, d
             break;
     }
 
-    const handleDeleteCard = () => deleteCard(id);
 
-    const { setIsHovered } = useKanbanCard(handleDeleteCard);
+    const { setIsHovered } = useKanbanCard(deleteCard, id);
 
 
     return (
