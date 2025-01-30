@@ -5,6 +5,7 @@ export const useKanbanForm = ({ onValidSubmit, kanbanFormValue }: KanbanFormType
     let defaultTitle = kanbanFormValue ? kanbanFormValue.title : "";
     let defaultDescription = kanbanFormValue ? kanbanFormValue.description : "";
     let defaultPriority = kanbanFormValue ? kanbanFormValue.priority : 1;
+    const id: string = kanbanFormValue ? kanbanFormValue.id: "";
 
     const [title, setTitle] = useState(defaultTitle);
     const [description, setDescription] = useState(defaultDescription);
@@ -39,10 +40,7 @@ export const useKanbanForm = ({ onValidSubmit, kanbanFormValue }: KanbanFormType
     const handleSubmit = (e) => {
         e.preventDefault();
         if (validateForm()) {
-            console.log(title);
-            console.log(description);
-            console.log(priority)
-            return onValidSubmit();
+            return onValidSubmit({title, description, priority, id});
         }
         return null;
     };

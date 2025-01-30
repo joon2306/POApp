@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { KanbanCardType, KanbanStatus } from "../types/KanbanTypes";
+import { useEffect, useState } from "react";
+import { KanbanCardType, KanbanFormValue, KanbanStatus } from "../types/KanbanTypes";
 import { IKanbanService } from "../services/IKanbanService";
 import { sortKanbanCards } from "../utils/KanbanUtils";
 
@@ -9,6 +9,7 @@ export const useKanban = (kanbanService: IKanbanService) => {
     const [activeCard, setActiveCard] = useState(null);
     const [kanbanCards, setKanbanCards] = useState<KanbanCardType[]>([]);
     const [updateHeight, setUpdateHeight] = useState(0);
+    const [updateCards, setUpdateCards] = useState(0);
 
     const handleDrop = (status: number) => {
         setUpdateHeight(updateHeight + 1);
@@ -35,24 +36,29 @@ export const useKanban = (kanbanService: IKanbanService) => {
         }
     }
 
-    const deleteCard = async (cardId: string) => {
-        const filteredKanbanCards = await kanbanService.deleteKanbanCards(cardId);
-        setKanbanCards(filteredKanbanCards);
+    const deleteCard = (cardId: string) => {
+        kanbanService.deleteKanbanCards(cardId);
+        setUpdateCards(updateCards + 1);
     }
 
-    const saveCard = () => console.log("Arjoon king card saved");
+    const saveCard = (arg: KanbanFormValue) => {
+        kanbanService.addKanbanCard(arg);
+        setUpdateCards(updateCards + 1);
+    };
 
-    const modifyCard = async () => {
-        
+    const modifyCard = (arg: KanbanFormValue) => {
+        kanbanService.modifyKanbanCard(arg);
+        setUpdateCards(updateCards + 1);
     }
 
     useEffect(() => {
         const loadData = async () => {
             const cards = await kanbanService.getKanbanCards();
-            setKanbanCards(sortKanbanCards(cards));
+            const sortedCards = sortKanbanCards(cards);
+            setKanbanCards(sortedCards);
         };
         loadData();
-    }, [kanbanService]);
+    }, [updateCards]);
 
 
 

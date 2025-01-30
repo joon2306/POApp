@@ -9,6 +9,7 @@ import { useKanbanCard } from "../hooks/useKanbanCard";
 import { getModalService } from "../services/impl/ModalService";
 import KanbanForm from "./Form/KanbanForm";
 import { ModalType } from "../types/ModalTypes";
+import { sortKanbanCards } from "../utils/KanbanUtils";
 
 
 const getKanbanForm = (isModify, handleSave, kanbanFormValue, modalService): ModalType => {
@@ -64,7 +65,7 @@ export default function Kanban({ calculateHeight }) {
 }
 
 
-function KanbanHeader({ title, status, saveCard }: { title: string, status: KanbanStatus, saveCard: () => void }) {
+function KanbanHeader({ title, status, saveCard }: { title: string, status: KanbanStatus, saveCard: (arg: KanbanFormValue) => void }) {
     status = +status as unknown as KanbanStatus;
     const color =
         status === 1
@@ -75,8 +76,8 @@ function KanbanHeader({ title, status, saveCard }: { title: string, status: Kanb
 
     const modalService = getModalService();
 
-    const handleSubmit = () => {
-        saveCard();
+    const handleSubmit = ({title, description, priority, id}: KanbanFormValue) => {
+        saveCard({title, description, priority, id});
         modalService.closeModal();
     }
 
@@ -131,15 +132,16 @@ function KanbanCard({ title, description, priority, status, setActiveCard, id, d
     const { setIsHovered } = useKanbanCard(deleteCard, id);
     const modalService = getModalService();
 
-    const handleSave = () => {
-        modifyCard();
+    const handleSave = ({description, title, priority}: KanbanFormValue) => {
+        modifyCard({description, title, priority, id});
         modalService.closeModal();
     }
 
     const kanbanFormValue: KanbanFormValue ={
-        description: description,
-        title: title,
-        priority: priority
+        description,
+        title,
+        priority,
+        id
     }
 
     const modal = getKanbanForm(true, handleSave, kanbanFormValue, modalService);
@@ -175,7 +177,7 @@ return (
 
 function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, updateHeight, calculateHeight, deleteCard, saveCard, modifyCard }: HeaderSwimLane) {
 
-    const applicableCards = cards.filter(card => +card.status === +status);
+    const applicableCards = sortKanbanCards(cards.filter(card => +card.status === +status));
     const divRef = useRef();
 
     return (
