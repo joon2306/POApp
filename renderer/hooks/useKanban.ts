@@ -36,18 +36,18 @@ export const useKanban = (kanbanService: IKanbanService) => {
         }
     }
 
-    const deleteCard = (cardId: string) => {
-        kanbanService.deleteKanbanCards(cardId);
+    const deleteCard = async (cardId: string) => {
+        await kanbanService.deleteKanbanCards(cardId);
         setUpdateCards(updateCards + 1);
     }
 
-    const saveCard = (arg: KanbanFormValue) => {
-        kanbanService.addKanbanCard(arg);
+    const saveCard = async (arg: KanbanFormValue) => {
+        await kanbanService.addKanbanCard(arg);
         setUpdateCards(updateCards + 1);
     };
 
-    const modifyCard = (arg: KanbanFormValue) => {
-        kanbanService.modifyKanbanCard(arg);
+    const modifyCard = async (arg: KanbanFormValue) => {
+        await kanbanService.modifyKanbanCard(arg);
         setUpdateCards(updateCards + 1);
     }
 

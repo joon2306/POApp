@@ -63,11 +63,11 @@ export class KanbanService implements IKanbanService {
         return mockCards;
     }
 
-    deleteKanbanCards(cardId: string): void {
+    async deleteKanbanCards(cardId: string): Promise<void> {
         mockCards = mockCards.filter(c => c.id !== cardId);
     }
 
-    modifyKanbanCard({ title, description, priority, id }: KanbanFormValue) {
+    async modifyKanbanCard({ title, description, priority, id }: KanbanFormValue) {
         const selectedCard = mockCards.find(c => c.id === id);
 
         if (!selectedCard) {
@@ -77,7 +77,7 @@ export class KanbanService implements IKanbanService {
         Object.assign(selectedCard, { title, description, priority: priority as unknown as PriorityLevel });
     }
 
-    addKanbanCard({title, description, priority}: KanbanFormValue) {
+    async addKanbanCard({title, description, priority}: KanbanFormValue) {
         const id = `${mockCards.length + 1}`;
         const kanbanCard: KanbanCardType = {
             id,
