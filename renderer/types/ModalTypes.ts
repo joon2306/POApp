@@ -1,15 +1,12 @@
 import React, { ReactNode } from "react"
+import { ButtonProps } from "./ButtonTypes"
 
-export type ModalButton = {
-    label: string,
-    onClick: () => void,
-    className: string,
-    closeModal: boolean
-}
-
-export type ModalType = {
+interface ModalConfig {
     title: string,
     content: ReactNode,
-    buttons: ModalButton[],
-    closeOnBackdrop: boolean
+    closeOnBackdrop?: boolean
 }
+export interface ModalType extends ModalConfig {
+    buttons: ButtonProps[]
+}
+

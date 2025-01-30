@@ -12,7 +12,8 @@ export type HeaderSwimLane = {
   calculateHeight : (height: any) => number,
   updateHeight: number,
   deleteCard: (cardId: string) => void,
-  saveCard: () => void
+  saveCard: () => void,
+  modifyCard: () => void
 }
 
 export type KanbanCardType = {
@@ -26,7 +27,7 @@ export type KanbanCardType = {
 export interface KanbanCardProp extends KanbanCardType {
   setActiveCard: (value: string) => void,
   deleteCard: (cardId: string) => void,
-  saveCard: () => void
+  modifyCard: () => void
 };
 
 export type SwimLaneConfig = {
@@ -76,3 +77,15 @@ export const PRIORITY_CONFIG = {
     textColor: "text-text-critical-priority",
   },
 } as const;
+
+
+export type KanbanFormValue = {
+  description: string, 
+  title: string, 
+  priority: number
+}
+
+export type KanbanFormType = {
+  onValidSubmit: () => KanbanFormValue,
+  kanbanFormValue?: KanbanFormValue
+}

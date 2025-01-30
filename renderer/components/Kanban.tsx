@@ -1,18 +1,43 @@
 import styles from "../styles/kanban/style.module.css";
 
 import React, { useRef } from "react";
-import { HeaderSwimLane, KANBAN_SWIM_LANE_CONFIG, KanbanCardProp, KanbanCardType, KanbanStatus, PRIORITY_CONFIG, PriorityLevel } from "../types/KanbanTypes";
+import { HeaderSwimLane, KANBAN_SWIM_LANE_CONFIG, KanbanCardProp, KanbanCardType, KanbanFormValue, KanbanStatus, PRIORITY_CONFIG, PriorityLevel } from "../types/KanbanTypes";
 import { KanbanService } from "../services/impl/KanbanService";
 import { useKanban } from "../hooks/useKanban";
 import { useDroppable } from "../hooks/useDroppable";
 import { useKanbanCard } from "../hooks/useKanbanCard";
-import { useGlobalUI } from "../provider/GlobalUiProvider";
-import ValidationForm from "./ValidatioForm";
+import { getModalService } from "../services/impl/ModalService";
+import KanbanForm from "./Form/KanbanForm";
+import { ModalType } from "../types/ModalTypes";
+
+
+const getKanbanForm = (isModify, handleSave, kanbanFormValue, modalService): ModalType => {
+    return {
+        title: isModify ? "Modify Kanban" : "Create Kanban",
+        content: <KanbanForm onValidSubmit={handleSave} kanbanFormValue = {kanbanFormValue} />,
+        buttons: [
+            {
+                label: "Cancel",
+                onClick: modalService.closeModal,
+                variant: "success"
+            },
+            {
+                label: "Save",
+                onClick: () => {
+                    // Programmatically submit the form
+                    const form = document.querySelector('form');
+                    if (form) form.requestSubmit();
+                },
+                variant: "primary"
+            }
+        ]
+    };
+}
 
 
 export default function Kanban({ calculateHeight }) {
 
-    const { handleDragStart, handleDrop, kanbanCards, updateHeight, deleteCard, saveCard } = useKanban(new KanbanService());
+    const { handleDragStart, handleDrop, kanbanCards, updateHeight, deleteCard, saveCard, modifyCard } = useKanban(new KanbanService());
 
     return <>
         <div className={`flex justify-around my-10`}>
@@ -29,7 +54,8 @@ export default function Kanban({ calculateHeight }) {
                         updateHeight={updateHeight}
                         calculateHeight={calculateHeight}
                         deleteCard={deleteCard}
-                        saveCard = {saveCard}
+                        saveCard={saveCard}
+                        modifyCard={modifyCard}
                     />
                 ))
             }
@@ -38,17 +64,34 @@ export default function Kanban({ calculateHeight }) {
 }
 
 
-function KanbanHeader({ title, status }: { title: string, status: KanbanStatus }) {
+function KanbanHeader({ title, status, saveCard }: { title: string, status: KanbanStatus, saveCard: () => void }) {
+    status = +status as unknown as KanbanStatus;
     const color =
-        +status === 1
+        status === 1
             ? styles.bgPendingKanban
-            : +status === 2
+            : status === 2
                 ? styles.bgInProgressKanban
                 : styles.bgOnHoldKanban;
 
+    const modalService = getModalService();
+
+    const handleSubmit = () => {
+        saveCard();
+        modalService.closeModal();
+    }
+
+    const modal = getKanbanForm(false, handleSubmit, undefined, modalService);
+
+    const handleClick = () => {
+        if (+status === 1) {
+            modalService.openModal(modal);
+        }
+    }
+
     return (
         <>
-            <div className={`${color} py-2 px-10 text-white font-bold rounded-tl-[7px] rounded-tr-[7px] rounded-bl-[7px] rounded-br-[7px] w-[175px] lg:w-[200px] text-center h-[40px]`}>
+            <div className={`${color} py-2 px-10 text-white font-bold rounded-tl-[7px] rounded-tr-[7px] rounded-bl-[7px] rounded-br-[7px] w-[175px] lg:w-[200px] text-center h-[40px]`}
+                style={{ cursor: +status === 1 ? "pointer" : null }} onClick={handleClick}>
                 {title}
             </div>
         </>
@@ -56,7 +99,7 @@ function KanbanHeader({ title, status }: { title: string, status: KanbanStatus }
 }
 
 
-function KanbanCard({ title, description, priority, status, setActiveCard, id, deleteCard, saveCard }: KanbanCardProp) {
+function KanbanCard({ title, description, priority, status, setActiveCard, id, deleteCard, modifyCard }: KanbanCardProp) {
     status = +status as unknown as KanbanStatus;
     priority = +priority as unknown as PriorityLevel;
 
@@ -86,67 +129,51 @@ function KanbanCard({ title, description, priority, status, setActiveCard, id, d
 
 
     const { setIsHovered } = useKanbanCard(deleteCard, id);
-    const { showModal, hideModal } = useGlobalUI();
+    const modalService = getModalService();
 
     const handleSave = () => {
-        saveCard();
-        console.log("modal getting hidden");
-        hideModal();
+        modifyCard();
+        modalService.closeModal();
     }
 
-    const openSaveModal = () => {
-        showModal({
-            title: "Save Card",
-            content: <ValidationForm onValidSubmit={hideModal} />,
-            buttons: [
-              { 
-                label: "Cancel", 
-                onClick: hideModal,
-                className: "bg-gray-200 hover:bg-gray-300" 
-              },
-              { 
-                label: "Save",
-                onClick: () => {
-                  // Programmatically submit the form
-                  const form = document.querySelector('form');
-                  if (form) form.requestSubmit();
-                },
-                className: "bg-blue-500 hover:bg-blue-600 text-white"
-              }
-            ]
-          });
+    const kanbanFormValue: KanbanFormValue ={
+        description: description,
+        title: title,
+        priority: priority
     }
 
+    const modal = getKanbanForm(true, handleSave, kanbanFormValue, modalService);
 
-    return (
-        <div className="w-[175px] lg:w-[200px] mb-3 text-[10px] cursor-pointer" onDoubleClick={() => openSaveModal()} draggable="true"
-            onDragStart={() => setActiveCard(`${status}-${id}`)} onDragEnd={() => setActiveCard(null)} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-            <div className={`border ${borderColor} rounded-lg p-6 max-w-sm  
+
+return (
+    <div className="w-[175px] lg:w-[200px] mb-3 text-[10px] cursor-pointer" onDoubleClick={() => modalService.openModal(modal)} draggable="true"
+        onDragStart={() => setActiveCard(`${status}-${id}`)} onDragEnd={() => setActiveCard(null)} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+        <div className={`border ${borderColor} rounded-lg p-6 max-w-sm  
                   hover:border-blue-500 hover:ring-4 hover:ring-blue-500/50 
                   transition duration-300 ease-in-out`}>
-                <div className="grid grid-cols-2 gap-y-2">
-                    <p className="text-left text-grey-text">Title</p>
-                    <p className="text-left text-title-text font-bold">
-                        {title}
-                    </p>
-                    <p className="text-left text-grey-text">Description</p>
-                    <p className="text-left">{description}</p>
+            <div className="grid grid-cols-2 gap-y-2">
+                <p className="text-left text-grey-text">Title</p>
+                <p className="text-left text-title-text font-bold">
+                    {title}
+                </p>
+                <p className="text-left text-grey-text">Description</p>
+                <p className="text-left">{description}</p>
 
-                    <p className="text-left text-grey-text">Priority</p>
-                    <div className={`text-center ${priorityColor} rounded-tl-[5px] rounded-tr-[5px] rounded-bl-[5px] rounded-br-[5px] ${priorityTextColor} font-bold p-[3px]`}>
-                        {priorityText}
-                    </div>
+                <p className="text-left text-grey-text">Priority</p>
+                <div className={`text-center ${priorityColor} rounded-tl-[5px] rounded-tr-[5px] rounded-bl-[5px] rounded-br-[5px] ${priorityTextColor} font-bold p-[3px]`}>
+                    {priorityText}
                 </div>
-
-
             </div>
 
+
         </div>
-    )
+
+    </div>
+)
 }
 
 
-function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, updateHeight, calculateHeight, deleteCard, saveCard }: HeaderSwimLane) {
+function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, updateHeight, calculateHeight, deleteCard, saveCard, modifyCard }: HeaderSwimLane) {
 
     const applicableCards = cards.filter(card => +card.status === +status);
     const divRef = useRef();
@@ -154,7 +181,7 @@ function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, upd
     return (
         <div className="flex flex-col">
 
-            <KanbanHeader title={headerTitle} status={status} />
+            <KanbanHeader title={headerTitle} status={status} saveCard={saveCard} />
             <Droppable onDrop={() => onDrop(status)} isBottom={false} calculateHeight={calculateHeight} divRef={divRef} updateHeight={updateHeight} />
             <div ref={divRef}>
 
@@ -162,7 +189,7 @@ function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, upd
                     applicableCards.map((card, index) => (
                         <div key={card.id}>
                             <KanbanCard description={card.description} priority={card.priority} title={card.title} status={status} setActiveCard={setActiveCard} id={card.id}
-                            deleteCard={deleteCard} saveCard={saveCard} />
+                                deleteCard={deleteCard} modifyCard={modifyCard} />
                         </div>
                     ))
                 }

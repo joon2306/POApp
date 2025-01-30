@@ -1,3 +1,4 @@
+import { mock } from "node:test";
 import { KanbanCardType, KanbanStatus } from "../../types/KanbanTypes";
 import { generateKanbanIds } from "../../utils/KanbanUtils";
 import { IKanbanService } from "../IKanbanService";
@@ -53,8 +54,15 @@ export class KanbanService implements IKanbanService {
         return kanbanService;
     }
 
+    private mockCardsWithIds = generateKanbanIds(mockCards, STATUS_PREFIX_MAP);
+
     async getKanbanCards(): Promise<KanbanCardType[]> {
-        return generateKanbanIds(mockCards, STATUS_PREFIX_MAP);
+        return this.mockCardsWithIds;
+    }
+
+    async deleteKanbanCards(cardId: string): Promise<KanbanCardType[]> {
+        this.mockCardsWithIds = this.mockCardsWithIds.filter(c => c.id !== cardId);
+        return this.mockCardsWithIds;
     }
 
 }
