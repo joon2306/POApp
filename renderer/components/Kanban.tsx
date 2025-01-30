@@ -6,11 +6,12 @@ import { KanbanService } from "../services/impl/KanbanService";
 import { useKanban } from "../hooks/useKanban";
 import { useDroppable } from "../hooks/useDroppable";
 import { useKanbanCard } from "../hooks/useKanbanCard";
+import { useGlobalUI } from "../provider/GlobalUiProvider";
 
 
 export default function Kanban({ calculateHeight }) {
 
-    const { handleDragStart, handleDrop, kanbanCards, updateHeight, deleteCard } = useKanban(new KanbanService());
+    const { handleDragStart, handleDrop, kanbanCards, updateHeight, deleteCard, saveCard } = useKanban(new KanbanService());
 
     return <>
         <div className={`flex justify-around my-10`}>
@@ -27,6 +28,7 @@ export default function Kanban({ calculateHeight }) {
                         updateHeight={updateHeight}
                         calculateHeight={calculateHeight}
                         deleteCard={deleteCard}
+                        saveCard = {saveCard}
                     />
                 ))
             }
@@ -53,7 +55,7 @@ function KanbanHeader({ title, status }: { title: string, status: KanbanStatus }
 }
 
 
-function KanbanCard({ title, description, priority, status, setActiveCard, id, deleteCard }: KanbanCardProp) {
+function KanbanCard({ title, description, priority, status, setActiveCard, id, deleteCard, saveCard }: KanbanCardProp) {
     status = +status as unknown as KanbanStatus;
     priority = +priority as unknown as PriorityLevel;
 
@@ -83,10 +85,55 @@ function KanbanCard({ title, description, priority, status, setActiveCard, id, d
 
 
     const { setIsHovered } = useKanbanCard(deleteCard, id);
+    const { showModal, hideModal } = useGlobalUI();
+
+    const handleSave = () => {
+        saveCard();
+        console.log("modal getting hidden");
+        hideModal();
+    }
+
+    const openSaveModal = () => {
+        showModal({
+            title: "Save Card",
+            content: (
+                <form style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                    <input
+                        type="text"
+                        name="title"
+                        placeholder="Title"
+                        onChange={() => console.log("title")}
+                        style={{ padding: "0.5rem", border: "1px solid #ccc", borderRadius: "0.375rem" }}
+                    />
+                    <input
+                        type="text"
+                        name="description"
+                        placeholder="Description"
+                        onChange={() => console.log("description")}
+                        style={{ padding: "0.5rem", border: "1px solid #ccc", borderRadius: "0.375rem" }}
+                    />
+                    <select
+                        name="priority"
+                        onChange={() => console.log("priority")}
+                        style={{ padding: "0.5rem", border: "1px solid #ccc", borderRadius: "0.375rem" }}
+                    >
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                        <option value="Critical">Critical</option>
+                    </select>
+                </form>
+            ),
+            buttons: [
+                { label: "Cancel", className: "bg-gray-200 hover:bg-gray-300", onClick: () => console.log("Modal closed") },
+                { label: "Save", className: "bg-blue-500 hover:bg-blue-600 text-white", onClick: () => console.log("Modal saved") }
+            ]
+        });
+    }
 
 
     return (
-        <div className="w-[175px] lg:w-[200px] mb-3 text-[10px] cursor-pointer" onDoubleClick={() => console.log("Arjoon")} draggable="true"
+        <div className="w-[175px] lg:w-[200px] mb-3 text-[10px] cursor-pointer" onDoubleClick={() => openSaveModal()} draggable="true"
             onDragStart={() => setActiveCard(`${status}-${id}`)} onDragEnd={() => setActiveCard(null)} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
             <div className={`border ${borderColor} rounded-lg p-6 max-w-sm  
                   hover:border-blue-500 hover:ring-4 hover:ring-blue-500/50 
@@ -113,7 +160,7 @@ function KanbanCard({ title, description, priority, status, setActiveCard, id, d
 }
 
 
-function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, updateHeight, calculateHeight, deleteCard }: HeaderSwimLane) {
+function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, updateHeight, calculateHeight, deleteCard, saveCard }: HeaderSwimLane) {
 
     const applicableCards = cards.filter(card => +card.status === +status);
     const divRef = useRef();
@@ -128,7 +175,8 @@ function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, upd
                 {
                     applicableCards.map((card, index) => (
                         <div key={card.id}>
-                            <KanbanCard description={card.description} priority={card.priority} title={card.title} status={status} setActiveCard={setActiveCard} id={card.id} deleteCard={deleteCard} />
+                            <KanbanCard description={card.description} priority={card.priority} title={card.title} status={status} setActiveCard={setActiveCard} id={card.id}
+                            deleteCard={deleteCard} saveCard={saveCard} />
                         </div>
                     ))
                 }

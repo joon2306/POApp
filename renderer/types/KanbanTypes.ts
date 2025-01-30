@@ -11,7 +11,8 @@ export type HeaderSwimLane = {
   onDrop: (status: number) => void,
   calculateHeight : (height: any) => number,
   updateHeight: number,
-  deleteCard: (cardId: string) => void
+  deleteCard: (cardId: string) => void,
+  saveCard: () => void
 }
 
 export type KanbanCardType = {
@@ -24,7 +25,8 @@ export type KanbanCardType = {
 
 export interface KanbanCardProp extends KanbanCardType {
   setActiveCard: (value: string) => void,
-  deleteCard: (cardId: string) => void
+  deleteCard: (cardId: string) => void,
+  saveCard: () => void
 };
 
 export type SwimLaneConfig = {

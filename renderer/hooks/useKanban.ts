@@ -40,6 +40,8 @@ export const useKanban = (kanbanService: IKanbanService) => {
         setKanbanCards(filteredKanbanCards);
     }
 
+    const saveCard = () => console.log("Arjoon king card saved");
+
     useEffect(() => {
         const loadData = async () => {
             const cards = await kanbanService.getKanbanCards();
@@ -50,6 +52,6 @@ export const useKanban = (kanbanService: IKanbanService) => {
 
 
 
-    return { handleDrop, handleDragStart, kanbanCards, updateHeight, deleteCard };
+    return { handleDrop, handleDragStart, kanbanCards, updateHeight, deleteCard, saveCard };
 
 }
