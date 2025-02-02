@@ -26,6 +26,7 @@ export const useKanban = (kanbanService: IKanbanService) => {
             return;
         }
         selectedCard.status = +status as unknown as KanbanStatus;
+        kanbanService.modifyKanbanCard(selectedCard, selectedCard.status);
 
     }
 
@@ -36,18 +37,18 @@ export const useKanban = (kanbanService: IKanbanService) => {
         }
     }
 
-    const deleteCard = async (cardId: string) => {
-        await kanbanService.deleteKanbanCards(cardId);
+    const deleteCard =  (cardId: string) => {
+        kanbanService.deleteKanbanCards(cardId);
         setUpdateCards(updateCards + 1);
     }
 
-    const saveCard = async (arg: KanbanFormValue) => {
-        await kanbanService.addKanbanCard(arg);
+    const saveCard = (arg: KanbanFormValue) => {
+        kanbanService.addKanbanCard(arg);
         setUpdateCards(updateCards + 1);
     };
 
-    const modifyCard = async (arg: KanbanFormValue) => {
-        await kanbanService.modifyKanbanCard(arg);
+    const modifyCard = (arg: KanbanFormValue) => {
+        kanbanService.modifyKanbanCard(arg, undefined);
         setUpdateCards(updateCards + 1);
     }
 

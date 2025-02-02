@@ -2,7 +2,7 @@ import path from 'path'
 import { app, ipcMain } from 'electron'
 import serve from 'electron-serve'
 import { createWindow } from './helpers'
-import { getKanbanCards } from './kanbanCard'
+import { deleteCard, getKanbanCards, modifyCard, saveKanbanCard } from './kanbanCard'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -41,4 +41,6 @@ ipcMain.on('message', async (event, arg) => {
 })
 
 getKanbanCards();
-
+saveKanbanCard();
+deleteCard();
+modifyCard();

@@ -1,8 +1,8 @@
-import { mock } from "node:test";
 import { KanbanCardType, KanbanFormValue, KanbanStatus, PriorityLevel } from "../../types/KanbanTypes";
 import { IKanbanService } from "../IKanbanService";
 import CommsService from "./CommsService";
 import ICommsService from "../ICommsService";
+import CommunicationEvents from "../../types/CommunicationEvent";
 
 let kanbanService: KanbanService = null;
 
@@ -22,36 +22,43 @@ export class KanbanService implements IKanbanService {
 
     async getKanbanCards(): Promise<KanbanCardType[]> {
         if (this.cachedCards.length === 0) {
-            this.cachedCards = await this.commsService.sendRequest<KanbanCardType[]>("kanban-cards", null);
+            this.cachedCards = await this.commsService.sendRequest<KanbanCardType[]>(CommunicationEvents.getKanbanCards, null);
         }
         return this.cachedCards;
     }
 
-    async deleteKanbanCards(cardId: string): Promise<void> {
+    deleteKanbanCards(cardId: string): void {
         this.cachedCards = this.cachedCards.filter(c => c.id !== cardId);
+        this.commsService.sendRequest(CommunicationEvents.deleteKanbanCard, cardId);
     }
 
-    async modifyKanbanCard({ title, description, priority, id }: KanbanFormValue) {
+    modifyKanbanCard({ title, description, priority, id }: KanbanFormValue, status: number | undefined) {
         const selectedCard = this.cachedCards.find(c => c.id === id);
+        if (!status) {
+            status = selectedCard.status;
+        }
 
         if (!selectedCard) {
             throw new Error("Kanban item not found to update");
         }
 
-        Object.assign(selectedCard, { title, description, priority: priority as unknown as PriorityLevel });
+        Object.assign(selectedCard, { title, description, priority: priority as unknown as PriorityLevel, status });
+        this.commsService.sendRequest(CommunicationEvents.modifyKanbanCard, selectedCard);
     }
 
-    async addKanbanCard({ title, description, priority }: KanbanFormValue) {
+    addKanbanCard({ title, description, priority }: KanbanFormValue) {
         const id = `${this.cachedCards.length + 1}`;
+        const status = 1;
         const kanbanCard: KanbanCardType = {
             id,
             title,
             description,
             priority: priority as unknown as PriorityLevel,
-            status: 1
+            status
         }
 
         this.cachedCards.push(kanbanCard);
+        this.commsService.sendRequest(CommunicationEvents.saveKanbanCard, kanbanCard);
     }
 
 }

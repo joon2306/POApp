@@ -23,7 +23,6 @@ export type KanbanCardType = {
   priority: PriorityLevel;
   status: KanbanStatus;
 };
-
 export interface KanbanCardProp extends KanbanCardType {
   setActiveCard: (value: string) => void,
   deleteCard: (cardId: string) => void,
