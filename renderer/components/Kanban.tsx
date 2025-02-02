@@ -20,7 +20,7 @@ const getKanbanForm = (isModify, handleSave, kanbanFormValue, modalService): Mod
             {
                 label: "Cancel",
                 onClick: modalService.closeModal,
-                variant: "success"
+                variant: "secondary"
             },
             {
                 label: "Save",

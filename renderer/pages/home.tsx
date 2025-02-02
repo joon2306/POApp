@@ -5,25 +5,25 @@ import Kanban from '../components/Kanban';
 export default function HomePage() {
 
   const dashboardContent: DashboardContent = {
-    kanban: {
-      title: "kanban",
+    Kanban: {
+      title: "Kanban",
       content: Kanban
     },
-    kanban2: {
-      title: "kanban2",
+    Feature: {
+      title: "feature tracking",
       content: Kanban2
     }
   }
 
   return (
     <>
-      <Dashboard dashboardContent={dashboardContent} activeDashboardBtn={dashboardContent.kanban.title} />
+      <Dashboard dashboardContent={dashboardContent} activeDashboardBtn={dashboardContent.Kanban.title} />
     </>
   )
 }
 
 function Kanban2() {
   return <>
-    <div>Kanban2</div>
+    <div className='flex justify-center items-center h-screen'>Feature not yet available</div>
   </>
 }
