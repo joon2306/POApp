@@ -47,7 +47,7 @@ export class KanbanService implements IKanbanService {
     }
 
     addKanbanCard({ title, description, priority }: KanbanFormValue) {
-        const id = `${this.cachedCards.length + 1}`;
+        const id = `${this.cachedCards.length + 2}`;
         const status = 1;
         const kanbanCard: KanbanCardType = {
             id,
