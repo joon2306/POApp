@@ -2,7 +2,7 @@ import path from 'path'
 import { app, ipcMain } from 'electron'
 import serve from 'electron-serve'
 import { createWindow } from './helpers'
-import { hello } from './testBackend'
+import { getKanbanCards } from './kanbanCard'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -40,5 +40,5 @@ ipcMain.on('message', async (event, arg) => {
   event.reply('message', `${arg} World!`)
 })
 
-hello();
+getKanbanCards();
 
