@@ -1,22 +1,12 @@
-import { KanbanCardType, KanbanStatus } from "../types/KanbanTypes";
+import { KanbanCardType } from "../types/KanbanTypes";
 
-export const generateKanbanIds = (
-    cards: Omit<KanbanCardType, "id">[],
-    statusPrefixMap: Record<KanbanStatus, string>
-): KanbanCardType[] => {
-    const grouped = cards.reduce((acc, card) => {
-        const prefix = statusPrefixMap[card.status];
-        acc[prefix] = acc[prefix] || [];
-        acc[prefix].push(card);
-        return acc;
-    }, {} as Record<string, Omit<KanbanCardType, "id">[]>);
+export const generateKanbanId = (cards: KanbanCardType[]): number => {
+    if (cards.length === 0) return 1;
 
-    return Object.entries(grouped).flatMap(([prefix, group]) =>
-        group.map((card, index) => ({
-            ...card,
-            id: `${prefix}_${index + 1}`
-        }))
-    );
+    return cards.reduce((max, card) => {
+        return Math.max(max, parseInt(card.id));
+    }, 0) + 1;
+
 };
 
 export const sortKanbanCards = (cards: KanbanCardType[]) => {

@@ -3,6 +3,7 @@ import { IKanbanService } from "../IKanbanService";
 import CommsService from "./CommsService";
 import ICommsService from "../ICommsService";
 import CommunicationEvents from "../../types/CommunicationEvent";
+import { generateKanbanId } from "../../utils/KanbanUtils";
 
 let kanbanService: KanbanService = null;
 
@@ -47,7 +48,7 @@ export class KanbanService implements IKanbanService {
     }
 
     addKanbanCard({ title, description, priority }: KanbanFormValue) {
-        const id = `${this.cachedCards.length + 2}`;
+        const id = generateKanbanId(this.cachedCards).toString();
         const status = 1;
         const kanbanCard: KanbanCardType = {
             id,
