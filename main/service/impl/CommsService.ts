@@ -14,8 +14,9 @@ export default class CommsService implements ICommunicationService {
     getRequest(event: string, callback: (arg: unknown) => unknown): void {
         const sendEvent = `send-${event}`;
         const receivedEvent = `received-${event}`;
-        ipcMain.on(sendEvent, (event, input) => {
-            const output = callback(input);
+        ipcMain.on(sendEvent, async (event, input) => {
+            const output = await callback(input);
+            console.log("ouput: ", output)
             event.reply(receivedEvent, output);
         });
     }

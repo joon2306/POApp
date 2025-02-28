@@ -3,6 +3,7 @@ import { app, ipcMain } from 'electron'
 import serve from 'electron-serve'
 import { createWindow } from './helpers'
 import { deleteCard, getKanbanCards, modifyCard, saveKanbanCard } from './kanbanCard'
+import { generateFeature } from './generate'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -44,3 +45,4 @@ getKanbanCards();
 saveKanbanCard();
 deleteCard();
 modifyCard();
+generateFeature();

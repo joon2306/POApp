@@ -19,7 +19,7 @@ export default class CommsService implements ICommsService {
                 resolve(arg);
             });
 
-            setTimeout(() => reject("Request timed out"), 15000);
+            setTimeout(() => reject("Request timed out"), 300000);
         });
 
     }

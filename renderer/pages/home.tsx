@@ -1,6 +1,7 @@
 import React from 'react';
 import Dashboard, { DashboardContent } from "../components/Dashboard";
 import Kanban from '../components/Kanban';
+import FeatureGenerator from '../components/FeatureGenerator/FeatureGenerator';
 
 export default function HomePage() {
 
@@ -24,6 +25,6 @@ export default function HomePage() {
 
 function Kanban2() {
   return <>
-    <div className='flex justify-center items-center h-screen'>Feature not yet available</div>
+    <div className='flex justify-center items-center h-screen'><FeatureGenerator/></div>
   </>
 }

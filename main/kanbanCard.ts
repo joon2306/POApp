@@ -1,4 +1,3 @@
-import { KanbanCardType } from '../renderer/types/KanbanTypes';
 import CommsService from './service/impl/CommsService';
 import ICommunicationService from './service/ICommunicationService';
 import { ICsvReader } from './service/ICsvReader';
