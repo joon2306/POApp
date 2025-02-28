@@ -11,7 +11,7 @@ export default function HomePage() {
       content: Kanban
     },
     Feature: {
-      title: "feature tracking",
+      title: "feature generator",
       content: Kanban2
     }
   }

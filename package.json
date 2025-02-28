@@ -1,8 +1,8 @@
 {
   "private": true,
-  "name": "productivity",
+  "name": "assistant",
   "description": "My application description",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "author": "Yoshihide Shiono <shiono.yoshihide@gmail.com>",
   "main": "app/background.js",
   "scripts": {

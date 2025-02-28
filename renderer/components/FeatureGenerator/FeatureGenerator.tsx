@@ -119,7 +119,6 @@ export default function FeatureGenerator() {
   return (
     <div className="container mx-auto px-4">
       <Head>
-        <title>Feature Generator</title>
         <meta name="description" content="Generate user stories and requirements using AI" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
