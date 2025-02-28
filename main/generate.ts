@@ -69,7 +69,6 @@ export async function generateFeature() {
 
     commsService.getRequest(CommunicationEvents.generateFeature, async (featureInput: FeatureInputType[]) => {
         const response = await generate(featureInput);
-        console.log("backend response: ", JSON.stringify(response));
-        return response;
+        return response; 
     });
 }

@@ -1,5 +1,7 @@
 import OpenAI from "openai";
 import { ChatCompletionCreateParamsNonStreaming } from "openai/resources";
+import fs from 'fs';
+import path from 'path';
 
 export interface OpenAIConfig {
     baseURL: string;
@@ -20,7 +22,15 @@ export interface Payload {
 const AiUtils = () => {
     const nemotronModel = "nvidia/llama-3.1-nemotron-70b-instruct:free";
 
-    const apiKey = "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";
+    // Read the API key from the file
+    const apiKeyPath = path.join('E:', 'PO_APP', 'apiKey.txt');
+    let apiKey = '';
+    try {
+        apiKey = fs.readFileSync(apiKeyPath, 'utf8').trim();
+    } catch (error) {
+        console.error('Error reading API key from file:', error);
+        throw new Error('Failed to read API key from file');
+    }
 
     const openai = new OpenAI({
         baseURL: "https://openrouter.ai/api/v1",

@@ -7,7 +7,7 @@ import GeneratedOutput from './GeneratedOutput';
 import FeedbackForm from './FeedbackForm';
 import FinalReport from './FinalReport';
 import FeatureInputType from '../../types/FeatureGenerator/FeatureInput';
-import { Content } from '../../types/FeatureGenerator/FinalReport';
+import { AiResponse, Content } from '../../types/FeatureGenerator/FinalReport';
 import { FeedbackFormType } from '../../types/FeatureGenerator/FeedbackForm';
 import { IFeatureGeneratorService } from '../../services/IFeatureGeneratorService';
 import { FeatureGeneratorService } from '../../services/impl/FeatureGeneratorService';
@@ -36,7 +36,7 @@ export default function FeatureGenerator() {
     setIsLoading(true);
 
     try {
-      const response = await featureGeneratorService.generateFeature(data);
+      const response: AiResponse = await featureGeneratorService.generateFeature(data);
       console.log("response: ", JSON.stringify(response));
 
       if (response.error) {
@@ -144,8 +144,8 @@ export default function FeatureGenerator() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6 text-center">Feature Generator</h1>
+      <main className="max-w-4xl mx-auto py-8">
+        <h1 className="text-3xl font-bold mb-6 text-center" style={{color: "black"}}>Feature Generator</h1>
 
         {isLoading && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

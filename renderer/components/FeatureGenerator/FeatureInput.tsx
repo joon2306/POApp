@@ -27,7 +27,7 @@ const FeatureInput: React.FC<FeatureInputProps> = ({ onSubmit }) => {
 
   return (
     <div className="bg-white shadow-2xl rounded-lg p-6">
-      <h2 className="text-xl font-semibold mb-4">Feature Description</h2>
+      <h2 className="text-xl font-semibold mb-4" style={{color: "black"}}>Feature Description</h2>
       <form onSubmit={handleSubmit}>
         <LabeledTextarea
           id="description"

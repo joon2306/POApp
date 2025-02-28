@@ -29,3 +29,8 @@ export interface GeneratedOutputProps {
     content: Content;
     iteration: number;
   }
+
+  export interface AiResponse {
+    error: boolean;
+    result: Content
+  }

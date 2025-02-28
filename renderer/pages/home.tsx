@@ -25,6 +25,6 @@ export default function HomePage() {
 
 function Kanban2() {
   return <>
-    <div className='flex justify-center items-center h-screen'><FeatureGenerator/></div>
+    <div className='flex justify-center items-center'><FeatureGenerator/></div>
   </>
 }

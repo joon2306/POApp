@@ -1,5 +1,6 @@
 import CommunicationEvents from "../../types/CommunicationEvent";
 import FeatureInputType from "../../types/FeatureGenerator/FeatureInput";
+import { AiResponse, Content } from "../../types/FeatureGenerator/FinalReport";
 import ICommsService from "../ICommsService";
 import { IFeatureGeneratorService } from "../IFeatureGeneratorService";
 import CommsService from "./CommsService";
@@ -20,10 +21,8 @@ export class FeatureGeneratorService implements IFeatureGeneratorService {
         return featureGeneratorService;
     }
 
-    async generateFeature(featureInput: FeatureInputType): Promise<any> {	
-        const frontResponse = await this.commsService.sendRequest(CommunicationEvents.generateFeature, featureInput);
-        console.log("frontResponse: ", JSON.stringify(frontResponse));
-        return frontResponse;
+    async generateFeature(featureInput: FeatureInputType): Promise<AiResponse> {	
+        return await this.commsService.sendRequest(CommunicationEvents.generateFeature, featureInput);
     }
 
 }

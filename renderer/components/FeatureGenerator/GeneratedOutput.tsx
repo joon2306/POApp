@@ -1,55 +1,66 @@
 import React from 'react';
 import { GeneratedOutputProps } from '../../types/FeatureGenerator/FinalReport';
 
+const getEstimateStyles = (estimate: string) => {
+  switch (estimate) {
+    case 'XS':
+      return { backgroundColor: '#d1fae5', color: '#065f46' };
+    case 'S':
+      return { backgroundColor: '#bfdbfe', color: '#1e3a8a' };
+    case 'M':
+      return { backgroundColor: '#fef3c7', color: '#92400e' };
+    case 'L':
+      return { backgroundColor: '#fed7aa', color: '#9a3412' };
+    default:
+      return { backgroundColor: '#fecaca', color: '#7f1d1d' };
+  }
+};
 
 const GeneratedOutput: React.FC<GeneratedOutputProps> = ({ content, iteration }) => {
   const { userStories, acceptanceCriteria, estimates, questions } = content;
 
   return (
-    <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Generated Requirements</h2>
-        <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+    <div style={{ backgroundColor: 'white', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', borderRadius: '0.5rem', padding: '1.5rem', marginBottom: '1.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+        <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: 'black' }}>Generated Requirements</h2>
+        <span style={{ padding: '0.25rem 0.75rem', backgroundColor: '#bfdbfe', color: '#1e3a8a', borderRadius: '9999px', fontSize: '0.875rem' }}>
           Iteration {iteration}
         </span>
       </div>
 
-      <div className="space-y-6">
+      <div style={{ marginBottom: '1.5rem' }}>
         <section>
-          <h3 className="text-lg font-medium mb-3">User Stories</h3>
-          <div className="space-y-4">
-            {userStories.map((story) => (
-              <div key={story.id} className="border-l-4 border-blue-500 pl-4 py-2">
-                <p className="text-sm font-medium text-gray-500 mb-1">{story.id}</p>
-                <p className="mb-2">{story.story}</p>
-                <div className="flex items-center justify-between mt-2">
-                  <div className="flex items-center">
-                    <span className="text-sm text-gray-500 mr-2">Estimate:</span>
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${
-                      estimates[story.id] === 'XS' ? 'bg-green-100 text-green-800' :
-                      estimates[story.id] === 'S' ? 'bg-blue-100 text-blue-800' :
-                      estimates[story.id] === 'M' ? 'bg-yellow-100 text-yellow-800' :
-                      estimates[story.id] === 'L' ? 'bg-orange-100 text-orange-800' :
-                      'bg-red-100 text-red-800'
-                    }`}>
-                      {estimates[story.id]}
-                    </span>
+          <h3 style={{ fontSize: '1.125rem', fontWeight: '500', marginBottom: '0.75rem' , color:'black' }}>User Stories</h3>
+          <div style={{ marginBottom: '1rem' }}>
+            {userStories.map((story) => {
+              const { backgroundColor, color } = getEstimateStyles(estimates[story.id]);
+              return (
+                <div key={story.id} style={{ borderLeft: '4px solid #3b82f6', paddingLeft: '1rem', paddingTop: '0.5rem', paddingBottom: '0.5rem' }}>
+                  <p style={{ fontSize: '0.875rem', fontWeight: '500', color: '#6b7280', marginBottom: '0.25rem' }}>{story.id}</p>
+                  <p style={{ marginBottom: '0.5rem' , color:'black' }}>{story.story}</p>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.875rem', color: '#6b7280', marginRight: '0.5rem' }}>Estimate:</span>
+                      <span style={{ padding: '0.25rem 0.5rem', borderRadius: '0.25rem', fontSize: '0.75rem', fontWeight: '500', backgroundColor, color }}>
+                        {estimates[story.id]}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 
         <section>
-          <h3 className="text-lg font-medium mb-3">Acceptance Criteria</h3>
-          <div className="space-y-4">
+          <h3 style={{ fontSize: '1.125rem', fontWeight: '500', marginBottom: '0.75rem', color: 'black' }}>Acceptance Criteria</h3>
+          <div style={{ marginBottom: '1rem' }}>
             {userStories.map((story) => (
-              <div key={`ac-${story.id}`} className="bg-gray-50 p-4 rounded-md">
-                <p className="font-medium mb-2">{story.id}: {story.story}</p>
-                <ul className="list-disc pl-5 space-y-1">
+              <div key={`ac-${story.id}`} style={{ backgroundColor: '#f9fafb', padding: '1rem', borderRadius: '0.375rem' }}>
+                <p style={{ fontWeight: '500', marginBottom: '0.5rem', color: 'black' }}>{story.id}: {story.story}</p>
+                <ul style={{ listStyleType: 'disc', paddingLeft: '1.25rem', marginBottom: '0.25rem' }}>
                   {acceptanceCriteria[story.id]?.map((criteria, idx) => (
-                    <li key={idx} className="text-gray-700">{criteria}</li>
+                    <li key={idx} style={{ color: '#374151' }}>{criteria}</li>
                   ))}
                 </ul>
               </div>
@@ -58,11 +69,11 @@ const GeneratedOutput: React.FC<GeneratedOutputProps> = ({ content, iteration })
         </section>
 
         <section>
-          <h3 className="text-lg font-medium mb-3">Questions</h3>
-          <div className="space-y-4">
+          <h3 style={{ fontSize: '1.125rem', fontWeight: '500', marginBottom: '0.75rem', color:'black' }}>Questions</h3>
+          <div style={{ marginBottom: '1rem' }}>
             {questions?.map((question, index) => (
-              <div key={index} className="bg-gray-50 p-4 rounded-md">
-                <p className="font-medium mb-2">{question}</p>
+              <div key={index} style={{ backgroundColor: '#f9fafb', padding: '1rem', borderRadius: '0.375rem' }}>
+                <p style={{ fontWeight: '500', marginBottom: '0.5rem' }}>{question}</p>
               </div>
             ))}
           </div>

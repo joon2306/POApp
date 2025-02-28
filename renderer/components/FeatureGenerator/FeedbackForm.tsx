@@ -22,7 +22,7 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({ onSubmit, previousFeedback 
 
   return (
     <div className="bg-white shadow-lg rounded-lg p-6 mb-8">
-      <h2 className="text-xl font-semibold mb-4">Provide Feedback</h2>
+      <h2 className="text-xl font-semibold mb-4" style={{color: 'black'}}>Provide Feedback</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
         <LabeledTextarea
