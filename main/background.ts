@@ -4,6 +4,9 @@ import serve from 'electron-serve'
 import { createWindow } from './helpers'
 import { deleteCard, getKanbanCards, modifyCard, saveKanbanCard } from './kanbanCard'
 import { generateFeature } from './generate'
+import { refineFeature } from './refine'
+import { summaryFeature } from './summary'
+import { exportFeature } from './export'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -46,3 +49,6 @@ saveKanbanCard();
 deleteCard();
 modifyCard();
 generateFeature();
+refineFeature();
+summaryFeature();
+exportFeature();

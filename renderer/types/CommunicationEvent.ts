@@ -4,6 +4,9 @@ const CommunicationEvents = Object.freeze({
     deleteKanbanCard: "delete-kanban-card",
     modifyKanbanCard: "modify-kanban-card",
     generateFeature: "generate-feature",
+    refineFeature: "refine-feature",
+    summaryFeature: "summary-feature",
+    exportFeature: "export-feature",
 });
 
 export default CommunicationEvents;

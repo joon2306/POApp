@@ -7,7 +7,7 @@ import GeneratedOutput from './GeneratedOutput';
 import FeedbackForm from './FeedbackForm';
 import FinalReport from './FinalReport';
 import FeatureInputType from '../../types/FeatureGenerator/FeatureInput';
-import { AiResponse, Content } from '../../types/FeatureGenerator/FinalReport';
+import { AiResponse, Content, SummaryFeatureProps } from '../../types/FeatureGenerator/FinalReport';
 import { FeedbackFormType } from '../../types/FeatureGenerator/FeedbackForm';
 import { IFeatureGeneratorService } from '../../services/IFeatureGeneratorService';
 import { FeatureGeneratorService } from '../../services/impl/FeatureGeneratorService';
@@ -25,7 +25,7 @@ export default function FeatureGenerator() {
   const [feedback, setFeedback] = useState<string>('');
   const [iterations, setIterations] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [featureSummary, setFeatureSummary] = useState<{ summary: string; benefitHypothesis: string }>({ summary: "", benefitHypothesis: "" });
+  const [featureSummary, setFeatureSummary] = useState<SummaryFeatureProps>({ summary: "", benefitHypothesis: "" });
 
   const featureGeneratorService: IFeatureGeneratorService = new FeatureGeneratorService();
   const handleFeatureSubmit = async (data: FeatureInputType) => {
@@ -37,12 +37,11 @@ export default function FeatureGenerator() {
 
     try {
       const response: AiResponse = await featureGeneratorService.generateFeature(data);
-      console.log("response: ", JSON.stringify(response));
 
       if (response.error) {
         throw new Error("Failure to generate content");
       }
-      setGeneratedContent(response.result);
+      setGeneratedContent(response.result as Content);
       setStage('review');
       setIterations(1);
     } catch (error) {
@@ -59,28 +58,17 @@ export default function FeatureGenerator() {
 
     try {
       if (!feedbackData.isApproved) {
-        const response = await fetch('/api/refine', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            feature: featureData,
-            currentContent: generatedContent,
-            feedback: feedbackData.feedback,
-            iterations: iterations
-          }),
+        const response: AiResponse = await featureGeneratorService.refineFeature({
+          feature: featureData,
+          currentContent: generatedContent,
+          feedback: feedbackData.feedback,
+          iterations: iterations
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to refine content');
-        }
-
-        const result = await response.json();
-        if (result.error) {
+        if (response.error) {
           throw new Error("Failure to refine content");
         }
-        setGeneratedContent(result.result);
+        setGeneratedContent(response.result as Content);
         setIterations(iterations + 1);
       }
 
@@ -100,26 +88,18 @@ export default function FeatureGenerator() {
 
   const generateFeatureSummary = async () => {
     try {
-      const response = await fetch('/api/summary', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          feature: featureData,
-          currentContent: generatedContent
-        }),
-      });
 
-      if (!response.ok) {
-        throw new Error('Failed to generate summary');
+      const data = {
+        feature: featureData,
+        currentContent: generatedContent
+      };
+      const response: AiResponse = await featureGeneratorService.summaryFeature(data);
+
+      if (response.error) {
+        throw new Error("Failure to refine content");
       }
 
-      const result = await response.json();
-      if (result.error) {
-        throw new Error("Failure to generate content");
-      }
-      setFeatureSummary(result.result);
+      setFeatureSummary(response.result as SummaryFeatureProps);
 
     } catch (error) {
       console.error('Error refining content:', error);
@@ -145,7 +125,7 @@ export default function FeatureGenerator() {
       </Head>
 
       <main className="max-w-4xl mx-auto py-8">
-        <h1 className="text-3xl font-bold mb-6 text-center" style={{color: "black"}}>Feature Generator</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center" style={{ color: "black" }}>Feature Generator</h1>
 
         {isLoading && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

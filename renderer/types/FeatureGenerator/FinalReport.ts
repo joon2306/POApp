@@ -26,11 +26,36 @@ export interface FinalReportProps {
 }
 
 export interface GeneratedOutputProps {
-    content: Content;
-    iteration: number;
-  }
+  content: Content;
+  iteration: number;
+}
 
-  export interface AiResponse {
-    error: boolean;
-    result: Content
-  }
+export interface AiResponse {
+  error: boolean;
+  result: Content | SummaryFeatureProps
+}
+
+export interface RefineData {
+  feature: FeatureInputType;
+  currentContent: Content;
+  feedback: string;
+  iterations: number;
+}
+
+
+export interface SummaryData {
+  feature: FeatureInputType;
+  currentContent: Content;
+}
+
+export interface SummaryFeatureProps {
+  summary: string,
+  benefitHypothesis: string
+}
+
+export interface ExportData {
+  feature: FeatureInputType,
+  content: Content,
+  summary: string,
+  benefitHypothesis: string
+}

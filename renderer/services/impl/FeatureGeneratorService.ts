@@ -1,6 +1,7 @@
+import { NextResponse } from "next/server";
 import CommunicationEvents from "../../types/CommunicationEvent";
 import FeatureInputType from "../../types/FeatureGenerator/FeatureInput";
-import { AiResponse, Content } from "../../types/FeatureGenerator/FinalReport";
+import { AiResponse, Content, ExportData, RefineData, SummaryData } from "../../types/FeatureGenerator/FinalReport";
 import ICommsService from "../ICommsService";
 import { IFeatureGeneratorService } from "../IFeatureGeneratorService";
 import CommsService from "./CommsService";
@@ -23,6 +24,18 @@ export class FeatureGeneratorService implements IFeatureGeneratorService {
 
     async generateFeature(featureInput: FeatureInputType): Promise<AiResponse> {	
         return await this.commsService.sendRequest(CommunicationEvents.generateFeature, featureInput);
+    }
+
+    async refineFeature(refineData: RefineData): Promise<AiResponse>{
+        return await this.commsService.sendRequest(CommunicationEvents.refineFeature, refineData);
+    }
+
+    async summaryFeature(summaryData: SummaryData): Promise<AiResponse> {
+        return await this.commsService.sendRequest(CommunicationEvents.summaryFeature, summaryData);
+    }
+
+    async exportFeature(exportData: ExportData): Promise<NextResponse> {
+        return await this.commsService.sendRequest(CommunicationEvents.exportFeature, exportData);
     }
 
 }

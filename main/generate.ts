@@ -8,7 +8,6 @@ export async function generateFeature() {
     const commsService: ICommunicationService = new CommsService();
 
     const generate = async ([{ description, context }]: FeatureInputType[]) => {
-        console.log("description: ", description);
 
         if (!context) {
             context = "No Additional Context";
