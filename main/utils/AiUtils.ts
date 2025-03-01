@@ -19,9 +19,13 @@ export interface Payload {
     temperature: number;
 }
 
-const AiUtils = () => {
-    const nemotronModel = "nvidia/llama-3.1-nemotron-70b-instruct:free";
+export const models = {
+    nemotronModel: "nvidia/llama-3.1-nemotron-70b-instruct:free",
+    geminiModel: "google/gemini-2.0-pro-exp-02-05:free"
+}
 
+const AiUtils = () => {
+    const defaultModel = models.nemotronModel;
     // Read the API key from the file
     const apiKeyPath = path.join('E:', 'PO_APP', 'apiKey.txt');
     let apiKey = '';
@@ -58,7 +62,8 @@ const AiUtils = () => {
             throw new Error("Invalid input format");
         }
 
-        const jsonString = match[1];
+        let jsonString = match[1];
+        console.log("jsonString: ", jsonString);
 
         try {
             const parsedObject = JSON.parse(jsonString);
@@ -69,9 +74,9 @@ const AiUtils = () => {
         }
     };
 
-    const getPayload = (promptMsg: string): Payload => {
+    const getPayload = (promptMsg: string, model: string): Payload => {
         return {
-            model: nemotronModel, // Use appropriate model
+            model: model, // Use appropriate model
             messages: [
                 {
                     role: "user",
@@ -82,14 +87,14 @@ const AiUtils = () => {
         };
     };
 
-    const getAiResponse = async (promptMsg: string, isNotJson = false): Promise<any> => {
+    const getAiResponse = async (promptMsg: string, model = defaultModel, isNotJson = false,): Promise<any> => {
         const maxAttempts = 5;
         let attempt = 0;
         let result;
 
         while (attempt < maxAttempts) {
             try {
-                const completion = await openai.chat.completions.create(getPayload(promptMsg) as ChatCompletionCreateParamsNonStreaming);
+                const completion = await openai.chat.completions.create(getPayload(promptMsg, model) as ChatCompletionCreateParamsNonStreaming);
                 const msg = completion.choices[0].message?.content;
                 if (isNotJson) {
                     return msg;

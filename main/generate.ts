@@ -10,7 +10,7 @@ export async function generateFeature() {
     const generate = async ([{ description, context }]: FeatureInputType[]) => {
 
         if (!context) {
-            context = "No Additional Context";
+            context = "No Additional Context"; 
         }
 
         const promptMsg = `

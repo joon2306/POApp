@@ -1,4 +1,4 @@
-import { ButtonProps, variant } from "../types/ButtonTypes";
+import { ButtonProps, SubmitButtonProps, variant } from "../types/ButtonTypes";
 import styles from "../styles/button/style.module.css";
 
 type ButtonColors = {
@@ -55,4 +55,30 @@ const Button = ({ onClick, variant, label }: ButtonProps
 }
 
 
+const SubmitButton = ({  variant, label, isDisabled }: SubmitButtonProps
+
+
+) => {
+    return (
+        <button
+            style={{
+                backgroundColor: buttonColors[variant].color
+            }}
+            className={styles.btn}
+            type="submit"
+            disabled={isDisabled}
+            onMouseOver={(e) => e.currentTarget.style.backgroundColor = buttonColors[variant].hover}
+            onMouseOut={(e) => e.currentTarget.style.backgroundColor = buttonColors[variant].color}
+        >
+            {label}
+        </button>
+
+    )
+
+
+}
+
+
 export default Button;
+
+export { SubmitButton };

@@ -11,6 +11,14 @@ interface LabeledTextareaProps {
   onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
+
+interface TextAreaProps {
+  text: string;
+  setText: (text: string) => void;
+  row: number;
+  required: boolean;
+}
+
 const LabeledTextarea: React.FC<LabeledTextareaProps> = ({
   id,
   name,
@@ -40,4 +48,20 @@ const LabeledTextarea: React.FC<LabeledTextareaProps> = ({
   );
 };
 
+
+const TextAreaComponent = ({text, setText, row, required}: TextAreaProps) => {
+  return (
+    <textarea
+        className="w-full p-4 border rounded-lg focus:ring-2 focus:ring-blue-500"
+        value={text}
+        rows={row}
+        required={required}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="Enter your French email text here..."
+      />
+  )
+}
+
 export default LabeledTextarea;
+
+export { TextAreaComponent };

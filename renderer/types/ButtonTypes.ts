@@ -4,4 +4,10 @@ export interface ButtonProps {
     label: string;
 }
 
+export interface SubmitButtonProps {
+    variant: variant
+    label: string;
+    isDisabled: boolean;
+}
+
 export type variant = "primary" | "secondary" | "warning" | "danger" | "success";

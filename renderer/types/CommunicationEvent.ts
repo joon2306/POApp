@@ -7,6 +7,7 @@ const CommunicationEvents = Object.freeze({
     refineFeature: "refine-feature",
     summaryFeature: "summary-feature",
     exportFeature: "export-feature",
+    translateEmail: "translate-email",
 });
 
 export default CommunicationEvents;
