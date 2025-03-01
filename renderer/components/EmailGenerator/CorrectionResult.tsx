@@ -1,6 +1,8 @@
 'use client';
 
-import Button from "../Button";
+import { useState } from 'react';
+import Button from '../Button';
+import LabeledTextarea from '../LabeledTextarea';
 
 interface CorrectionResultProps {
   correctedText: string;
@@ -8,8 +10,11 @@ interface CorrectionResultProps {
 }
 
 export default function CorrectionResult({ correctedText, suggestedSubject }: CorrectionResultProps) {
+  const [subject, setSubject] = useState(suggestedSubject);
+  const [body, setBody] = useState(correctedText);
+
   const openInOutlook = () => {
-    const mailtoLink = `mailto:?subject=${encodeURIComponent(suggestedSubject)}&body=${encodeURIComponent(correctedText)}`;
+    const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.location.href = mailtoLink;
   };
 
@@ -17,12 +22,26 @@ export default function CorrectionResult({ correctedText, suggestedSubject }: Co
     <div className="border rounded-lg p-6 space-y-4">
       <h2 className="text-xl font-semibold">Corrected Email</h2>
       <div>
-        <h3 className="font-medium">Subject:</h3>
-        <p className="mt-1 p-2 bg-gray-50 rounded">{suggestedSubject}</p>
+        <LabeledTextarea
+          id="subject"
+          name="subject"
+          label="Subject:"
+          rows={1}
+          value={subject}
+          placeholder="Enter subject here..."
+          onChange={(e) => setSubject(e.target.value)}
+        />
       </div>
       <div>
-        <h3 className="font-medium">Body:</h3>
-        <p className="mt-1 p-2 bg-gray-50 rounded whitespace-pre-wrap">{correctedText}</p>
+        <LabeledTextarea
+          id="body"
+          name="body"
+          label="Body:"
+          rows={10}
+          value={body}
+          placeholder="Enter body here..."
+          onChange={(e) => setBody(e.target.value)}
+        />
       </div>
       <Button onClick={openInOutlook} variant="primary" label="Open in Outlook" />
     </div>
