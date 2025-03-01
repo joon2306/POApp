@@ -10,14 +10,16 @@ export default function EmailGenerator() {
 
   return (
     <main className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8" style={{color: 'black'}}>Email Generator</h1>
+      <h1 className="text-3xl font-bold mb-8 text-center" style={{color: 'black'}}>Email Generator</h1>
       <div className="grid gap-8">
-        <EmailForm 
-          onCorrectionReceived={(text: string, subject: string) => {
-            setCorrectedText(text);
-            setSuggestedSubject(subject);
-          }}
-        />
+        <div className="border rounded-lg p-6 space-y-4 shadow-lg">
+          <EmailForm 
+            onCorrectionReceived={(text: string, subject: string) => {
+              setCorrectedText(text);
+              setSuggestedSubject(subject);
+            }}
+          />
+        </div>
         {correctedText && (
           <CorrectionResult
             correctedText={correctedText} 

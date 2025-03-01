@@ -19,31 +19,33 @@ export default function CorrectionResult({ correctedText, suggestedSubject }: Co
   };
 
   return (
-    <div className="border rounded-lg p-6 space-y-4">
-      <h2 className="text-xl font-semibold">Corrected Email</h2>
-      <div>
-        <LabeledTextarea
-          id="subject"
-          name="subject"
-          label="Subject:"
-          rows={1}
-          value={subject}
-          placeholder="Enter subject here..."
-          onChange={(e) => setSubject(e.target.value)}
-        />
+    <div className="container mx-auto">
+      <div className="border rounded-lg p-6 space-y-4 shadow-lg w-full">
+        <h2 className="text-xl font-semibold">Corrected Email</h2>
+        <div>
+          <LabeledTextarea
+            id="subject"
+            name="subject"
+            label="Subject:"
+            rows={1}
+            value={subject}
+            placeholder="Enter subject here..."
+            onChange={(e) => setSubject(e.target.value)}
+          />
+        </div>
+        <div>
+          <LabeledTextarea
+            id="body"
+            name="body"
+            label="Body:"
+            rows={10}
+            value={body}
+            placeholder="Enter body here..."
+            onChange={(e) => setBody(e.target.value)}
+          />
+        </div>
+        <Button onClick={openInOutlook} variant="primary" label="Open in Outlook" />
       </div>
-      <div>
-        <LabeledTextarea
-          id="body"
-          name="body"
-          label="Body:"
-          rows={10}
-          value={body}
-          placeholder="Enter body here..."
-          onChange={(e) => setBody(e.target.value)}
-        />
-      </div>
-      <Button onClick={openInOutlook} variant="primary" label="Open in Outlook" />
     </div>
   );
 }

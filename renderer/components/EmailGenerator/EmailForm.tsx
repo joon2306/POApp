@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { TextAreaComponent } from '../LabeledTextarea';
+import LabeledTextarea from '../LabeledTextarea';
 import IEmailGeneratorService from '../../services/IEmailGeneratorSevice';
 import EmailGeneratorService from '../../services/impl/EmailGeneratorService';
 import { EmailGeneratorContent } from '../../types/EmailGenerator/EmailGenerator';
@@ -38,7 +38,16 @@ export default function EmailForm({ onCorrectionReceived }: EmailFormProps) {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            <TextAreaComponent text={text} setText={setText} row={12} required={true} />
+            <LabeledTextarea
+                id="emailBody"
+                name="emailBody"
+                label="Email*"
+                rows={10}
+                value={text}
+                placeholder="Enter your email text here..."
+                onChange={(e) => setText(e.target.value)}
+                required={true}
+            />
             <div className="flex justify-end">
                 <button
                     type="submit"
