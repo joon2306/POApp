@@ -18,6 +18,7 @@ export default async function translate() {
         }
         You should not not add any symbols etc so that the json string can be parsed easily to a javascript object.
         If in the email you do not have a subject, you should generate one.
+        Lastly, remember to correct french mistakes but DO NOT WRITE IT IN ENGLISH!
         Here is the email to correct: ${email}
     `;
 
