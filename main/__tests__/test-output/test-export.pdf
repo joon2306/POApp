@@ -10,199 +10,164 @@
 endobj
 4 0 obj
 <<
-/Length 4803
+/Length 2762
 >>
 stream
 0.5670000000000001 w
 0 G
 BT
-/F1 16 Tf
-18.3999999999999986 TL
+/F2 20 Tf
+23. TL
 0 g
 28.3464566929133888 813.5435433070865656 Td
 (Feature Requirements Report) Tj
 ET
 BT
-/F1 12 Tf
-13.7999999999999989 TL
+/F2 14 Tf
+16.0999999999999979 TL
 0 g
-28.3464566929133888 785.1970866141732586 Td
-(Feature:) Tj
+28.3464566929133888 742.6774015748030706 Td
+(Feature Description) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 756.8506299212598378 Td
-({) Tj
+28.3464566929133888 714.3309448818897636 Td
+(The aim of this feature is to add a new two-way communication between ADT and BLMS server for) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 728.5041732283464171 Td
-(  "title": "Test Feature",) Tj
+28.3464566929133888 685.9844881889763428 Td
+(several applications. One OTX to be able to get data from BLMS through a key. One OTX to be able to push data in) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 700.15771653543311 Td
-(  "description": "The aim of this feature is to add a new two-way communication between ADT and BLMS server) Tj
+28.3464566929133888 657.6380314960629221 Td
+(the BLMS through a key.) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 671.8112598425196893 Td
-(for\\nseveral applications. One OTX to be able to get data from BLMS through a key. One OTX to be able to push) Tj
+28.3464566929133888 600.9451181102361943 Td
+(The user of these OTX libraries is a Renault Diagnostic User.) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 643.4648031496062686 Td
-(data in\\nthe BLMS through a key.\\n\\nThe user of these OTX libraries is a Renault Diagnostic User.\\n\\nI believe we) Tj
+28.3464566929133888 544.2522047244094665 Td
+(I believe we should) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 615.1183464566928478 Td
-(should\\nhave two epics for these features: \\n1. OTX library to write to BLMS server\\n2. OTX library to read from) Tj
+28.3464566929133888 515.9057480314959321 Td
+(have two epics for these features: ) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 586.7718897637794271 Td
-(BLMS\\nserver\\n\\nI believe we should have some user stories like this:\\n-> As a Renault Diagnostic User, I want to) Tj
+28.3464566929133888 487.559291338582625 Td
+(1. OTX library to write to BLMS server) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 558.42543307086612 Td
-(call an\\nETAS OTX library so that I can write data to BLMS server.\\n-> As a Renault Diagnostic User, I want to call) Tj
+28.3464566929133888 459.2128346456692611 Td
+(2. OTX library to read from BLMS) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 530.0789763779526993 Td
-(an ETAS\\nOTX library so that I can read data from BLMS server.\\n\\nSome technical explanation about each) Tj
+28.3464566929133888 430.8663779527558404 Td
+(server) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 501.7325196850393354 Td
-(library:\\n1. OTX\\nlibrary to write to BLMS server\\n-> An OTX calls the OTX library request to write data to BLMS) Tj
+28.3464566929133888 374.1734645669290558 Td
+(I believe we should have some user stories like this:) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 473.3860629921259147 Td
-(server. It sends the\\nOTX library data to be written in the form of a key value pair MAP\\n-> the OTX library calls a) Tj
+28.3464566929133888 345.8270078740156919 Td
+(-> As a Renault Diagnostic User, I want to call an) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 445.0396062992125508 Td
-(host service provider,\\nwhich is a service in ADT runtime. The OTX library pass the data to be written. The ADT) Tj
+28.3464566929133888 317.480551181102328 Td
+(ETAS OTX library so that I can write data to BLMS server.) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 416.69314960629913 Td
-(runtime reads the BIN\\n\(Battery Identification Number\). If the BIN is missing, the host service provider returns an) Tj
+28.3464566929133888 289.1340944881889072 Td
+(-> As a Renault Diagnostic User, I want to call an ETAS) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 388.3466929133857661 Td
-(error Message and the\\nOTX library returns an error boolean and an error message.\\n-> If the BIN could be read,) Tj
+28.3464566929133888 260.7876377952754865 Td
+(OTX library so that I can read data from BLMS server.) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 360.0002362204724022 Td
-(the ADT runtime calls a\\nrest endpoint from ADT server which is PUT updateByBin/{bin} and the server performs) Tj
+28.3464566929133888 204.0947244094487587 Td
+(Some technical explanation about each library:) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 331.6537795275589815 Td
-(the write to the BLMS\\nserver. This endpoint already exist and there is no new development to be done on server) Tj
+28.3464566929133888 175.748267716535338 Td
+(1. OTX) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 303.3073228346455608 Td
-(side.\\n-> the server\\nsends the status to the ADT runtime and ADT runtime host service provider sends OTX the) Tj
+28.3464566929133888 147.4018110236219172 Td
+(library to write to BLMS server) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 274.9608661417322537 Td
-(status and OTX returns\\nerror false and a positive message.\\n-> when the server writes in BLMS, a feedback) Tj
+28.3464566929133888 119.0553543307086102 Td
+(-> An OTX calls the OTX library request to write data to BLMS server. It sends the) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 246.614409448818833 Td
-(ADT.SERVICE.BLM is sent to\\nfeedback viewer\\n\\n2. OTX Read BLMS\\n-> An OTX calls the OTX library with a list) Tj
+28.3464566929133888 90.7088976377951894 Td
+(OTX library data to be written in the form of a key value pair MAP) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 218.2679527559054122 Td
-(of keys. These are values that\\nthe OTX wants to read from BLMS\\n-> The OTX library through a host service) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 189.9214960629919915 Td
-(provider sends the list of keys to the\\nADT runtime.\\n-> The ADT runtime reads the BIN. If BIN could not be read,) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 161.5750393700786844 Td
-(an error message is returned to the\\nOTX library and the process stops. The OTX library returns an error message) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 133.2285826771652637 Td
-(to the OTX calling it\\n-> if BIN could\\nbe read, the ADT runtime sends to the ADT server the keys and BIN through) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 104.882125984251843 Td
-(a new rest endpoint that needs to be\\ndevelopped\\n-> In ADT server side, it needs to perform an http request with a) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 76.5356692913385359 Td
-(new API. This API is unknown for\\nnow. This is new development to be made\\n-> ADT server then sends a) Tj
+28.3464566929133888 62.3624409448817687 Td
+(-> the OTX library calls a host service provider,) Tj
 ET
 endstream
 endobj
@@ -216,7 +181,7 @@ endobj
 endobj
 6 0 obj
 <<
-/Length 5023
+/Length 3647
 >>
 stream
 0.5670000000000001 w
@@ -226,189 +191,182 @@ BT
 11.5 TL
 0 g
 28.3464566929133888 813.5435433070865656 Td
-(feedback ADT.SERVICE.BLMS of data that\\nhas been read from BLMS\\n-> The server then sends the data and) Tj
+(which is a service in ADT runtime. The OTX library pass the data to be written. The ADT runtime reads the BIN) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 785.1970866141732586 Td
-(status to ADT runtime\\n-> ADT runtime then\\nsends it to OTX library which in turn returns it to the OTX calling) Tj
+(\(Battery Identification Number\). If the BIN is missing, the host service provider returns an error Message and the) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 756.8506299212598378 Td
-(it\\n\\"",) Tj
+(OTX library returns an error boolean and an error message.) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 728.5041732283464171 Td
-(  "context": "eral OTX scenarios are needed to communicate with the BLMS server. We need to be able to) Tj
+(-> If the BIN could be read, the ADT runtime calls a) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 700.15771653543311 Td
-(read\\nand write data through ‘keys’. The goal is the same as the BVM Read / Write concept.\\nThe writing of data) Tj
+(rest endpoint from ADT server which is PUT updateByBin/{bin} and the server performs the write to the BLMS) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 671.8112598425196893 Td
-(from\\nADT to BLMS through this scenario should be instantly done to let NewDialogys read the data just after) Tj
+(server. This endpoint already exist and there is no new development to be done on server side.) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 643.4648031496062686 Td
-(the\\nscenario.\\nExample for more context:\\nFor electric vehicles, Renault rule states that in the event of an accident) Tj
+(-> the server) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 615.1183464566928478 Td
-(with\\nairbag deployment, the traction battery must be replaced and sent for recycling. \\n\\nThis leads to a) Tj
+(sends the status to the ADT runtime and ADT runtime host service provider sends OTX the status and OTX returns) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 586.7718897637794271 Td
-(significant\\nincrease in the repair cost of damaged vehicles, as in addition to bodywork expenses, the additional) Tj
+(error false and a positive message.) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 558.42543307086612 Td
-(cost of\\nreplacing the traction battery must also be covered. \\n\\nIn many cases, this situation leads to: \\n\\n- High) Tj
+(-> when the server writes in BLMS, a feedback ADT.SERVICE.BLM is sent to) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 530.0789763779526993 Td
-(risk of\\neconomically non-repairable vehicle to be scrapped \(the repair cost exceeds the car's residual value\). From) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 501.7325196850393354 Td
-(the\\nperspective of insurers and specialized media, this is a technical and ecological nonsense. \\n\\n-) Tj
+(feedback viewer) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 473.3860629921259147 Td
-(Insurance\\ncompanies compensating for vehicles that are lightly/moderately damaged, even when they are less) Tj
+(2. OTX Read BLMS) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 445.0396062992125508 Td
-(than 2 years\\nold in some cases.\\n\\nWith the introduction of EDR \(GSR2 regulation\) in July 2024, it becomes) Tj
+(-> An OTX calls the OTX library with a list of keys. These are values that) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 416.69314960629913 Td
-(possible to\\nimplement a traction battery diagnostic based on Airbag ECU data. \\n\\nADT reads the concerned) Tj
+(the OTX wants to read from BLMS) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 388.3466929133857661 Td
-(GSR2 DIDs and\\nprovide a calculated result to state if the battery is reusable or not. These DIDs and the results) Tj
+(-> The OTX library through a host service provider sends the list of keys to the) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 360.0002362204724022 Td
-(are sent to BLMS for\\ntraceability: unlike the traction battery State of Health \(SoH\) that is sent automatically to) Tj
+(ADT runtime.) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 331.6537795275589815 Td
-(BLMS via ADT, these\\nGSR2 DIDs are GDPR compliant, they shall not be sent automatically to BLMS when we) Tj
+(-> The ADT runtime reads the BIN. If BIN could not be read, an error message is returned to the) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 303.3073228346455608 Td
-(connect ADT to the\\nvehicle as we must have the client agreement to read them and send them to) Tj
+(OTX library and the process stops. The OTX library returns an error message to the OTX calling it) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 274.9608661417322537 Td
-(BLMS.\\n\\"\\n}\\nSummary:\\nThe Two-Way Communication with BLMS Server feature enables Renault Diagnostic) Tj
+(-> if BIN could) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 246.614409448818833 Td
-(Users to seamlessly write and\\nread data to/from the Battery Lifecycle Management System \(BLMS\) server through) Tj
+(be read, the ADT runtime sends to the ADT server the keys and BIN through a new rest endpoint that needs to be) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 218.2679527559054122 Td
-(ETAS OTX libraries. This\\nfeature consists of two primary epics: OTX library for writing data to BLMS server,) Tj
+(developped) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 189.9214960629919915 Td
-(utilizing an existing endpoint, and\\nOTX library for reading data from BLMS server, requiring development of a new) Tj
+(-> In ADT server side, it needs to perform an http request with a new API. This API is unknown for) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 161.5750393700786844 Td
-(REST endpoint and API integration.\\nThe feature provides instant updates for downstream applications, enhances) Tj
+(now. This is new development to be made) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 133.2285826771652637 Td
-(diagnostic capabilities, and offers\\nrobust error handling and real-time operational insights through feedback) Tj
+(-> ADT server then sends a feedback ADT.SERVICE.BLMS of data that) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 104.882125984251843 Td
-(mechanisms. This enhancement is crucial\\nfor efficient vehicle diagnostics, particularly for electric vehicles, where it) Tj
+(has been read from BLMS) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 76.5356692913385359 Td
-(supports the implementation of traction\\nbattery diagnostics based on Airbag ECU data, potentially reducing repair) Tj
+(-> The server then sends the data and status to ADT runtime) Tj
 ET
 endstream
 endobj
@@ -422,7 +380,7 @@ endobj
 endobj
 8 0 obj
 <<
-/Length 3662
+/Length 2930
 >>
 stream
 0.5670000000000001 w
@@ -432,189 +390,154 @@ BT
 11.5 TL
 0 g
 28.3464566929133888 813.5435433070865656 Td
-(costs and environmental impact.\\nBenefit Hypothesis:\\nWe believe that by implementing the Two-Way) Tj
+(-> ADT runtime then) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 785.1970866141732586 Td
-(Communication with BLMS Server feature, Renault Diagnostic Users\\nwill experience a significant reduction in) Tj
+(sends it to OTX library which in turn returns it to the OTX calling it) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 756.8506299212598378 Td
-(diagnostic time and an increase in accuracy, leading to improved overall\\nefficiency and customer satisfaction.) Tj
+(") Tj
 ET
 BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 728.5041732283464171 Td
-(Specifically, the instant updates to BLMS will ensure that downstream\\napplications, like NewDialogys, have access) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
+/F2 14 Tf
+16.0999999999999979 TL
 0 g
 28.3464566929133888 700.15771653543311 Td
-(to the latest data, enhancing the repair process. Furthermore, the\\nfeature is expected to contribute to reduced) Tj
+(Context) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 671.8112598425196893 Td
-(repair costs for electric vehicles by facilitating informed decisions on\\ntraction battery replacement, ultimately) Tj
+(eral OTX scenarios are needed to communicate with the BLMS server. We need to be able to read) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 643.4648031496062686 Td
-(benefiting both Renault and its customers environmentally and economically.\\nKey indicators of success will include) Tj
+(and write data through 'keys'. The goal is the same as the BVM Read / Write concept.) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 615.1183464566928478 Td
-(metrics on reduced diagnostic time, increased first-time fix rates, and a\\ndecrease in economically non-repairable) Tj
+(The writing of data from) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 586.7718897637794271 Td
-(vehicle cases due to battery replacement costs.") Tj
+(ADT to BLMS through this scenario should be instantly done to let NewDialogys read the data just after the) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 558.42543307086612 Td
-(}) Tj
+(scenario.) Tj
 ET
 BT
-/F1 12 Tf
-13.7999999999999989 TL
+/F1 10 Tf
+11.5 TL
 0 g
 28.3464566929133888 530.0789763779526993 Td
-(Summary:) Tj
+(Example for more context:) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 501.7325196850393354 Td
-(undefined) Tj
-ET
-BT
-/F1 12 Tf
-13.7999999999999989 TL
-0 g
-28.3464566929133888 473.3860629921259147 Td
-(Benefit Hypothesis:) Tj
+(For electric vehicles, Renault rule states that in the event of an accident with) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 445.0396062992125508 Td
-(undefined) Tj
+28.3464566929133888 473.3860629921259147 Td
+(airbag deployment, the traction battery must be replaced and sent for recycling. ) Tj
 ET
 BT
-/F1 12 Tf
-13.7999999999999989 TL
+/F1 10 Tf
+11.5 TL
 0 g
 28.3464566929133888 416.69314960629913 Td
-(Content:) Tj
+(This leads to a significant) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 388.3466929133857661 Td
-({) Tj
+(increase in the repair cost of damaged vehicles, as in addition to bodywork expenses, the additional cost of) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 360.0002362204724022 Td
-(  "userStories": [) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 331.6537795275589815 Td
-(    {) Tj
+(replacing the traction battery must also be covered. ) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 303.3073228346455608 Td
-(      "id": "US-1",) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 274.9608661417322537 Td
-(      "story": "As a Renault Diagnostic User, I want to call an ETAS OTX library to write data to the BLMS server\\n      ) Tj
+(In many cases, this situation leads to: ) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 246.614409448818833 Td
-(through a key-value pair MAP, so that I can instantly update BLMS for downstream applications like NewDialogys) Tj
+(- High risk of) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 218.2679527559054122 Td
-(to\\n       ensure seamless vehicle diagnostics",) Tj
+(economically non-repairable vehicle to be scrapped \(the repair cost exceeds the car's residual value\). From the) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 189.9214960629919915 Td
-(      "role": "Renault Diagnostic User",) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 161.5750393700786844 Td
-(      "feature": "OTX library to write to BLMS server",) Tj
+(perspective of insurers and specialized media, this is a technical and ecological nonsense. ) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 133.2285826771652637 Td
-(      "benefit": "Enables instant updates for downstream applications") Tj
+(- Insurance) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 104.882125984251843 Td
-(    },) Tj
+(companies compensating for vehicles that are lightly/moderately damaged, even when they are less than 2 years) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 76.5356692913385359 Td
-(    {) Tj
+(old in some cases.) Tj
 ET
 endstream
 endobj
@@ -628,7 +551,7 @@ endobj
 endobj
 10 0 obj
 <<
-/Length 3661
+/Length 3917
 >>
 stream
 0.5670000000000001 w
@@ -637,190 +560,162 @@ BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 813.5435433070865656 Td
-(      "id": "US-2",) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
 28.3464566929133888 785.1970866141732586 Td
-(      "story": "As a Renault Diagnostic User, I want to call an ETAS OTX library to read data from the BLMS server\\n  ) Tj
+(With the introduction of EDR \(GSR2 regulation\) in July 2024, it becomes possible to) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 756.8506299212598378 Td
-(    using a list of keys, so that I can retrieve specific diagnostic data to inform repair decisions",) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 728.5041732283464171 Td
-(      "role": "Renault Diagnostic User",) Tj
+(implement a traction battery diagnostic based on Airbag ECU data. ) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 700.15771653543311 Td
-(      "feature": "OTX library to read from BLMS server",) Tj
+(ADT reads the concerned GSR2 DIDs and) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 671.8112598425196893 Td
-(      "benefit": "Enhances diagnostic capabilities with targeted data retrieval") Tj
+(provide a calculated result to state if the battery is reusable or not. These DIDs and the results are sent to BLMS for) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 643.4648031496062686 Td
-(    },) Tj
+(traceability: unlike the traction battery State of Health \(SoH\) that is sent automatically to BLMS via ADT, these) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 615.1183464566928478 Td
-(    {) Tj
+(GSR2 DIDs are GDPR compliant, they shall not be sent automatically to BLMS when we connect ADT to the) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 586.7718897637794271 Td
-(      "id": "US-3",) Tj
+(vehicle as we must have the client agreement to read them and send them to BLMS.) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 558.42543307086612 Td
-(      "story": "As a Renault Diagnostic User, I want the OTX library to handle errors when writing to the BLMS) Tj
+(") Tj
 ET
 BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 530.0789763779526993 Td
-(server\\n       \(e.g., missing BIN\), so that I receive informative error messages to quickly resolve issues",) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
+/F2 14 Tf
+16.0999999999999979 TL
 0 g
 28.3464566929133888 501.7325196850393354 Td
-(      "role": "Renault Diagnostic User",) Tj
+(Summary) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 473.3860629921259147 Td
-(      "feature": "Error handling for OTX library \(write\)",) Tj
+(The Two-Way Communication with BLMS Server feature enables Renault Diagnostic Users to seamlessly write and) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 445.0396062992125508 Td
-(      "benefit": "Improves user experience with robust error handling") Tj
+(read data to/from the Battery Lifecycle Management System \(BLMS\) server through ETAS OTX libraries. This) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 416.69314960629913 Td
-(    },) Tj
+(feature consists of two primary epics: OTX library for writing data to BLMS server, utilizing an existing endpoint, and) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 388.3466929133857661 Td
-(    {) Tj
+(OTX library for reading data from BLMS server, requiring development of a new REST endpoint and API integration.) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 360.0002362204724022 Td
-(      "id": "US-4",) Tj
+(The feature provides instant updates for downstream applications, enhances diagnostic capabilities, and offers) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 331.6537795275589815 Td
-(      "story": "As a Renault Diagnostic User, I want the OTX library to handle errors when reading from the BLMS\\n    ) Tj
+(robust error handling and real-time operational insights through feedback mechanisms. This enhancement is crucial) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 303.3073228346455608 Td
-(  server \(e.g., missing BIN, API issues\), so that I can efficiently troubleshoot and resolve connection problems",) Tj
+(for efficient vehicle diagnostics, particularly for electric vehicles, where it supports the implementation of traction) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 274.9608661417322537 Td
-(      "role": "Renault Diagnostic User",) Tj
+(battery diagnostics based on Airbag ECU data, potentially reducing repair costs and environmental impact.) Tj
 ET
 BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 246.614409448818833 Td
-(      "feature": "Error handling for OTX library \(read\)",) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
+/F2 14 Tf
+16.0999999999999979 TL
 0 g
 28.3464566929133888 218.2679527559054122 Td
-(      "benefit": "Enhances overall system reliability and user productivity") Tj
+(Benefit Hypothesis) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 189.9214960629919915 Td
-(    },) Tj
+(We believe that by implementing the Two-Way Communication with BLMS Server feature, Renault Diagnostic Users) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 161.5750393700786844 Td
-(    {) Tj
+(will experience a significant reduction in diagnostic time and an increase in accuracy, leading to improved overall) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 133.2285826771652637 Td
-(      "id": "US-5",) Tj
+(efficiency and customer satisfaction. Specifically, the instant updates to BLMS will ensure that downstream) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 104.882125984251843 Td
-(      "story": "As a System Administrator, I want the ADT server to send feedback \(ADT.SERVICE.BLM\) upon\\n      ) Tj
+(applications, like NewDialogys, have access to the latest data, enhancing the repair process. Furthermore, the) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 76.5356692913385359 Td
-(successful write operations to BLMS, so that I can monitor and verify the integrity of write operations in real-time",) Tj
+(feature is expected to contribute to reduced repair costs for electric vehicles by facilitating informed decisions on) Tj
 ET
 endstream
 endobj
@@ -834,7 +729,7 @@ endobj
 endobj
 12 0 obj
 <<
-/Length 3560
+/Length 2355
 >>
 stream
 0.5670000000000001 w
@@ -844,541 +739,122 @@ BT
 11.5 TL
 0 g
 28.3464566929133888 813.5435433070865656 Td
-(      "role": "System Administrator",) Tj
+(traction battery replacement, ultimately benefiting both Renault and its customers environmentally and economically.) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 785.1970866141732586 Td
-(      "feature": "Feedback mechanism for write operations",) Tj
+(Key indicators of success will include metrics on reduced diagnostic time, increased first-time fix rates, and a) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
 28.3464566929133888 756.8506299212598378 Td
-(      "benefit": "Provides real-time operational insights for improved system management") Tj
+(decrease in economically non-repairable vehicle cases due to battery replacement costs.) Tj
 ET
 BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 728.5041732283464171 Td
-(    },) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
+/F2 14 Tf
+16.0999999999999979 TL
 0 g
 28.3464566929133888 700.15771653543311 Td
-(    {) Tj
+(User Stories) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 671.8112598425196893 Td
-(      "id": "US-6",) Tj
+42.5196850393700814 671.8112598425196893 Td
+(US-1: As a Renault Diagnostic User, I want to call an ETAS OTX library to write data to the BLMS server) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 643.4648031496062686 Td
-(      "story": "As a System Administrator, I want the ADT server to send feedback \(ADT.SERVICE.BLMS\) upon\\n      ) Tj
+42.5196850393700814 643.4648031496062686 Td
+(                through a key-value pair MAP, so that I can instantly update BLMS for downstream applications like) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 615.1183464566928478 Td
-(successful read operations from BLMS, so that I can track and analyze data retrieval patterns for optimization",) Tj
+42.5196850393700814 615.1183464566928478 Td
+(NewDialogys to) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 586.7718897637794271 Td
-(      "role": "System Administrator",) Tj
+42.5196850393700814 586.7718897637794271 Td
+(                ensure seamless vehicle diagnostics) Tj
 ET
 BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 558.42543307086612 Td
-(      "feature": "Feedback mechanism for read operations",) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 530.0789763779526993 Td
-(      "benefit": "Enables data-driven decision-making for system improvements") Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 501.7325196850393354 Td
-(    }) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 473.3860629921259147 Td
-(  ],) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 445.0396062992125508 Td
-(  "acceptanceCriteria": {) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 416.69314960629913 Td
-(    "US-1": [) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 388.3466929133857661 Td
-(      "The OTX library successfully sends a key-value pair MAP to the ADT runtime.",) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 360.0002362204724022 Td
-(      "The ADT runtime writes the data to BLMS using the existing PUT updateByBin/{bin} endpoint.",) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 331.6537795275589815 Td
-(      "The OTX library receives a success status and a positive message from the ADT runtime.") Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 303.3073228346455608 Td
-(    ],) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 274.9608661417322537 Td
-(    "US-2": [) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 246.614409448818833 Td
-(      "The OTX library successfully sends a list of keys to the ADT runtime.",) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 218.2679527559054122 Td
-(      "The ADT runtime reads the BIN and sends the keys and BIN to the ADT server via the new REST endpoint.",) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 189.9214960629919915 Td
-(      "The ADT server performs an HTTP request to the new API to read data from BLMS.",) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 161.5750393700786844 Td
-(      "The OTX library receives the read data and status from the ADT runtime.") Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 133.2285826771652637 Td
-(    ],) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 104.882125984251843 Td
-(    "US-3": [) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 76.5356692913385359 Td
-(      "The OTX library returns an error boolean and an informative error message when the BIN is missing.",) Tj
-ET
-endstream
-endobj
-13 0 obj
-<</Type /Page
-/Parent 1 0 R
-/Resources 2 0 R
-/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
-/Contents 14 0 R
->>
-endobj
-14 0 obj
-<<
-/Length 3142
->>
-stream
-0.5670000000000001 w
-0 G
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 813.5435433070865656 Td
-(      "The OTX library handles other potential errors \(e.g., network, server\) and provides meaningful error) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 785.1970866141732586 Td
-(messages.") Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 756.8506299212598378 Td
-(    ],) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 728.5041732283464171 Td
-(    "US-4": [) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 700.15771653543311 Td
-(      "The OTX library returns an error boolean and an informative error message when the BIN is missing or API\\n    ) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 671.8112598425196893 Td
-(  issues occur.",) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 643.4648031496062686 Td
-(      "The OTX library handles other potential errors \(e.g., network, server\) and provides meaningful error\\n      ) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 615.1183464566928478 Td
-(messages.") Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 586.7718897637794271 Td
-(    ],) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 558.42543307086612 Td
-(    "US-5": [) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 530.0789763779526993 Td
-(      "The ADT server sends a feedback \(ADT.SERVICE.BLM\) to the feedback viewer upon successful write\\n      ) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 501.7325196850393354 Td
-(operations.",) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 473.3860629921259147 Td
-(      "The feedback contains relevant information about the write operation \(e.g., BIN, timestamp\).") Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 445.0396062992125508 Td
-(    ],) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 416.69314960629913 Td
-(    "US-6": [) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 388.3466929133857661 Td
-(      "The ADT server sends a feedback \(ADT.SERVICE.BLMS\) to the feedback viewer upon successful read\\n      ) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 360.0002362204724022 Td
-(operations.",) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 331.6537795275589815 Td
-(      "The feedback contains relevant information about the read operation \(e.g., BIN, keys, timestamp\).") Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 303.3073228346455608 Td
-(    ]) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 274.9608661417322537 Td
-(  },) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 246.614409448818833 Td
-(  "estimates": {) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 218.2679527559054122 Td
-(    "US-1": "M",) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 189.9214960629919915 Td
-(    "US-2": "L",) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 161.5750393700786844 Td
-(    "US-3": "XS",) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 133.2285826771652637 Td
-(    "US-4": "S",) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 104.882125984251843 Td
-(    "US-5": "XS",) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 76.5356692913385359 Td
-(    "US-6": "XS") Tj
-ET
-endstream
-endobj
-15 0 obj
-<</Type /Page
-/Parent 1 0 R
-/Resources 2 0 R
-/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
-/Contents 16 0 R
->>
-endobj
-16 0 obj
-<<
-/Length 2436
->>
-stream
-0.5670000000000001 w
-0 G
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 813.5435433070865656 Td
-(  },) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 785.1970866141732586 Td
-(  "questions": [) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 756.8506299212598378 Td
-(    "What is the expected payload size for the key-value pair MAP in write operations, and are there any specific\\n    ) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 728.5041732283464171 Td
-(  formatting requirements?",) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 700.15771653543311 Td
-(    "Can you provide more information about the new API for reading data from BLMS \(e.g., API endpoint,\\n      ) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 671.8112598425196893 Td
-(authentication, rate limiting\)?",) Tj
-ET
-BT
-/F1 10 Tf
+/F2 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 643.4648031496062686 Td
-(    "How will the Renault Diagnostic User authenticate and authorize with the OTX library and ADT server?",) Tj
+56.6929133858267775 544.2522047244094665 Td
+(Acceptance Criteria:) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 615.1183464566928478 Td
-(    "Are there any specific logging or auditing requirements for the write and read operations?",) Tj
+70.8661417322834666 501.7325196850393354 Td
+(• The OTX library successfully sends a key-value pair MAP to the ADT runtime.) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 586.7718897637794271 Td
-(    "What is the expected frequency and volume of write and read operations, and are there any performance or\\n     ) Tj
+70.8661417322834666 459.2128346456692611 Td
+(• The ADT runtime writes the data to BLMS using the existing PUT updateByBin/{bin} endpoint.) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 558.42543307086612 Td
-( scalability concerns?",) Tj
+70.8661417322834666 416.69314960629913 Td
+(• The OTX library receives a success status and a positive message from the ADT runtime.) Tj
 ET
 BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 530.0789763779526993 Td
-(    "Can you clarify the format and content of the feedback \(ADT.SERVICE.BLM and ADT.SERVICE.BLMS\) and) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 501.7325196850393354 Td
-(how\\n       it will be consumed by the feedback viewer?",) Tj
-ET
-BT
-/F1 10 Tf
-11.5 TL
-0 g
-28.3464566929133888 473.3860629921259147 Td
-(    "Are there any dependencies or prerequisites for the development of these user stories \(e.g., other teams') Tj
-ET
-BT
-/F1 10 Tf
+/F2 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 445.0396062992125508 Td
-(work,\\n       infrastructure setup\)?",) Tj
+56.6929133858267775 374.1734645669290558 Td
+(Estimate: M) Tj
 ET
 BT
-/F1 10 Tf
-11.5 TL
+/F2 14 Tf
+16.0999999999999979 TL
 0 g
-28.3464566929133888 416.69314960629913 Td
-(    "How will the success of these user stories be measured, and what are the key performance indicators \(KPIs\)?") Tj
+28.3464566929133888 317.480551181102328 Td
+(Open Questions) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 388.3466929133857661 Td
-(  ]) Tj
+42.5196850393700814 289.1340944881889072 Td
+(1. What is the expected payload size for the key-value pair MAP in write operations, and are there any specific) Tj
 ET
 BT
 /F1 10 Tf
 11.5 TL
 0 g
-28.3464566929133888 360.0002362204724022 Td
-(}) Tj
+42.5196850393700814 260.7876377952754865 Td
+(            formatting requirements?) Tj
 ET
 endstream
 endobj
 1 0 obj
 <</Type /Pages
-/Kids [3 0 R 5 0 R 7 0 R 9 0 R 11 0 R 13 0 R 15 0 R ]
-/Count 7
+/Kids [3 0 R 5 0 R 7 0 R 9 0 R 11 0 R ]
+/Count 5
 >>
 endobj
-17 0 obj
+13 0 obj
 <<
 /Type /Font
 /BaseFont /Helvetica
@@ -1388,7 +864,7 @@ endobj
 /LastChar 255
 >>
 endobj
-18 0 obj
+14 0 obj
 <<
 /Type /Font
 /BaseFont /Helvetica-Bold
@@ -1398,7 +874,7 @@ endobj
 /LastChar 255
 >>
 endobj
-19 0 obj
+15 0 obj
 <<
 /Type /Font
 /BaseFont /Helvetica-Oblique
@@ -1408,7 +884,7 @@ endobj
 /LastChar 255
 >>
 endobj
-20 0 obj
+16 0 obj
 <<
 /Type /Font
 /BaseFont /Helvetica-BoldOblique
@@ -1418,7 +894,7 @@ endobj
 /LastChar 255
 >>
 endobj
-21 0 obj
+17 0 obj
 <<
 /Type /Font
 /BaseFont /Courier
@@ -1428,7 +904,7 @@ endobj
 /LastChar 255
 >>
 endobj
-22 0 obj
+18 0 obj
 <<
 /Type /Font
 /BaseFont /Courier-Bold
@@ -1438,7 +914,7 @@ endobj
 /LastChar 255
 >>
 endobj
-23 0 obj
+19 0 obj
 <<
 /Type /Font
 /BaseFont /Courier-Oblique
@@ -1448,7 +924,7 @@ endobj
 /LastChar 255
 >>
 endobj
-24 0 obj
+20 0 obj
 <<
 /Type /Font
 /BaseFont /Courier-BoldOblique
@@ -1458,7 +934,7 @@ endobj
 /LastChar 255
 >>
 endobj
-25 0 obj
+21 0 obj
 <<
 /Type /Font
 /BaseFont /Times-Roman
@@ -1468,7 +944,7 @@ endobj
 /LastChar 255
 >>
 endobj
-26 0 obj
+22 0 obj
 <<
 /Type /Font
 /BaseFont /Times-Bold
@@ -1478,7 +954,7 @@ endobj
 /LastChar 255
 >>
 endobj
-27 0 obj
+23 0 obj
 <<
 /Type /Font
 /BaseFont /Times-Italic
@@ -1488,7 +964,7 @@ endobj
 /LastChar 255
 >>
 endobj
-28 0 obj
+24 0 obj
 <<
 /Type /Font
 /BaseFont /Times-BoldItalic
@@ -1498,7 +974,7 @@ endobj
 /LastChar 255
 >>
 endobj
-29 0 obj
+25 0 obj
 <<
 /Type /Font
 /BaseFont /ZapfDingbats
@@ -1507,7 +983,7 @@ endobj
 /LastChar 255
 >>
 endobj
-30 0 obj
+26 0 obj
 <<
 /Type /Font
 /BaseFont /Symbol
@@ -1520,32 +996,32 @@ endobj
 <<
 /ProcSet [/PDF /Text /ImageB /ImageC /ImageI]
 /Font <<
-/F1 17 0 R
-/F2 18 0 R
-/F3 19 0 R
-/F4 20 0 R
-/F5 21 0 R
-/F6 22 0 R
-/F7 23 0 R
-/F8 24 0 R
-/F9 25 0 R
-/F10 26 0 R
-/F11 27 0 R
-/F12 28 0 R
-/F13 29 0 R
-/F14 30 0 R
+/F1 13 0 R
+/F2 14 0 R
+/F3 15 0 R
+/F4 16 0 R
+/F5 17 0 R
+/F6 18 0 R
+/F7 19 0 R
+/F8 20 0 R
+/F9 21 0 R
+/F10 22 0 R
+/F11 23 0 R
+/F12 24 0 R
+/F13 25 0 R
+/F14 26 0 R
 >>
 /XObject <<
 >>
 >>
 endobj
-31 0 obj
+27 0 obj
 <<
 /Producer (jsPDF 3.0.0)
-/CreationDate (D:20250307162441+04'00')
+/CreationDate (D:20250307163354+04'00')
 >>
 endobj
-32 0 obj
+28 0 obj
 <<
 /Type /Catalog
 /Pages 1 0 R
@@ -1554,47 +1030,43 @@ endobj
 >>
 endobj
 xref
-0 33
+0 29
 0000000000 65535 f 
-0000027636 00000 n 
-0000029497 00000 n 
+0000016576 00000 n 
+0000018423 00000 n 
 0000000015 00000 n 
 0000000152 00000 n 
-0000005007 00000 n 
-0000005144 00000 n 
-0000010219 00000 n 
-0000010356 00000 n 
-0000014070 00000 n 
-0000014208 00000 n 
-0000017922 00000 n 
-0000018061 00000 n 
-0000021674 00000 n 
-0000021813 00000 n 
-0000025008 00000 n 
-0000025147 00000 n 
-0000027732 00000 n 
-0000027858 00000 n 
-0000027989 00000 n 
-0000028123 00000 n 
-0000028261 00000 n 
-0000028385 00000 n 
-0000028514 00000 n 
-0000028646 00000 n 
-0000028782 00000 n 
-0000028910 00000 n 
-0000029037 00000 n 
-0000029166 00000 n 
-0000029299 00000 n 
-0000029401 00000 n 
-0000029750 00000 n 
-0000029836 00000 n 
+0000002966 00000 n 
+0000003103 00000 n 
+0000006802 00000 n 
+0000006939 00000 n 
+0000009921 00000 n 
+0000010059 00000 n 
+0000014029 00000 n 
+0000014168 00000 n 
+0000016658 00000 n 
+0000016784 00000 n 
+0000016915 00000 n 
+0000017049 00000 n 
+0000017187 00000 n 
+0000017311 00000 n 
+0000017440 00000 n 
+0000017572 00000 n 
+0000017708 00000 n 
+0000017836 00000 n 
+0000017963 00000 n 
+0000018092 00000 n 
+0000018225 00000 n 
+0000018327 00000 n 
+0000018676 00000 n 
+0000018762 00000 n 
 trailer
 <<
-/Size 33
-/Root 32 0 R
-/Info 31 0 R
-/ID [ <5DFF0A871C2268611E7FF1C461563141> <5DFF0A871C2268611E7FF1C461563141> ]
+/Size 29
+/Root 28 0 R
+/Info 27 0 R
+/ID [ <E0663B5FD4669792121112996E206E80> <E0663B5FD4669792121112996E206E80> ]
 >>
 startxref
-29940
+18866
 %%EOF
