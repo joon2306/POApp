@@ -8,6 +8,7 @@ export async function exportFeature() {
     const commsService: ICommunicationService = new CommsService(); 
 
     const generate = async ([{ feature, content, summary, benefitHypothesis }]: ExportData[]) => {
+        console.log("Hello World");
         const doc = new jsPDF();
         const margin = 10;
         const lineHeight = 10;
