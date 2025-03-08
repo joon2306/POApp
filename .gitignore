@@ -13,5 +13,7 @@ next-env.d.ts
 /app
 dist
 
-# test data
+# test data and output
 **/test-data/
+**/test-output/
+*.pdf

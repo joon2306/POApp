@@ -1,20 +1,6 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
-import FeatureInputType from '../../types/FeatureGenerator/FeatureInput';
+import FeatureInputType, { ExtendedFormData, FeatureInputProps } from '../../types/FeatureGenerator/FeatureInput';
 import LabeledTextarea from '../LabeledTextarea';
-
-interface FeatureInputProps {
-  onSubmit: (formData: FeatureInputType) => void;
-}
-
-interface ExtendedFormData {
-  purpose: string;
-  description: string;
-  users: string;
-  examples: string;
-  validation: string;
-  technicalDetails: string;
-  context: string;
-}
 
 export const buildDescription = (formData: ExtendedFormData): FeatureInputType => {
   const sections: string[] = [];
