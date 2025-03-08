@@ -1,3 +1,5 @@
+import { JiraReportData } from "../../components/JiraGenerator/JiraReport";
+
 export type JiraType = 'bug' | 'epic' | 'user-story' | 'task';
 export type Priority = 'low' | 'medium' | 'high' | 'critical';
 
@@ -31,3 +33,8 @@ export const defaultJiraFormData: JiraFormData = {
   expectedResult: '',
   actualResult: ''
 };
+
+export interface AiJiraResponse {
+    error: boolean,
+    result: JiraReportData
+}
