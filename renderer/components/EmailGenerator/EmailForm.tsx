@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import LabeledTextarea from '../LabeledTextarea';
 import IEmailGeneratorService from '../../services/IEmailGeneratorSevice';
 import EmailGeneratorService from '../../services/impl/EmailGeneratorService';
@@ -15,6 +15,18 @@ export default function EmailForm({ onCorrectionReceived }: EmailFormProps) {
     const [isLoading, setIsLoading] = useState(false);
 
     const emailGeneratorService: IEmailGeneratorService = new EmailGeneratorService();
+
+    // Reset function to clear the text
+    useEffect(() => {
+        const handleCustomReset = () => {
+            setText('');
+        };
+
+        window.addEventListener('resetEmailForm', handleCustomReset);
+        return () => {
+            window.removeEventListener('resetEmailForm', handleCustomReset);
+        };
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

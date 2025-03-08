@@ -3,10 +3,18 @@
 import { useState } from 'react';
 import EmailForm from './EmailForm';
 import CorrectionResult from './CorrectionResult';
+import Button from '../Button';
 
 export default function EmailGenerator() {
   const [correctedText, setCorrectedText] = useState<string>('');
   const [suggestedSubject, setSuggestedSubject] = useState<string>('');
+
+  const handleReset = () => {
+    setCorrectedText('');
+    setSuggestedSubject('');
+    // Dispatch custom event to reset the form
+    window.dispatchEvent(new Event('resetEmailForm'));
+  };
 
   return (
     <main className="container mx-auto px-4 py-8">
@@ -21,10 +29,13 @@ export default function EmailGenerator() {
           />
         </div>
         {correctedText && (
-          <CorrectionResult
-            correctedText={correctedText} 
-            suggestedSubject={suggestedSubject}
-          />
+          <div className="space-y-4">
+            <CorrectionResult
+              correctedText={correctedText} 
+              suggestedSubject={suggestedSubject}
+              onReset={handleReset}
+            />
+          </div>
         )}
       </div>
     </main>

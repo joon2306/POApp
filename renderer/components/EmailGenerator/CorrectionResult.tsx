@@ -7,9 +7,10 @@ import LabeledTextarea from '../LabeledTextarea';
 interface CorrectionResultProps {
   correctedText: string;
   suggestedSubject: string;
+  onReset: () => void;
 }
 
-export default function CorrectionResult({ correctedText, suggestedSubject }: CorrectionResultProps) {
+export default function CorrectionResult({ correctedText, suggestedSubject, onReset }: CorrectionResultProps) {
   const [subject, setSubject] = useState(suggestedSubject);
   const [body, setBody] = useState(correctedText);
 
@@ -44,7 +45,10 @@ export default function CorrectionResult({ correctedText, suggestedSubject }: Co
             onChange={(e) => setBody(e.target.value)}
           />
         </div>
-        <Button onClick={openInOutlook} variant="primary" label="Open in Outlook" />
+        <div className="flex justify-between items-center">
+          <Button onClick={onReset} variant="secondary" label="Reset" />
+          <Button onClick={openInOutlook} variant="primary" label="Open in Outlook" />
+        </div>
       </div>
     </div>
   );
