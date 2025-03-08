@@ -7,7 +7,7 @@ import { generateFeature } from './generate'
 import { refineFeature } from './refine'
 import { summaryFeature } from './summary'
 import { exportFeature } from './export'
-import translate from "./translate";
+import translate from "./translate"; 
 
 const isProd = process.env.NODE_ENV === 'production'
 
