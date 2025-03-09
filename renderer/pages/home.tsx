@@ -4,6 +4,7 @@ import Kanban from '../components/Kanban';
 import FeatureGenerator from '../components/FeatureGenerator/FeatureGenerator';
 import EmailGenerator from '../components/EmailGenerator/EmailGenerator';
 import JiraGenerator from '../components/JiraGenerator/JiraGenerator';
+import English from '../components/English/English';
 
 export default function HomePage() {
 
@@ -23,6 +24,10 @@ export default function HomePage() {
     Jira: {
       title: "jira generator",
       content: JiraGeneratorMenu
+    },
+    English: {
+      title: "English",
+      content: EnglishMenu
     }
   }
 
@@ -48,5 +53,11 @@ function EmailGeneratorMenu() {
 function JiraGeneratorMenu() {
   return <>
     <div className='flex justify-center items-center'><JiraGenerator/></div>
+  </>
+}
+
+function EnglishMenu() {
+  return <>
+    <div className='flex justify-center items-center'><English/></div>
   </>
 }

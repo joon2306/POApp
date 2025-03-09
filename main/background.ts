@@ -9,6 +9,7 @@ import { summaryFeature } from './summary'
 import { exportFeature } from './export'
 import translate from "./translate"; 
 import { generateJira } from './jira'
+import improve from './english'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -56,3 +57,4 @@ summaryFeature();
 exportFeature();
 translate();
 generateJira();
+improve();

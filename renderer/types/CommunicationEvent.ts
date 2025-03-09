@@ -8,7 +8,8 @@ const CommunicationEvents = Object.freeze({
     summaryFeature: "summary-feature",
     exportFeature: "export-feature",
     translateEmail: "translate-email",
-    generateJira: "generate-jira"
+    generateJira: "generate-jira",
+    improveEnglish: "improve-english"
 });
 
 export default CommunicationEvents;
