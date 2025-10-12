@@ -21,7 +21,9 @@ export interface Payload {
 
 export const models = {
     nemotronModel: "nvidia/llama-3.1-nemotron-70b-instruct:free",
-    geminiModel: "google/gemini-2.0-pro-exp-02-05:free"
+    geminiModel: "google/gemini-2.0-pro-exp-02-05:free",
+    mistral: "mistralai/mistral-nemo:free",
+    dolphin: "cognitivecomputations/dolphin3.0-r1-mistral-24b:free"
 }
 
 const AiUtils = () => {
@@ -95,7 +97,9 @@ const AiUtils = () => {
         while (attempt < maxAttempts) {
             try {
                 const completion = await openai.chat.completions.create(getPayload(promptMsg, model) as ChatCompletionCreateParamsNonStreaming);
+                console.log("completion: ", completion);
                 const msg = completion.choices[0].message?.content;
+                console.log("msg: ", msg);
                 if (isNotJson) {
                     return msg;
                 }

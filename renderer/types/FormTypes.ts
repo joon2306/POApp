@@ -1,9 +1,10 @@
 export type InputType = {
-    value: string,
+    value: string | number,
     title: string,
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
     error: boolean,
-    errorMessage: string
+    errorMessage: string,
+    type?: string
 }
 
 export type SelectType = {

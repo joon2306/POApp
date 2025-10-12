@@ -1,15 +1,17 @@
 import styles from "../styles/kanban/style.module.css";
 
-import React, { useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { HeaderSwimLane, KANBAN_SWIM_LANE_CONFIG, KanbanCardProp, KanbanCardType, KanbanFormValue, KanbanStatus, PRIORITY_CONFIG, PriorityLevel } from "../types/KanbanTypes";
 import { KanbanService } from "../services/impl/KanbanService";
 import { useKanban } from "../hooks/useKanban";
 import { useDroppable } from "../hooks/useDroppable";
 import { useKanbanCard } from "../hooks/useKanbanCard";
-import { getModalService } from "../services/impl/ModalService";
 import KanbanForm from "./Form/KanbanForm";
 import { ModalType } from "../types/ModalTypes";
 import { sortKanbanCards } from "../utils/KanbanUtils";
+import MediatorEvents from "../constants/MediatorEvents";
+import Mediator from "../services/impl/Mediator";
+import { IModalService, useModalService } from "../services/impl/ModalService";
 
 
 const getKanbanForm = (isModify, handleSave, kanbanFormValue, modalService): ModalType => {
@@ -31,14 +33,46 @@ const getKanbanForm = (isModify, handleSave, kanbanFormValue, modalService): Mod
                 },
                 variant: "primary"
             }
-        ]
+        ],
+        closeOnBackdrop: false
     };
+}
+
+
+const showErrorModal = (errorMessage: string, modalService: IModalService): ModalType => {
+
+    return {
+        title: "Error",
+        content: <div className="text-red-500">{errorMessage}</div>,
+        buttons: [
+            {
+                label: "Okay",
+                onClick: () => modalService.closeModal(),
+                variant: "primary"
+            }
+        ]
+    }
+
 }
 
 
 export default function Kanban({ calculateHeight }) {
 
     const { handleDragStart, handleDrop, kanbanCards, updateHeight, deleteCard, saveCard, modifyCard } = useKanban(new KanbanService());
+    const modalService = useModalService();
+    const mediator = useMemo(() => new Mediator(), []);
+
+    useEffect(() => {
+        const unsubscribe = mediator.subscribe(MediatorEvents.GENERIC_KANBAN_ERROR, (errorMessage: string) => {
+            const errorModal = showErrorModal(errorMessage, modalService);
+            modalService.openModal(errorModal);
+        });
+        return () => {
+            if(unsubscribe instanceof Object) {
+                unsubscribe.unsubscribe();
+            }
+        }
+    }, [mediator, modalService])
 
     return <>
         <div className={`flex justify-around my-10`}>
@@ -57,6 +91,7 @@ export default function Kanban({ calculateHeight }) {
                         deleteCard={deleteCard}
                         saveCard={saveCard}
                         modifyCard={modifyCard}
+                        modalService={modalService}
                     />
                 ))
             }
@@ -65,7 +100,7 @@ export default function Kanban({ calculateHeight }) {
 }
 
 
-function KanbanHeader({ title, status, saveCard }: { title: string, status: KanbanStatus, saveCard: (arg: KanbanFormValue) => void }) {
+function KanbanHeader({ title, status, saveCard, modalService}: { title: string, status: KanbanStatus, saveCard: (arg: KanbanFormValue) => void, modalService:IModalService }) {
     status = +status as unknown as KanbanStatus;
     const color =
         status === 1
@@ -74,10 +109,8 @@ function KanbanHeader({ title, status, saveCard }: { title: string, status: Kanb
                 ? styles.bgInProgressKanban
                 : styles.bgOnHoldKanban;
 
-    const modalService = getModalService();
-
-    const handleSubmit = ({title, description, priority, id}: KanbanFormValue) => {
-        saveCard({title, description, priority, id});
+    const handleSubmit = ({title, description, priority, id, time}: KanbanFormValue) => {
+        saveCard({title, description, priority, id, time});
         modalService.closeModal();
     }
 
@@ -100,7 +133,7 @@ function KanbanHeader({ title, status, saveCard }: { title: string, status: Kanb
 }
 
 
-function KanbanCard({ title, description, priority, status, setActiveCard, id, deleteCard, modifyCard }: KanbanCardProp) {
+function KanbanCard({ title, description, priority, status, setActiveCard, id, deleteCard, modifyCard, modalService }: KanbanCardProp) {
     status = +status as unknown as KanbanStatus;
     priority = +priority as unknown as PriorityLevel;
 
@@ -129,11 +162,10 @@ function KanbanCard({ title, description, priority, status, setActiveCard, id, d
     }
 
 
-    const { setIsHovered } = useKanbanCard(deleteCard, id);
-    const modalService = getModalService();
+    const { setIsHovered } = useKanbanCard(deleteCard, title, description);
 
-    const handleSave = ({description, title, priority}: KanbanFormValue) => {
-        modifyCard({description, title, priority, id});
+    const handleSave = ({description, title, priority, time}: KanbanFormValue) => {
+        modifyCard({description, title, priority, id, time});
         modalService.closeModal();
     }
 
@@ -175,7 +207,7 @@ return (
 }
 
 
-function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, updateHeight, calculateHeight, deleteCard, saveCard, modifyCard }: HeaderSwimLane) {
+function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, updateHeight, calculateHeight, deleteCard, saveCard, modifyCard, modalService }: HeaderSwimLane) {
 
     const applicableCards = sortKanbanCards(cards.filter(card => +card.status === +status));
     const divRef = useRef();
@@ -183,7 +215,7 @@ function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, upd
     return (
         <div className="flex flex-col">
 
-            <KanbanHeader title={headerTitle} status={status} saveCard={saveCard} />
+            <KanbanHeader title={headerTitle} status={status} saveCard={saveCard} modalService={modalService} />
             <Droppable onDrop={() => onDrop(status)} isBottom={false} calculateHeight={calculateHeight} divRef={divRef} updateHeight={updateHeight} />
             <div ref={divRef}>
 
@@ -191,7 +223,7 @@ function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, upd
                     applicableCards.map((card, index) => (
                         <div key={card.id}>
                             <KanbanCard description={card.description} priority={card.priority} title={card.title} status={status} setActiveCard={setActiveCard} id={card.id}
-                                deleteCard={deleteCard} modifyCard={modifyCard} />
+                                deleteCard={deleteCard} modifyCard={modifyCard} modalService={modalService} />
                         </div>
                     ))
                 }

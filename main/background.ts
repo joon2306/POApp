@@ -10,6 +10,7 @@ import { exportFeature } from './export'
 import translate from "./translate"; 
 import { generateJira } from './jira'
 import improve from './english'
+import getDatabase from './database/database'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -46,7 +47,6 @@ app.on('window-all-closed', () => {
 ipcMain.on('message', async (event, arg) => {
   event.reply('message', `${arg} World!`)
 })
-
 getKanbanCards();
 saveKanbanCard();
 deleteCard();

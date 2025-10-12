@@ -1,3 +1,5 @@
+import { IModalService } from "../services/impl/ModalService";
+
 export type KanbanStatus = 1 | 2 | 3;
 export type KanbanHeaderColor = "pending" | "inProgress" | "onHold";
 export type PriorityLevel = 1 | 2 | 3 | 4;
@@ -11,9 +13,10 @@ export type HeaderSwimLane = {
   onDrop: (status: number) => void,
   calculateHeight : (height: any) => number,
   updateHeight: number,
-  deleteCard: (cardId: string) => void,
+  deleteCard: (title: string, description: string) => void,
   saveCard: (arg: KanbanFormValue) => void,
   modifyCard: (arg: KanbanFormValue) => void
+  modalService: IModalService
 }
 
 export type KanbanCardType = {
@@ -22,11 +25,18 @@ export type KanbanCardType = {
   description: string;
   priority: PriorityLevel;
   status: KanbanStatus;
+  time?: number;
 };
+
+export type KanbanResponse<T> = {
+  error: boolean;
+  data: T
+}
 export interface KanbanCardProp extends KanbanCardType {
   setActiveCard: (value: string) => void,
-  deleteCard: (cardId: string) => void,
+  deleteCard: (title: string, description: string) => void,
   modifyCard: (arg: KanbanFormValue) => void
+  modalService: IModalService
 };
 
 export type SwimLaneConfig = {
@@ -82,7 +92,8 @@ export type KanbanFormValue = {
   description: string, 
   title: string, 
   priority: number,
-  id: string
+  id: string,
+  time ?: number
 }
 
 export type KanbanFormType = {

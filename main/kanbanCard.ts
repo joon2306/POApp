@@ -4,7 +4,9 @@ import { ICsvReader } from './service/ICsvReader';
 import { CsvReaderService } from './service/impl/CsvReaderService';
 import { KanbanCard } from './model/KanbanCard';
 import CommunicationEvents from '../renderer/types/CommunicationEvent';
-import { MdFilter7 } from 'react-icons/md';
+import KanbanDbService from './service/impl/KanbanDbService';
+import IKanbanDbService from './service/IKanbanDbService';
+import { KanbanDbItem } from './model/KanbanItem';
 
 const filePath = 'E:\\PO_APP\\kanbanTodo.csv';
 
@@ -13,35 +15,36 @@ const firstRow = ["id", "title", "description", "priority", "status"];
 
 export async function getKanbanCards() {
     const commsService: ICommunicationService = new CommsService();
-    const csvReaderService: ICsvReader = new CsvReaderService();
-    const csvData = await csvReaderService.readCsv(filePath);
-    const kanbanCards = csvData.slice(0).map((row) => KanbanCard.fromCsvRow(row));
+    const kanbanDbService: IKanbanDbService = new KanbanDbService();
+    const kanbanCards = kanbanDbService.getAllKanbanCards();
     commsService.getRequest(CommunicationEvents.getKanbanCards, () => kanbanCards);
 }
 export async function saveKanbanCard() {
     const commsService: ICommunicationService = new CommsService();
-    const csvReaderService: ICsvReader = new CsvReaderService();
-    const save = async ([{ id, title, description, priority, status }]: KanbanCard[]) => {
-        await csvReaderService.insertRow(filePath, [id, title, description, priority.toString(), status.toString()], firstRow)
+    const kanbanDbService: IKanbanDbService = new KanbanDbService();
+    const save = ([{ title, description, priority, status, time }]: KanbanDbItem[]) => {
+        kanbanDbService.saveKanbanCard({ title, description, priority, status, time });
     }
-    commsService.getRequest(CommunicationEvents.saveKanbanCard, (kanbanCard: KanbanCard[]) => save(kanbanCard));
+    commsService.getRequest(CommunicationEvents.saveKanbanCard, (kanbanCard: KanbanDbItem[]) => save(kanbanCard));
 }
 
 
 export async function deleteCard() {
     const commsService: ICommunicationService = new CommsService();
-    const csvReaderService: ICsvReader = new CsvReaderService();
-    const deleteCard = async ([id]: Array<string>) => {
-        await csvReaderService.deleteRow(filePath, id, firstRow)
+    const kanbanDbService: IKanbanDbService = new KanbanDbService();
+    const deleteCard = ([{title, description}]: Array<{title: string, description: string}>) => {
+        kanbanDbService.deleteKanbanCard(title, description)
     }
-    commsService.getRequest(CommunicationEvents.deleteKanbanCard, (id: Array<string>) => deleteCard(id));
+    commsService.getRequest(CommunicationEvents.deleteKanbanCard, ([{title, description}]: Array<{title: string, description: string}>) => {
+        deleteCard([{title, description}])
+});
 }
 
 export async function modifyCard() {
     const commsService: ICommunicationService = new CommsService();
-    const csvReaderService: ICsvReader = new CsvReaderService();
-    const modifyCard = async ([{ id, title, description, priority, status }]: KanbanCard[]) => {
-        await csvReaderService.modifyRow(filePath, id, [id, title, description, priority.toString(), status.toString()], firstRow)
+    const kanbanDbService: IKanbanDbService = new KanbanDbService();
+    const modifyCard =  ([{ id, title, description, priority, status, time }]: KanbanDbItem[]) => {
+        kanbanDbService.modifyKanbanCard({ id, title, description, priority, status, time });
     }
-    commsService.getRequest(CommunicationEvents.modifyKanbanCard, (kanbanCard: KanbanCard[]) => modifyCard(kanbanCard));
+    commsService.getRequest(CommunicationEvents.modifyKanbanCard, (kanbanCard: KanbanDbItem[]) => modifyCard(kanbanCard));
 }

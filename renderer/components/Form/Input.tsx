@@ -1,12 +1,12 @@
 import styles from "../../styles/Form/Input/style.module.css";
 import { InputType } from "../../types/FormTypes";
-const Input = ({ title, value, onChange, error, errorMessage }: InputType) => {
+const Input = ({ title, value, onChange, error, errorMessage, type }: InputType) => {
 
     return (
         <div>
             <input
-                type="text"
-                name={value}
+                type={type || "text"}
+                name={value.toString()}
                 value={value}
                 placeholder={title}
                 onChange={onChange}

@@ -3,9 +3,9 @@ import { KanbanCardType, KanbanFormValue } from "../types/KanbanTypes";
 export interface IKanbanService {
     getKanbanCards(): Promise<KanbanCardType[]>;
 
-    deleteKanbanCards(cardId: string): void;
+    deleteKanbanCards(title: string, description: string): void;
 
-    modifyKanbanCard({ title, description, priority, id }: KanbanFormValue, status: number | undefined): void;
+    modifyKanbanCard({ title, description, priority, id, time }: KanbanFormValue, status: number | undefined): void;
 
-    addKanbanCard({title, description, priority}: KanbanFormValue): void;
+    addKanbanCard({title, description, priority, time}: KanbanFormValue): void;
 }

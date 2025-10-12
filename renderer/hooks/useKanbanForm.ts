@@ -9,8 +9,10 @@ export const useKanbanForm = ({ onValidSubmit, kanbanFormValue }: KanbanFormType
 
     const [title, setTitle] = useState(defaultTitle);
     const [description, setDescription] = useState(defaultDescription);
+    const [time, setTime] = useState(30);
     const [titleError, setTitleError] = useState(false);
     const [descriptionError, setDescriptionError] = useState(false);
+    const [timeError, setTimeError] = useState(false);
     const [shouldShake, setShouldShake] = useState(false);
     const [priority, setPriority] = useState(defaultPriority);
 
@@ -26,6 +28,11 @@ export const useKanbanForm = ({ onValidSubmit, kanbanFormValue }: KanbanFormType
         // Validate description
         if (description.trim() === '') {
             setDescriptionError(true);
+            isValid = false;
+        }
+
+        if(time <= 0 && isNaN(time) && !Number.isInteger(time)) {
+            setTimeError(true);
             isValid = false;
         }
 
@@ -59,8 +66,14 @@ export const useKanbanForm = ({ onValidSubmit, kanbanFormValue }: KanbanFormType
         setPriority(parseInt(e.target.value));
     }
 
+    const handleTimeChange = (e) => {
+        setTime(e.target.value | 0);
+        setTimeError(false);
+    }
+
+
     return {
-        handleSubmit, handleTitleChange, handleDescriptionChange, handlePriorityChange,
-        title, description, titleError, descriptionError, shouldShake, priority
+        handleSubmit, handleTitleChange, handleDescriptionChange, handlePriorityChange, handleTimeChange,
+        title, description, titleError, descriptionError, shouldShake, priority, time, timeError
     }
 }

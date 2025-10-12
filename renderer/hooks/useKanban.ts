@@ -26,7 +26,7 @@ export const useKanban = (kanbanService: IKanbanService) => {
             return;
         }
         selectedCard.status = +status as unknown as KanbanStatus;
-        kanbanService.modifyKanbanCard(selectedCard, selectedCard.status);
+        kanbanService.modifyKanbanCard(selectedCard , selectedCard.status);
 
     }
 
@@ -37,8 +37,8 @@ export const useKanban = (kanbanService: IKanbanService) => {
         }
     }
 
-    const deleteCard =  (cardId: string) => {
-        kanbanService.deleteKanbanCards(cardId);
+    const deleteCard =  (title: string, description: string) => {
+        kanbanService.deleteKanbanCards(title, description);
         setUpdateCards(updateCards + 1);
     }
 

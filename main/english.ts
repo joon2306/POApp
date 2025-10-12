@@ -21,7 +21,7 @@ export default async function improve() {
 
         try {
             const { getAiResponse } = aiUtilsInstance;
-            const result = await getAiResponse(promptMsg, models.geminiModel);
+            const result = await getAiResponse(promptMsg, models.mistral);
             return { error: false, result };
         } catch (error) {
             console.error("Error parsing AI response:", error);
