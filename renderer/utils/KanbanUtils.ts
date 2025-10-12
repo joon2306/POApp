@@ -10,5 +10,9 @@ export const generateKanbanId = (cards: KanbanCardType[]): number => {
 };
 
 export const sortKanbanCards = (cards: KanbanCardType[]) => {
-    return cards.sort((a, b) => b.priority - a.priority);
+    return cards.sort((a, b) => {
+        if (a.priority < b.priority) return 1;
+        if (a.priority > b.priority) return -1;
+        return a.time - b.time
+    });
 }

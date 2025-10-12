@@ -6,7 +6,7 @@ const Input = ({ title, value, onChange, error, errorMessage, type }: InputType)
         <div>
             <input
                 type={type || "text"}
-                name={value.toString()}
+                name={value as string}
                 value={value}
                 placeholder={title}
                 onChange={onChange}

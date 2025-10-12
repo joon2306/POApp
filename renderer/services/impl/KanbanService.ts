@@ -40,9 +40,11 @@ export class KanbanService implements IKanbanService {
         return this.cachedCards;
     }
 
-    deleteKanbanCards(title: string, description: string): void {
-        this.cachedCards = this.cachedCards.filter(c => c.title !== title && c.description !== description);
-        this.commsService.sendRequest(CommunicationEvents.deleteKanbanCard, {title, description});
+    deleteKanbanCards(id: string): void {
+        console.log("Deleting kanban card with id: ", id);
+        console.log("Cached cards before deletion: ", this.cachedCards);
+        this.cachedCards = this.cachedCards.filter(c => c.id !== id);	
+        this.commsService.sendRequest(CommunicationEvents.deleteKanbanCard, { id: +id });
     }
 
     modifyKanbanCard({ title, description, priority, id, time }: KanbanFormValue, status: number | undefined) {

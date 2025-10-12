@@ -37,8 +37,8 @@ export const useKanban = (kanbanService: IKanbanService) => {
         }
     }
 
-    const deleteCard =  (title: string, description: string) => {
-        kanbanService.deleteKanbanCards(title, description);
+    const deleteCard =  (id: string) => {
+        kanbanService.deleteKanbanCards(id);
         setUpdateCards(updateCards + 1);
     }
 

@@ -13,7 +13,7 @@ export type HeaderSwimLane = {
   onDrop: (status: number) => void,
   calculateHeight : (height: any) => number,
   updateHeight: number,
-  deleteCard: (title: string, description: string) => void,
+  deleteCard: (id: string) => void,
   saveCard: (arg: KanbanFormValue) => void,
   modifyCard: (arg: KanbanFormValue) => void
   modalService: IModalService
@@ -25,7 +25,7 @@ export type KanbanCardType = {
   description: string;
   priority: PriorityLevel;
   status: KanbanStatus;
-  time?: number;
+  time: number;
 };
 
 export type KanbanResponse<T> = {
@@ -34,7 +34,7 @@ export type KanbanResponse<T> = {
 }
 export interface KanbanCardProp extends KanbanCardType {
   setActiveCard: (value: string) => void,
-  deleteCard: (title: string, description: string) => void,
+  deleteCard: (id: string) => void,
   modifyCard: (arg: KanbanFormValue) => void
   modalService: IModalService
 };
@@ -93,7 +93,7 @@ export type KanbanFormValue = {
   title: string, 
   priority: number,
   id: string,
-  time ?: number
+  time: number
 }
 
 export type KanbanFormType = {

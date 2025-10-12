@@ -133,7 +133,7 @@ function KanbanHeader({ title, status, saveCard, modalService}: { title: string,
 }
 
 
-function KanbanCard({ title, description, priority, status, setActiveCard, id, deleteCard, modifyCard, modalService }: KanbanCardProp) {
+function KanbanCard({ title, description, priority, status, setActiveCard, id, deleteCard, modifyCard, modalService, time }: KanbanCardProp) {
     status = +status as unknown as KanbanStatus;
     priority = +priority as unknown as PriorityLevel;
 
@@ -162,7 +162,7 @@ function KanbanCard({ title, description, priority, status, setActiveCard, id, d
     }
 
 
-    const { setIsHovered } = useKanbanCard(deleteCard, title, description);
+    const { setIsHovered } = useKanbanCard(deleteCard, id);
 
     const handleSave = ({description, title, priority, time}: KanbanFormValue) => {
         modifyCard({description, title, priority, id, time});
@@ -173,7 +173,8 @@ function KanbanCard({ title, description, priority, status, setActiveCard, id, d
         description,
         title,
         priority,
-        id
+        id,
+        time
     }
 
     const modal = getKanbanForm(true, handleSave, kanbanFormValue, modalService);
@@ -223,7 +224,7 @@ function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, upd
                     applicableCards.map((card, index) => (
                         <div key={card.id}>
                             <KanbanCard description={card.description} priority={card.priority} title={card.title} status={status} setActiveCard={setActiveCard} id={card.id}
-                                deleteCard={deleteCard} modifyCard={modifyCard} modalService={modalService} />
+                                deleteCard={deleteCard} modifyCard={modifyCard} modalService={modalService} time={card.time} />
                         </div>
                     ))
                 }

@@ -5,11 +5,12 @@ export const useKanbanForm = ({ onValidSubmit, kanbanFormValue }: KanbanFormType
     let defaultTitle = kanbanFormValue ? kanbanFormValue.title : "";
     let defaultDescription = kanbanFormValue ? kanbanFormValue.description : "";
     let defaultPriority = kanbanFormValue ? kanbanFormValue.priority : 1;
+    let defaultTime = kanbanFormValue ? kanbanFormValue.time : 30;
     const id: string = kanbanFormValue ? kanbanFormValue.id: "";
 
     const [title, setTitle] = useState(defaultTitle);
     const [description, setDescription] = useState(defaultDescription);
-    const [time, setTime] = useState(30);
+    const [time, setTime] = useState(defaultTime);
     const [titleError, setTitleError] = useState(false);
     const [descriptionError, setDescriptionError] = useState(false);
     const [timeError, setTimeError] = useState(false);
@@ -31,7 +32,8 @@ export const useKanbanForm = ({ onValidSubmit, kanbanFormValue }: KanbanFormType
             isValid = false;
         }
 
-        if(time <= 0 && isNaN(time) && !Number.isInteger(time)) {
+        console.log("time: ", time, isNaN(time), Number.isInteger(time));
+        if(time <= 0  || isNaN(time) || !Number.isInteger(time)) {
             setTimeError(true);
             isValid = false;
         }
@@ -47,7 +49,7 @@ export const useKanbanForm = ({ onValidSubmit, kanbanFormValue }: KanbanFormType
     const handleSubmit = (e) => {
         e.preventDefault();
         if (validateForm()) {
-            return onValidSubmit({title, description, priority, id});
+            return onValidSubmit({title, description, priority, id, time});
         }
         return null;
     };
@@ -67,7 +69,7 @@ export const useKanbanForm = ({ onValidSubmit, kanbanFormValue }: KanbanFormType
     }
 
     const handleTimeChange = (e) => {
-        setTime(e.target.value | 0);
+        setTime(parseInt(e.target.value));
         setTimeError(false);
     }
 

@@ -32,11 +32,11 @@ export async function saveKanbanCard() {
 export async function deleteCard() {
     const commsService: ICommunicationService = new CommsService();
     const kanbanDbService: IKanbanDbService = new KanbanDbService();
-    const deleteCard = ([{title, description}]: Array<{title: string, description: string}>) => {
-        kanbanDbService.deleteKanbanCard(title, description)
+    const deleteCard = ([{id}]: Array<{id: number}>) => {
+        kanbanDbService.deleteKanbanCard(id)
     }
-    commsService.getRequest(CommunicationEvents.deleteKanbanCard, ([{title, description}]: Array<{title: string, description: string}>) => {
-        deleteCard([{title, description}])
+    commsService.getRequest(CommunicationEvents.deleteKanbanCard, ([{id}]: Array<{id: number}>) => {
+        deleteCard([{id}])
 });
 }
 
@@ -48,3 +48,4 @@ export async function modifyCard() {
     }
     commsService.getRequest(CommunicationEvents.modifyKanbanCard, (kanbanCard: KanbanDbItem[]) => modifyCard(kanbanCard));
 }
+

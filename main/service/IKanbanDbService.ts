@@ -7,7 +7,7 @@ export default interface IKanbanDbService {
 
     saveKanbanCard(kanbanItem: KanbanDbItem): KanbanResponse<string>;
 
-    deleteKanbanCard(title: string, description: string): KanbanResponse<string>;
+    deleteKanbanCard(id: number): KanbanResponse<string>;
 
     modifyKanbanCard(kanbanItem: KanbanDbItem): KanbanResponse<string>;
 }

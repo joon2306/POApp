@@ -23,10 +23,17 @@ export default function getDatabase() {
 
     if (!db) {
         initDatabase();
+
+        app.on('window-all-closed', () => {
+            console.log("App is quitting, closing the database");
+            db.close();
+        })
     }
 
     return db;
 
 }
+
+
 
 export { TABLE_KANBAN_ITEMS };

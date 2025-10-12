@@ -36,9 +36,9 @@ export default class KanbanDbService implements IKanbanDbService {
             return { error: true, data: "Error saving kanban card" };
         }
     }
-    deleteKanbanCard(title: string, description: string): KanbanResponse<string> {
+    deleteKanbanCard(id: number): KanbanResponse<string> {
         try {
-            const kanbanCard = this.getKanbanCardByTitleAndDescription(title, description);
+            const kanbanCard = this.getKanbanCardById(id);
             if (kanbanCard.error) {
                 return { error: true, data: "Kanban card not found. Cannot delete" };
             }
