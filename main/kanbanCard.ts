@@ -16,14 +16,14 @@ const firstRow = ["id", "title", "description", "priority", "status"];
 export async function getKanbanCards() {
     const commsService: ICommunicationService = new CommsService();
     const kanbanDbService: IKanbanDbService = new KanbanDbService();
-    const kanbanCards = kanbanDbService.getAllKanbanCards();
-    commsService.getRequest(CommunicationEvents.getKanbanCards, () => kanbanCards);
+    const getKanbanCards = () => kanbanDbService.getAllKanbanCards();
+    commsService.getRequest(CommunicationEvents.getKanbanCards, () => getKanbanCards());
 }
 export async function saveKanbanCard() {
     const commsService: ICommunicationService = new CommsService();
     const kanbanDbService: IKanbanDbService = new KanbanDbService();
-    const save = ([{ title, description, priority, status, time }]: KanbanDbItem[]) => {
-        kanbanDbService.saveKanbanCard({ title, description, priority, status, time });
+    const save = ([{ id, title, description, priority, status, time }]: KanbanDbItem[]) => {
+        return kanbanDbService.saveKanbanCard({ id, title, description, priority, status, time });
     }
     commsService.getRequest(CommunicationEvents.saveKanbanCard, (kanbanCard: KanbanDbItem[]) => save(kanbanCard));
 }

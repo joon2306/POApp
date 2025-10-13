@@ -32,7 +32,6 @@ export const useKanbanForm = ({ onValidSubmit, kanbanFormValue }: KanbanFormType
             isValid = false;
         }
 
-        console.log("time: ", time, isNaN(time), Number.isInteger(time));
         if(time <= 0  || isNaN(time) || !Number.isInteger(time)) {
             setTimeError(true);
             isValid = false;

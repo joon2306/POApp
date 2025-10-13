@@ -21,7 +21,7 @@ export const useKanban = (kanbanService: IKanbanService) => {
         if (cardStatus === status) {
             return;
         }
-        const selectedCard = kanbanCards.find(card => card.id === cardId);
+        const selectedCard = kanbanCards.find(card => +card.id === +cardId);
         if (!selectedCard) {
             return;
         }
@@ -51,18 +51,18 @@ export const useKanban = (kanbanService: IKanbanService) => {
         kanbanService.modifyKanbanCard(arg, undefined);
         setUpdateCards(updateCards + 1);
     }
+    const loadData = async () => {
+        const cards = await kanbanService.getKanbanCards();
+        const sortedCards = sortKanbanCards(cards);
+        setKanbanCards(sortedCards);
+    };
 
     useEffect(() => {
-        const loadData = async () => {
-            const cards = await kanbanService.getKanbanCards();
-            const sortedCards = sortKanbanCards(cards);
-            setKanbanCards(sortedCards);
-        };
         loadData();
     }, [updateCards]);
 
 
 
-    return { handleDrop, handleDragStart, kanbanCards, updateHeight, deleteCard, saveCard, modifyCard };
+    return { handleDrop, handleDragStart, kanbanCards, updateHeight, deleteCard, saveCard, modifyCard, loadData };
 
 }

@@ -28,8 +28,13 @@ export default class KanbanDbService implements IKanbanDbService {
     }
     saveKanbanCard(kanbanItem: KanbanDbItem): KanbanResponse<string> {
         try {
-            const stmt = this.db.prepare(`INSERT INTO ${TABLE_KANBAN_ITEMS} (title, description, priority, status, time) VALUES (?, ?, ?, ?, ?)`);
-            stmt.run(kanbanItem.title, kanbanItem.description, kanbanItem.priority, kanbanItem.status, kanbanItem.time);
+            const { error } = this.getKanbanCardById(kanbanItem.id);
+            if (!error) {
+                console.log("Kanban card with id already exists. Cannot save duplicate");
+                return { error: true, data: "Kanban card with id already exists. Cannot save duplicate" };
+            }
+            const stmt = this.db.prepare(`INSERT INTO ${TABLE_KANBAN_ITEMS} (id, title, description, priority, status, time) VALUES (?, ?, ?, ?, ?, ?)`);
+            stmt.run(+kanbanItem.id, kanbanItem.title, kanbanItem.description, kanbanItem.priority, kanbanItem.status, kanbanItem.time);
             return { error: false, data: "Kanban card saved successfully" };
         } catch (err) {
             console.error("Error saving kanban card: ", err);
@@ -57,7 +62,7 @@ export default class KanbanDbService implements IKanbanDbService {
                 return { error: true, data: "Kanban card not found. Cannot modify" };
             }
             const stmt = this.db.prepare(`UPDATE ${TABLE_KANBAN_ITEMS} SET title = ?, description = ?, priority = ?, status = ?, time = ? WHERE id = ?`);
-            stmt.run(kanbanItem.title, kanbanItem.description, kanbanItem.priority, kanbanItem.status, kanbanItem.time, kanbanCard.data.id);
+            stmt.run(kanbanItem.title, kanbanItem.description, kanbanItem.priority, kanbanItem.status ?? kanbanCard.data.status, kanbanItem.time, kanbanCard.data.id);
             return { error: false, data: "Kanban card modified successfully" };
         } catch (err) {
             console.error("Error modifying kanban card: ", err);

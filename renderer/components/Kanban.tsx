@@ -58,7 +58,9 @@ const showErrorModal = (errorMessage: string, modalService: IModalService): Moda
 
 export default function Kanban({ calculateHeight }) {
 
-    const { handleDragStart, handleDrop, kanbanCards, updateHeight, deleteCard, saveCard, modifyCard } = useKanban(new KanbanService());
+    const kanbanService = new KanbanService();
+
+    const { handleDragStart, handleDrop, kanbanCards, updateHeight, deleteCard, saveCard, modifyCard, loadData } = useKanban(kanbanService);
     const modalService = useModalService();
     const mediator = useMemo(() => new Mediator(), []);
 
@@ -67,9 +69,16 @@ export default function Kanban({ calculateHeight }) {
             const errorModal = showErrorModal(errorMessage, modalService);
             modalService.openModal(errorModal);
         });
+
+        const updateCardsUnsubscribe = mediator.subscribe(MediatorEvents.KANBAN_CARD_UPDATE, async () => {
+            await loadData();
+        });
         return () => {
             if(unsubscribe instanceof Object) {
                 unsubscribe.unsubscribe();
+            }
+            if(updateCardsUnsubscribe instanceof Object) {
+                updateCardsUnsubscribe.unsubscribe();
             }
         }
     }, [mediator, modalService])
