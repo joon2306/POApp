@@ -23,6 +23,10 @@ export default function Dashboard({ dashboardContent, activeDashboardBtn }: { da
     }
 
     const handleClick = (title: string) => {
+        if(title === "Productivity") {
+            console.log("productivity clicked");
+            return;
+        }
         setActiveDashboard(title);
     }
 

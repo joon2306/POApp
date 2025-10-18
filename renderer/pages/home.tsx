@@ -21,13 +21,9 @@ export default function HomePage() {
       title: "email generator",
       content: EmailGeneratorMenu
     },
-    Jira: {
-      title: "jira generator",
-      content: JiraGeneratorMenu
-    },
-    English: {
-      title: "English",
-      content: EnglishMenu
+    Productivity: {
+      title: "Productivity",
+      content: null
     }
   }
 

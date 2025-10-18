@@ -4,6 +4,7 @@ import { app } from "electron";
 
 
 const TABLE_KANBAN_ITEMS = "kanban_items";
+const TABLE_PRODUCTIVITY_ITEMS = "productivity_items"
 export default function getDatabase() {
     let db: Database = null;
 
@@ -17,8 +18,11 @@ export default function getDatabase() {
     }
 
     const createTables = () => {
-        const createTableStmt = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_KANBAN_ITEMS} (id INTEGER PRIMARY KEY, title TEXT, description TEXT, priority INTEGER, status INTEGER, time INTEGER)`)
-        createTableStmt.run();
+        const createKanbanTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_KANBAN_ITEMS} (id INTEGER PRIMARY KEY, title TEXT, description TEXT, priority INTEGER, status INTEGER, time INTEGER, start INTEGER, duration INTEGER)`);
+        createKanbanTbl.run();
+
+        const createProductivityTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_PRODUCTIVITY_ITEMS} (id INTEGER PRIMARY KEY, title text, priority INTEGER, status INTEGER, time INTEGER, deleted INTEGER, duration INTEGER)`);
+        createProductivityTbl.run();
     }
 
     if (!db) {
