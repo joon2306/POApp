@@ -65,10 +65,11 @@ export default class KanbanDbService implements IKanbanDbService {
             if (kanbanCard.error) {
                 return { error: true, data: "Kanban card not found. Cannot modify" };
             }
+            kanbanItem = this.#kanbanTimeManager.handleChangeOfState(kanbanCard.data, kanbanItem);
             const stmt = this.db.prepare(`UPDATE ${TABLE_KANBAN_ITEMS} SET title = ?, description = ?, priority = ?, status = ?, time = ?, start = ?, duration = ? WHERE id = ?`);
             stmt.run(kanbanItem.title, kanbanItem.description, kanbanItem.priority, kanbanItem.status ?? kanbanCard.data.status, kanbanItem.time,
                 kanbanItem.start ?? kanbanCard.data.start, kanbanItem.duration ?? kanbanCard.data.duration, kanbanCard.data.id);
-            this.#kanbanTimeManager.handleChangeOfState(kanbanCard.data, kanbanItem);
+            
             return { error: false, data: "Kanban card modified successfully" };
         } catch (err) {
             console.error("Error modifying kanban card: ", err);

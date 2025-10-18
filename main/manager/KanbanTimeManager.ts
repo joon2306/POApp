@@ -2,9 +2,10 @@ import KanbanResponse, { KanbanDbItem } from "../model/KanbanItem";
 import IKanbanDbService from "../service/IKanbanDbService";
 
 export interface IKanbanTimeManager {
-    handleChangeOfState: (prevItem: KanbanDbItem, currentItem: KanbanDbItem) => void;
+    handleChangeOfState: (prevItem: KanbanDbItem, currentItem: KanbanDbItem) => KanbanDbItem;
 }
 
+const IN_PROGRESS = 2;
 export default class KanbanTimeManager implements IKanbanTimeManager {
 
     #startOfDay = null;
@@ -29,7 +30,7 @@ export default class KanbanTimeManager implements IKanbanTimeManager {
             return;
         }
 
-        const expiredInProgressItems = data.filter(item => item.status === 2 && item.start && item.start < this.#startOfDay);
+        const expiredInProgressItems = data.filter(item => item.status === IN_PROGRESS && item.start && item.start < this.#startOfDay);
 
         if (expiredInProgressItems.length === 0) {
             console.log("no expired in progress items");
@@ -57,17 +58,16 @@ export default class KanbanTimeManager implements IKanbanTimeManager {
 
         if (originalState !== newState) {
 
-            if (originalState === 2) {
+            if (originalState === IN_PROGRESS) {
                 const originalDuration = currentItem.duration ?? 0;
                 const newDuration = this.#getHoursDifference(prevItem.start, Date.now()) + originalDuration;
                 currentItem.duration = newDuration;
-                this.#kanbanDbService.modifyKanbanCard(currentItem);
-            } else if (newState === 2) {
+            } else if (newState === IN_PROGRESS) {
                 currentItem.start = Date.now();
-                this.#kanbanDbService.modifyKanbanCard(currentItem);
             }
 
         }
+        return currentItem;
 
     }
 
