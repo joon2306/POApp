@@ -22,9 +22,9 @@ export default function Dashboard({ dashboardContent, activeDashboardBtn }: { da
         return 0;
     }
 
-    const handleClick = (title: string) => {
-        if(title === "Productivity") {
-            console.log("productivity clicked");
+    const handleClick = (title: string, content: React.ComponentType) => {
+        if (!content) {
+            console.log("button has no content");
             return;
         }
         setActiveDashboard(title);
@@ -32,8 +32,8 @@ export default function Dashboard({ dashboardContent, activeDashboardBtn }: { da
 
     function renderDashboardContent() {
         const getActiveContent = () => {
-            const content =  Object.entries(dashboardContent).find(([k, v]) => v.title === activeDashboard);
-            return content? content[1].content : dashboardContent.kanban.content;
+            const content = Object.entries(dashboardContent).find(([k, v]) => v.title === activeDashboard);
+            return content ? content[1].content : dashboardContent.kanban.content;
         };
 
         const ActiveContent = getActiveContent();
@@ -53,7 +53,7 @@ export default function Dashboard({ dashboardContent, activeDashboardBtn }: { da
                             icon={MdOutlineViewKanban}
                             title={value.title}
                             active={value.title === activeDashboard}
-                            handleClick={() => handleClick(value.title)}
+                            handleClick={() => handleClick(value.title, value.content)}
                         />
                     </li>
                 ))}

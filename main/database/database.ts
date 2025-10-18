@@ -5,8 +5,9 @@ import { app } from "electron";
 
 const TABLE_KANBAN_ITEMS = "kanban_items";
 const TABLE_PRODUCTIVITY_ITEMS = "productivity_items"
+
+let db: Database = null;
 export default function getDatabase() {
-    let db: Database = null;
 
     const dbPath = path.join(app.getPath("userData"), "appdata.db");
 
@@ -40,4 +41,4 @@ export default function getDatabase() {
 
 
 
-export { TABLE_KANBAN_ITEMS };
+export { TABLE_KANBAN_ITEMS, TABLE_PRODUCTIVITY_ITEMS };

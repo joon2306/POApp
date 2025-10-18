@@ -5,6 +5,8 @@ interface KanbanDbItem {
     priority: number;
     status: number;
     time: number;
+    start: number;
+    duration: number;
 }
 
 export default interface KanbanResponse<T> {
