@@ -9,7 +9,7 @@ const TABLE_PRODUCTIVITY_ITEMS = "productivity_items"
 let db: Database = null;
 export default function getDatabase() {
 
-    const dbPath = path.join(app.getPath("userData"), "appdata.db");
+    const dbPath = path.join(app.getPath("userData"), "appdata1.db");
 
 
     const initDatabase = () => {

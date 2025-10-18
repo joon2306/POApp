@@ -3,15 +3,17 @@ import getDatabase, { TABLE_KANBAN_ITEMS } from "../../database/database";
 import KanbanResponse, { KanbanDbItem } from "../../model/KanbanItem";
 import IKanbanDbService from "../IKanbanDbService";
 import Database from "better-sqlite3";
+import KanbanTimeManager, { IKanbanTimeManager } from "../../manager/KanbanTimeManager";
 
 let instance: KanbanDbService = null;
 export default class KanbanDbService implements IKanbanDbService {
 
     private db: Database = null;
+    #kanbanTimeManager: IKanbanTimeManager = null;
     constructor() {
         if (!instance) {
             this.db = getDatabase();
-            this.#resetInProgressTimestamps();
+            this.#kanbanTimeManager = new KanbanTimeManager(this);
             instance = this;
         }
         return instance;
@@ -66,14 +68,13 @@ export default class KanbanDbService implements IKanbanDbService {
             const stmt = this.db.prepare(`UPDATE ${TABLE_KANBAN_ITEMS} SET title = ?, description = ?, priority = ?, status = ?, time = ?, start = ?, duration = ? WHERE id = ?`);
             stmt.run(kanbanItem.title, kanbanItem.description, kanbanItem.priority, kanbanItem.status ?? kanbanCard.data.status, kanbanItem.time,
                 kanbanItem.start ?? kanbanCard.data.start, kanbanItem.duration ?? kanbanCard.data.duration, kanbanCard.data.id);
+            this.#kanbanTimeManager.handleChangeOfState(kanbanCard.data, kanbanItem);
             return { error: false, data: "Kanban card modified successfully" };
         } catch (err) {
             console.error("Error modifying kanban card: ", err);
             return { error: true, data: "Error modifying kanban card" };
         }
     }
-
-    modify
 
     getKanbanCardByTitleAndDescription(title: string, description: string): KanbanResponse<KanbanDbItem> {
         try {
@@ -107,36 +108,5 @@ export default class KanbanDbService implements IKanbanDbService {
             return { error: true, data: null };
         }
 
-    }
-
-    #resetInProgressTimestamps() {
-
-        const getStartOfDay = () => {
-            const timeAt6 = new Date();
-            timeAt6.setHours(6, 0, 0, 0);
-            return timeAt6.getTime();
-        }
-
-        const startOfDay = getStartOfDay();
-
-
-        const { error, data } = this.getAllKanbanCards();
-        if (error) {
-            console.error("failure to fetch in progress cards for resetting...");
-            return;
-        }
-
-        const expiredInProgressItems = data.filter(item => item.status === 2 && item.start && item.start < startOfDay);
-
-        if (expiredInProgressItems.length === 0) {
-            console.log("no expired in progress items");
-            return;
-        }
-        for (const expiredKanbanItem of expiredInProgressItems) {
-            console.log(`resetting timestamp for ${expiredKanbanItem.title}`);
-            expiredKanbanItem.duration = 0;
-            expiredKanbanItem.start = Date.now();
-            this.modifyKanbanCard(expiredKanbanItem);
-        }
     }
 }
