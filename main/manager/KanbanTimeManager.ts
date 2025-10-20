@@ -1,8 +1,11 @@
-import KanbanResponse, { KanbanDbItem } from "../model/KanbanItem";
+import GenericDbResponse from "../model/DbItem";
+import  { KanbanDbItem } from "../model/KanbanItem";
 import IKanbanDbService from "../service/IKanbanDbService";
 
 export interface IKanbanTimeManager {
     handleChangeOfState: (prevItem: KanbanDbItem, currentItem: KanbanDbItem) => KanbanDbItem;
+
+    handleDelete: (kanbanItem: KanbanDbItem) => void;
 }
 
 const IN_PROGRESS = 2;
@@ -20,11 +23,11 @@ export default class KanbanTimeManager implements IKanbanTimeManager {
 
         this.#startOfDay = getStartOfDay();
         this.#kanbanDbService = kanbanDbService;
-        this.#resetInProgressStartTime();
+        this.#resetStartTime();
     }
 
-    #resetInProgressStartTime() {
-        const { error, data }: KanbanResponse<KanbanDbItem[]> = this.#kanbanDbService.getAllKanbanCards();
+    #resetStartTime() {
+        const { error, data }: GenericDbResponse<KanbanDbItem[]> = this.#kanbanDbService.getAll();
         if (error) {
             console.error("failure to fetch in progress cards for resetting...");
             return;
@@ -40,7 +43,7 @@ export default class KanbanTimeManager implements IKanbanTimeManager {
             console.log(`resetting timestamp for ${expiredKanbanItem.title}`);
             expiredKanbanItem.duration = 0;
             expiredKanbanItem.start = Date.now();
-            this.#kanbanDbService.modifyKanbanCard(expiredKanbanItem);
+            this.#kanbanDbService.modify(expiredKanbanItem);
         }
 
     }
@@ -52,6 +55,11 @@ export default class KanbanTimeManager implements IKanbanTimeManager {
         return milliseconds / (1000 * 60 * 60);
     };
 
+    #getUpdatedDuration = (kanbanItem: KanbanDbItem): number => {
+        const originalDuration = kanbanItem.duration ?? 0;
+        return this.#getHoursDifference(kanbanItem.start, Date.now()) + originalDuration;
+    }
+
     handleChangeOfState = (prevItem: KanbanDbItem, currentItem: KanbanDbItem) => {
         const originalState = prevItem.status;
         const newState = currentItem.status;
@@ -59,15 +67,29 @@ export default class KanbanTimeManager implements IKanbanTimeManager {
         if (originalState !== newState) {
 
             if (originalState === IN_PROGRESS) {
-                const originalDuration = currentItem.duration ?? 0;
-                const newDuration = this.#getHoursDifference(prevItem.start, Date.now()) + originalDuration;
-                currentItem.duration = newDuration;
+                currentItem.duration = this.#getUpdatedDuration(prevItem);
             } else if (newState === IN_PROGRESS) {
                 currentItem.start = Date.now();
             }
 
         }
         return currentItem;
+
+    }
+
+    handleDelete = (kanbanItem: KanbanDbItem) => {
+        const startTime = kanbanItem.start;
+        if (!startTime) {
+            console.log(`kanban ${kanbanItem.title} did not start. It won't be considered for productivity calcultation`);
+            return;
+        }
+
+        if (startTime < this.#startOfDay) {
+            console.log(`invalid item to be considered for productivity calculation`);
+            return;
+        }
+
+        const duration = this.#getUpdatedDuration(kanbanItem);
 
     }
 

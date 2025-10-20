@@ -1,9 +1,9 @@
-import { start } from "repl";
 import getDatabase, { TABLE_KANBAN_ITEMS } from "../../database/database";
-import KanbanResponse, { KanbanDbItem } from "../../model/KanbanItem";
+import { KanbanDbItem } from "../../model/KanbanItem";
 import IKanbanDbService from "../IKanbanDbService";
 import Database from "better-sqlite3";
 import KanbanTimeManager, { IKanbanTimeManager } from "../../manager/KanbanTimeManager";
+import GenericDbResponse from "../../model/DbItem";
 
 let instance: KanbanDbService = null;
 export default class KanbanDbService implements IKanbanDbService {
@@ -19,7 +19,8 @@ export default class KanbanDbService implements IKanbanDbService {
         return instance;
     }
 
-    getAllKanbanCards(): KanbanResponse<KanbanDbItem[]> {
+
+    getAll(): GenericDbResponse<KanbanDbItem[]> {
         try {
             const stmt = this.db.prepare(`SELECT * FROM ${TABLE_KANBAN_ITEMS}`);
             const rows = stmt.all() as KanbanDbItem[];
@@ -28,9 +29,9 @@ export default class KanbanDbService implements IKanbanDbService {
             console.error("Error fetching kanban cards: ", err);
             return { error: true, data: [] };
         }
-
     }
-    saveKanbanCard(kanbanItem: KanbanDbItem): KanbanResponse<string> {
+
+    create(kanbanItem: KanbanDbItem): GenericDbResponse<string> {
         try {
             const { error } = this.getKanbanCardById(kanbanItem.id);
             if (!error) {
@@ -45,7 +46,7 @@ export default class KanbanDbService implements IKanbanDbService {
             return { error: true, data: "Error saving kanban card" };
         }
     }
-    deleteKanbanCard(id: number): KanbanResponse<string> {
+    delete(id: number): GenericDbResponse<string> {
         try {
             const kanbanCard = this.getKanbanCardById(id);
             if (kanbanCard.error) {
@@ -59,7 +60,7 @@ export default class KanbanDbService implements IKanbanDbService {
             return { error: true, data: "Error deleting kanban card" };
         }
     }
-    modifyKanbanCard(kanbanItem: KanbanDbItem): KanbanResponse<string> {
+    modify(kanbanItem: KanbanDbItem): GenericDbResponse<string> {
         try {
             const kanbanCard = this.getKanbanCardById(kanbanItem.id);
             if (kanbanCard.error) {
@@ -69,7 +70,7 @@ export default class KanbanDbService implements IKanbanDbService {
             const stmt = this.db.prepare(`UPDATE ${TABLE_KANBAN_ITEMS} SET title = ?, description = ?, priority = ?, status = ?, time = ?, start = ?, duration = ? WHERE id = ?`);
             stmt.run(kanbanItem.title, kanbanItem.description, kanbanItem.priority, kanbanItem.status ?? kanbanCard.data.status, kanbanItem.time,
                 kanbanItem.start ?? kanbanCard.data.start, kanbanItem.duration ?? kanbanCard.data.duration, kanbanCard.data.id);
-            
+
             return { error: false, data: "Kanban card modified successfully" };
         } catch (err) {
             console.error("Error modifying kanban card: ", err);
@@ -77,7 +78,7 @@ export default class KanbanDbService implements IKanbanDbService {
         }
     }
 
-    getKanbanCardByTitleAndDescription(title: string, description: string): KanbanResponse<KanbanDbItem> {
+    getKanbanCardByTitleAndDescription(title: string, description: string): GenericDbResponse<KanbanDbItem> {
         try {
             const stmt = this.db.prepare(`SELECT * FROM ${TABLE_KANBAN_ITEMS} WHERE title = ? AND description = ?`);
             const row = stmt.get(title, description) as KanbanDbItem;
@@ -94,7 +95,7 @@ export default class KanbanDbService implements IKanbanDbService {
 
     }
 
-    getKanbanCardById(id: number): KanbanResponse<KanbanDbItem> {
+    getKanbanCardById(id: number): GenericDbResponse<KanbanDbItem> {
         try {
             const stmt = this.db.prepare(`SELECT * FROM ${TABLE_KANBAN_ITEMS} WHERE id = ?`);
             const row = stmt.get(id) as KanbanDbItem;

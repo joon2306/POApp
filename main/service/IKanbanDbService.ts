@@ -1,13 +1,13 @@
-import KanbanResponse from "../model/KanbanItem";
-import KanbanCards, { KanbanDbItem } from "../model/KanbanItem";
 
-export default interface IKanbanDbService {
+import GenericDbResponse from "../model/DbItem";
+import  { KanbanDbItem } from "../model/KanbanItem";
+import IDbService from "./IDbService";
 
-    getAllKanbanCards(): KanbanResponse<KanbanDbItem[]>;
+export default interface IKanbanDbService extends IDbService<KanbanDbItem,
+    GenericDbResponse<string>, GenericDbResponse<KanbanDbItem[]>, number, GenericDbResponse<string>, KanbanDbItem, GenericDbResponse<string>> {
 
-    saveKanbanCard(kanbanItem: KanbanDbItem): KanbanResponse<string>;
+        getKanbanCardByTitleAndDescription(title: string, description: string): GenericDbResponse<KanbanDbItem>;
 
-    deleteKanbanCard(id: number): KanbanResponse<string>;
+        getKanbanCardById(id: number): GenericDbResponse<KanbanDbItem>;
 
-    modifyKanbanCard(kanbanItem: KanbanDbItem): KanbanResponse<string>;
 }
