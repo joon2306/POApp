@@ -48,16 +48,14 @@ export default class KanbanTimeManager implements IKanbanTimeManager {
 
     }
 
-    #getHoursDifference = (startTimestamp: number, endTimestamp: number) => {
-        console.log("startTimestamp: ", startTimestamp);
-        console.log("endTimestamp: ", endTimestamp);
-        const milliseconds = endTimestamp - startTimestamp;
-        return milliseconds / (1000 * 60 * 60);
+    #getDifferenceInMinutes = (startTimestamp: number, endTimestamp: number) => {
+        const { toMinutes } = getTimeUtils();
+        return toMinutes(endTimestamp - startTimestamp)
     };
 
     #getUpdatedDuration = (kanbanItem: KanbanDbItem): number => {
         const originalDuration = kanbanItem.duration ?? 0;
-        return this.#getHoursDifference(kanbanItem.start, Date.now()) + originalDuration;
+        return this.#getDifferenceInMinutes(kanbanItem.start, Date.now()) + originalDuration;
     }
 
     handleChangeOfState = (prevItem: KanbanDbItem, currentItem: KanbanDbItem) => {

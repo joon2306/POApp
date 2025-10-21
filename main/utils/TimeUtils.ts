@@ -1,3 +1,4 @@
+import { timeStamp } from "console";
 
 const getStartOfDay = () => {
     const timeAt6 = new Date();
@@ -14,6 +15,7 @@ const getLunchTime = () => {
 export interface TimeUtils {
     startOfDay: number;
     lunchTime: number;
+    toMinutes: (timestamp: number) => number
 }
 
 const getTimeUtils: () => TimeUtils = () => {
@@ -21,7 +23,8 @@ const getTimeUtils: () => TimeUtils = () => {
     const lunchTime = getLunchTime();
     return Object.freeze({
         startOfDay,
-        lunchTime
+        lunchTime,
+        toMinutes: (timeStamp) => timeStamp / 60 * 1000
     });
 }
 

@@ -27,13 +27,13 @@ export default class ProductivityService implements IProductivityService {
 
     #getTimeSpent(): Pick<Productivity, "timeRemaining" | "timeConsumed"> {
         const now = Date.now();
-        const { startOfDay, lunchTime } = getTimeUtils();
+        const { startOfDay, lunchTime, toMinutes} = getTimeUtils();
         const isMorning = now < lunchTime;
-        let timeConsumed = now - startOfDay;
-        if (isMorning) {
-            timeConsumed--;
+        let timeConsumed = toMinutes(now - startOfDay);
+        if (!isMorning) {
+            timeConsumed = timeConsumed - 60;
         }
-        return { timeConsumed, timeRemaining: 8 - timeConsumed };
+        return { timeConsumed, timeRemaining: (7 * 60) - timeConsumed };
     }
 
     #calculateProductivity(completedTasks: CompletedTask[], timeConsumed: number): Pick<Productivity, "taskProductivity" | "overallProductivity"> {
