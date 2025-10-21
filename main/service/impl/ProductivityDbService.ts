@@ -1,7 +1,10 @@
 import getDatabase, { TABLE_PRODUCTIVITY_ITEMS } from "../../database/database";
-import GenericDbResponse from "../../model/DbItem";
+import GenericResponse from "../../model/GenericResponse";
 import ProductivityDbItem from "../../model/ProductivityDbItem";
+import getTimeUtils from "../../utils/TimeUtils";
 import IProductivityDbService from "../IProductivityDbService";
+
+let instance: ProductivityDbService = null;
 
 export default class ProductivityDbService implements IProductivityDbService {
 
@@ -15,14 +18,19 @@ export default class ProductivityDbService implements IProductivityDbService {
     #db = null;
 
     constructor() {
-        this.#db = getDatabase();
+        if (instance === null) {
+            this.#db = getDatabase();
+            this.#clearExpiredItems();
+            instance = this;
+        }
+        return instance;
     }
-    create(item: ProductivityDbItem): GenericDbResponse<string> {
+    create(item: ProductivityDbItem): GenericResponse<string> {
         const { error } = this.findById(item.id);
         if (!error) {
             try {
-                const stmt = this.#db.prepare(`INSERT INTO ${TABLE_PRODUCTIVITY_ITEMS} (id, title, priority, status, time, deleted, duration) VALUES (?, ?, ?, ?, ?, ?, ?)`);
-                stmt.run(item.id, item.title, item.priority, item.status, item.time, item.deleted, item.duration);
+                const stmt = this.#db.prepare(`INSERT INTO ${TABLE_PRODUCTIVITY_ITEMS} (title, priority, status, time, deleted, duration, start) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
+                stmt.run(item.title, item.priority, item.status, item.time, item.deleted, item.duration, item.start);
                 return { error: false, data: ProductivityDbService.CREATE_SUCCESS_MSG };
 
             } catch (err) {
@@ -33,7 +41,7 @@ export default class ProductivityDbService implements IProductivityDbService {
         return { error: true, data: ProductivityDbService.CREATE_ERROR_MSG }
 
     }
-    getAll(): GenericDbResponse<ProductivityDbItem[]> {
+    getAll(): GenericResponse<ProductivityDbItem[]> {
         try {
             const stmt = this.#db.prepare(`SELECT * FROM ${TABLE_PRODUCTIVITY_ITEMS}`);
             const items = stmt.all() as ProductivityDbItem[];
@@ -44,7 +52,7 @@ export default class ProductivityDbService implements IProductivityDbService {
 
         return { error: true, data: [] };
     }
-    delete(id: number): GenericDbResponse<string> {
+    delete(id: number): GenericResponse<string> {
         try {
             const stmt = this.#db.prepare(`DELETE * from ${TABLE_PRODUCTIVITY_ITEMS} where id = ?`);
             stmt.run(id);
@@ -55,10 +63,10 @@ export default class ProductivityDbService implements IProductivityDbService {
         }
         return { error: true, data: ProductivityDbService.DELETE_ERROR_MSG + id };
     }
-    modify(item: ProductivityDbItem): GenericDbResponse<string> {
+    modify(item: ProductivityDbItem): GenericResponse<string> {
         try {
-            const stmt = this.#db.prepare(`UPDATE ${TABLE_PRODUCTIVITY_ITEMS} SET title = ?, priority = ?, status = ?, time = ?, deleted = ?, duration = ? where id = ?`);
-            stmt.run(item.title, item.priority, item.status, item.time, item.deleted, item.duration, item.id);
+            const stmt = this.#db.prepare(`UPDATE ${TABLE_PRODUCTIVITY_ITEMS} SET title = ?, priority = ?, status = ?, time = ?, deleted = ?, duration = ?, start =? where id = ?`);
+            stmt.run(item.title, item.priority, item.status, item.time, item.deleted, item.duration, item.start, item.id);
             return { error: false, data: ProductivityDbService.MODIFY_SUCCESS_MSG };
         } catch (err) {
             console.error("Failure to modify item in productivity ", err);
@@ -66,7 +74,7 @@ export default class ProductivityDbService implements IProductivityDbService {
         return { error: true, data: ProductivityDbService.MODIFY_ERROR_MSG };
     }
 
-    findById(id: number): GenericDbResponse<ProductivityDbItem> {
+    findById(id: number): GenericResponse<ProductivityDbItem> {
         try {
             const stmt = this.#db.prepare(`SELECT * FROM ${TABLE_PRODUCTIVITY_ITEMS} WHERE id = ?`);
             const result = stmt.get(id) as ProductivityDbItem;
@@ -75,9 +83,26 @@ export default class ProductivityDbService implements IProductivityDbService {
             }
         } catch (err) {
             console.error("could not find this item in productivity table", err);
-
         }
         return { error: true, data: null };
+    }
+
+    #clearExpiredItems() {
+        const { error, data } = this.getAll();
+        if (error) {
+            console.log("could not retrieve items. skipping clearing expired items");
+            return;
+        }
+
+        const items = data as ProductivityDbItem[];
+        const startOfDay = getTimeUtils().startOfDay;
+        const expiredItems = items.filter(item => item.deleted && item.deleted < startOfDay);
+
+        if (expiredItems.length > 0) {
+            for (const item of expiredItems) {
+                this.delete(item.id);
+            }
+        }
 
     }
 

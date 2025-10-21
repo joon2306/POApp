@@ -1,6 +1,10 @@
-import GenericDbResponse from "../model/DbItem";
-import  { KanbanDbItem } from "../model/KanbanItem";
+import GenericResponse from "../model/GenericResponse";
+import { KanbanDbItem } from "../model/KanbanItem";
+import ProductivityDbItem from "../model/ProductivityDbItem";
 import IKanbanDbService from "../service/IKanbanDbService";
+import ProductivityDbService from "../service/impl/ProductivityDbService";
+import IProductivityDbService from "../service/IProductivityDbService";
+import getTimeUtils from "../utils/TimeUtils";
 
 export interface IKanbanTimeManager {
     handleChangeOfState: (prevItem: KanbanDbItem, currentItem: KanbanDbItem) => KanbanDbItem;
@@ -13,21 +17,17 @@ export default class KanbanTimeManager implements IKanbanTimeManager {
 
     #startOfDay = null;
     #kanbanDbService: IKanbanDbService = null;
+    #productivityDbService: IProductivityDbService = null;
 
     constructor(kanbanDbService: IKanbanDbService) {
-        const getStartOfDay = () => {
-            const timeAt6 = new Date();
-            timeAt6.setHours(6, 0, 0, 0);
-            return timeAt6.getTime();
-        }
-
-        this.#startOfDay = getStartOfDay();
+        this.#startOfDay = getTimeUtils().startOfDay;
         this.#kanbanDbService = kanbanDbService;
+        this.#productivityDbService = new ProductivityDbService();
         this.#resetStartTime();
     }
 
     #resetStartTime() {
-        const { error, data }: GenericDbResponse<KanbanDbItem[]> = this.#kanbanDbService.getAll();
+        const { error, data }: GenericResponse<KanbanDbItem[]> = this.#kanbanDbService.getAll();
         if (error) {
             console.error("failure to fetch in progress cards for resetting...");
             return;
@@ -90,7 +90,16 @@ export default class KanbanTimeManager implements IKanbanTimeManager {
         }
 
         const duration = this.#getUpdatedDuration(kanbanItem);
-
+        const productivityItem: ProductivityDbItem = {
+            title: kanbanItem.title,
+            time: kanbanItem.time,
+            priority: kanbanItem.priority,
+            duration: duration,
+            deleted: Date.now(),
+            status: kanbanItem.status,
+            start: kanbanItem.start
+        };
+        this.#productivityDbService.create(productivityItem);
     }
 
 }

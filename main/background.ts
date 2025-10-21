@@ -11,6 +11,11 @@ import translate from "./translate";
 import { generateJira } from './jira'
 import improve from './english'
 import getDatabase from './database/database'
+import ProductivityHandler from './Handlers/ProductivityHandler'
+import ProductivityService from './service/impl/ProductivityService'
+import ProductivityDbService from './service/impl/ProductivityDbService'
+import KanbanDbService from './service/impl/KanbanDbService'
+import CommsService from './service/impl/CommsService'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -58,3 +63,4 @@ exportFeature();
 translate();
 generateJira();
 improve();
+new ProductivityHandler(new ProductivityService(new ProductivityDbService(), new KanbanDbService()), new CommsService());
