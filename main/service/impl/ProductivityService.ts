@@ -10,16 +10,15 @@ let instance: ProductivityService = null;
 export default class ProductivityService implements IProductivityService {
 
     #productivityDbService: IProductivityDbService = null;
-    #kanbanDbService: IKanbanDbService = null;
 
-    constructor(productivityDbService: IProductivityDbService, kanbanDbService: IKanbanDbService) {
+    constructor(productivityDbService: IProductivityDbService) {
         if (instance === null) {
             this.#productivityDbService = productivityDbService;
-            this.#kanbanDbService = kanbanDbService;
             instance = this;
         }
         return instance;
     }
+
 
     #getTaskProductivity(dbItem: KanbanDbItem | ProductivityDbItem) {
         return dbItem.time / dbItem.duration;
@@ -27,7 +26,7 @@ export default class ProductivityService implements IProductivityService {
 
     #getTimeSpent(): Pick<Productivity, "timeRemaining" | "timeConsumed"> {
         const now = Date.now();
-        const { startOfDay, lunchTime, toMinutes} = getTimeUtils();
+        const { startOfDay, lunchTime, toMinutes } = getTimeUtils();
         const isMorning = now < lunchTime;
         let timeConsumed = toMinutes(now - startOfDay);
         if (!isMorning) {
@@ -52,15 +51,13 @@ export default class ProductivityService implements IProductivityService {
 
     }
 
-    getProductivity(): Productivity {
-        const inProgressStatus = 2;
+    get(inProgressCards: KanbanDbItem[]): Productivity {
         const { error: productivityErr, data: productivityItems } = this.#productivityDbService.getAll();
-        const { error: kanbanErr, data: kanbanItems } = this.#kanbanDbService.getAll();
 
-        const inProgressTasks: Task[] = !kanbanErr ? kanbanItems.filter(item => item.status === inProgressStatus)
+        const inProgressTasks: Task[] = inProgressCards
             .map(item => {
                 return { duration: item.duration, productivity: this.#getTaskProductivity(item), start: item.start, title: item.title };
-            }) : [];
+            });
 
         const completedTasks: CompletedTask[] = !productivityErr ? productivityItems.map(item => {
             return {
@@ -79,6 +76,37 @@ export default class ProductivityService implements IProductivityService {
             taskProductivity,
             timeConsumed,
             timeRemaining
+        }
+    }
+
+    add(deletedCard: KanbanDbItem): void {
+        const productivityItem: ProductivityDbItem = {
+            title: deletedCard.title,
+            time: deletedCard.time,
+            priority: deletedCard.priority,
+            duration: deletedCard.duration,
+            deleted: Date.now(),
+            status: deletedCard.status,
+            start: deletedCard.start
+        };
+        this.#productivityDbService.create(productivityItem);
+    }
+
+    handleExpired(): void {
+        const { error, data } = this.#productivityDbService.getAll();
+        if (error) {
+            console.log("could not retrieve items. skipping clearing expired items");
+            return;
+        }
+
+        const items = data as ProductivityDbItem[];
+        const startOfDay = getTimeUtils().startOfDay;
+        const expiredItems = items.filter(item => item.deleted && item.deleted < startOfDay);
+
+        if (expiredItems.length > 0) {
+            for (const item of expiredItems) {
+                this.#productivityDbService.delete(item.id);
+            }
         }
     }
 

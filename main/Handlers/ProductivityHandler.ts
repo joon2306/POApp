@@ -1,26 +1,30 @@
 import CommunicationEvents from "../../renderer/types/CommunicationEvent";
 import ICommunicationService from "../service/ICommunicationService";
+import IKanbanDbService from "../service/IKanbanDbService";
 import IProductivityService from "../service/IProductivityService";
+import Handler from "./Handler";
 
 let instance: ProductivityHandler = null;
-export default class ProductivityHandler {
+export default class ProductivityHandler implements Handler {
     #productivityService: IProductivityService;
     #commsService: ICommunicationService;
+    #kanbanDbService: IKanbanDbService;
 
-    constructor(productivityService: IProductivityService, commsService: ICommunicationService) {
+    constructor(productivityService: IProductivityService, commsService: ICommunicationService, kanbanDbService: IKanbanDbService) {
 
         if (instance === null) {
             this.#productivityService = productivityService;
             this.#commsService = commsService;
-            this.#getProductivity();
+            this.#kanbanDbService = kanbanDbService;
             instance = this;
         }
 
         return instance;
     }
 
-    #getProductivity(): void {
-        const productivity = this.#productivityService.getProductivity();
+    execute(): void {
+        this.#productivityService.handleExpired();
+        const productivity = this.#productivityService.get(this.#kanbanDbService.getInProgressCards());
         this.#commsService.getRequest(CommunicationEvents.getProductivity, () => productivity);
     }
 

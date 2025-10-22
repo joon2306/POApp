@@ -9,43 +9,42 @@ import getTimeUtils from "../utils/TimeUtils";
 export interface IKanbanTimeManager {
     handleChangeOfState: (prevItem: KanbanDbItem, currentItem: KanbanDbItem) => KanbanDbItem;
 
-    handleDelete: (kanbanItem: KanbanDbItem) => void;
+    handleDelete: (kanbanItem: KanbanDbItem) => KanbanDbItem;
+
+    getExpiredKanbans: (kanbanCards: KanbanDbItem[]) => KanbanDbItem[];
+
+    updateInProgress: (kanbanCards: KanbanDbItem[]) => KanbanDbItem[];
 }
 
 const IN_PROGRESS = 2;
+let instance: KanbanTimeManager = null;
 export default class KanbanTimeManager implements IKanbanTimeManager {
 
     #startOfDay = null;
-    #kanbanDbService: IKanbanDbService = null;
-    #productivityDbService: IProductivityDbService = null;
 
-    constructor(kanbanDbService: IKanbanDbService) {
-        this.#startOfDay = getTimeUtils().startOfDay;
-        this.#kanbanDbService = kanbanDbService;
-        this.#productivityDbService = new ProductivityDbService();
-        this.#resetStartTime();
+    constructor() {
+        if (instance === null) {
+            this.#startOfDay = getTimeUtils().startOfDay;
+            instance = this;
+        }
+        return instance;
     }
 
-    #resetStartTime() {
-        const { error, data }: GenericResponse<KanbanDbItem[]> = this.#kanbanDbService.getAll();
-        if (error) {
-            console.error("failure to fetch in progress cards for resetting...");
-            return;
-        }
-
-        const expiredInProgressItems = data.filter(item => item.status === IN_PROGRESS && item.start && item.start < this.#startOfDay);
-
-        if (expiredInProgressItems.length === 0) {
-            console.log("no expired in progress items");
-            return;
-        }
-        for (const expiredKanbanItem of expiredInProgressItems) {
-            console.log(`resetting timestamp for ${expiredKanbanItem.title}`);
+    getExpiredKanbans(kanbanCards: KanbanDbItem[]) {
+        return kanbanCards.filter(item => item.status === IN_PROGRESS && item.start && item.start < this.#startOfDay)
+        .map(expiredKanbanItem => {
             expiredKanbanItem.duration = 0;
             expiredKanbanItem.start = Date.now();
-            this.#kanbanDbService.modify(expiredKanbanItem);
-        }
+            return expiredKanbanItem;
+        })
+    }
 
+    updateInProgress(kanbanCards: KanbanDbItem[]) {
+        return kanbanCards.filter(item => item.status === IN_PROGRESS)
+        .map(inprogress => {
+            inprogress.duration = this.#getUpdatedDuration(inprogress);
+            return inprogress;
+        })
     }
 
     #getDifferenceInMinutes = (startTimestamp: number, endTimestamp: number) => {
@@ -88,16 +87,9 @@ export default class KanbanTimeManager implements IKanbanTimeManager {
         }
 
         const duration = this.#getUpdatedDuration(kanbanItem);
-        const productivityItem: ProductivityDbItem = {
-            title: kanbanItem.title,
-            time: kanbanItem.time,
-            priority: kanbanItem.priority,
-            duration: duration,
-            deleted: Date.now(),
-            status: kanbanItem.status,
-            start: kanbanItem.start
-        };
-        this.#productivityDbService.create(productivityItem);
+        kanbanItem.duration = duration;
+        return kanbanItem;
+        
     }
 
 }

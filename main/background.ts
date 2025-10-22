@@ -2,20 +2,14 @@ import path from 'path'
 import { app, ipcMain } from 'electron'
 import serve from 'electron-serve'
 import { createWindow } from './helpers'
-import { deleteCard, getKanbanCards, modifyCard, saveKanbanCard } from './kanbanCard'
 import { generateFeature } from './generate'
 import { refineFeature } from './refine'
 import { summaryFeature } from './summary'
 import { exportFeature } from './export'
-import translate from "./translate"; 
+import translate from "./translate";
 import { generateJira } from './jira'
 import improve from './english'
-import getDatabase from './database/database'
-import ProductivityHandler from './Handlers/ProductivityHandler'
-import ProductivityService from './service/impl/ProductivityService'
-import ProductivityDbService from './service/impl/ProductivityDbService'
-import KanbanDbService from './service/impl/KanbanDbService'
-import CommsService from './service/impl/CommsService'
+import HandlerProvider from './factory/HandlerProvider'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -25,7 +19,7 @@ if (isProd) {
   app.setPath('userData', `${app.getPath('userData')} (development)`)
 }
 
-;(async () => {
+; (async () => {
   await app.whenReady()
 
   const mainWindow = createWindow('main', {
@@ -52,10 +46,7 @@ app.on('window-all-closed', () => {
 ipcMain.on('message', async (event, arg) => {
   event.reply('message', `${arg} World!`)
 })
-getKanbanCards();
-saveKanbanCard();
-deleteCard();
-modifyCard();
+
 generateFeature();
 refineFeature();
 summaryFeature();
@@ -63,4 +54,7 @@ exportFeature();
 translate();
 generateJira();
 improve();
-new ProductivityHandler(new ProductivityService(new ProductivityDbService(), new KanbanDbService()), new CommsService());
+
+const { kanbanHandler, productivityHandler } = (new HandlerProvider()).provide();
+kanbanHandler.execute();
+productivityHandler.execute();

@@ -1,4 +1,4 @@
-import getDatabase, { TABLE_KANBAN_ITEMS } from "../../database/database";
+import { TABLE_KANBAN_ITEMS } from "../../database/database";
 import { KanbanDbItem } from "../../model/KanbanItem";
 import IKanbanDbService from "../IKanbanDbService";
 import Database from "better-sqlite3";
@@ -8,21 +8,35 @@ import GenericResponse from "../../model/GenericResponse";
 let instance: KanbanDbService = null;
 export default class KanbanDbService implements IKanbanDbService {
 
-    private db: Database = null;
+    #db: Database = null;
     #kanbanTimeManager: IKanbanTimeManager = null;
-    constructor() {
-        if (!instance) {
-            this.db = getDatabase();
-            this.#kanbanTimeManager = new KanbanTimeManager(this);
+    constructor(database: Database, kanbanTimeManager: IKanbanTimeManager) {
+        if (instance == null) {
+            this.#db = database;
+            this.#kanbanTimeManager = kanbanTimeManager;
             instance = this;
         }
         return instance;
+    }
+    resetInProgressCards(): void {
+        const { error, data: kanbanCards } = this.getAll();
+        if (!error) {
+            const expiredCards = this.#kanbanTimeManager.getExpiredKanbans(kanbanCards);
+            for (const expiredCard of expiredCards) {
+                this.modify(expiredCard);
+            }
+        }
+    }
+
+    getInProgressCards(): KanbanDbItem[] {
+        const { error, data: kanbanCards } = this.getAll();
+        return !error ? this.#kanbanTimeManager.updateInProgress(kanbanCards) : [];
     }
 
 
     getAll(): GenericResponse<KanbanDbItem[]> {
         try {
-            const stmt = this.db.prepare(`SELECT * FROM ${TABLE_KANBAN_ITEMS}`);
+            const stmt = this.#db.prepare(`SELECT * FROM ${TABLE_KANBAN_ITEMS}`);
             const rows = stmt.all() as KanbanDbItem[];
             return { error: false, data: rows }
         } catch (err) {
@@ -38,7 +52,7 @@ export default class KanbanDbService implements IKanbanDbService {
                 console.log("Kanban card with id already exists. Cannot save duplicate");
                 return { error: true, data: "Kanban card with id already exists. Cannot save duplicate" };
             }
-            const stmt = this.db.prepare(`INSERT INTO ${TABLE_KANBAN_ITEMS} (id, title, description, priority, status, time) VALUES (?, ?, ?, ?, ?, ?)`);
+            const stmt = this.#db.prepare(`INSERT INTO ${TABLE_KANBAN_ITEMS} (id, title, description, priority, status, time) VALUES (?, ?, ?, ?, ?, ?)`);
             stmt.run(+kanbanItem.id, kanbanItem.title, kanbanItem.description, kanbanItem.priority, kanbanItem.status, kanbanItem.time);
             return { error: false, data: "Kanban card saved successfully" };
         } catch (err) {
@@ -46,19 +60,19 @@ export default class KanbanDbService implements IKanbanDbService {
             return { error: true, data: "Error saving kanban card" };
         }
     }
-    delete(id: number): GenericResponse<string> {
+    delete(id: number): GenericResponse<KanbanDbItem> {
         try {
             const kanbanCard = this.getKanbanCardById(id);
             if (kanbanCard.error) {
-                return { error: true, data: "Kanban card not found. Cannot delete" };
+                return { error: true, data: null };
             }
-            const stmt = this.db.prepare(`DELETE FROM ${TABLE_KANBAN_ITEMS} WHERE id = ?`);
+            const stmt = this.#db.prepare(`DELETE FROM ${TABLE_KANBAN_ITEMS} WHERE id = ?`);
             stmt.run(kanbanCard.data.id);
-            this.#kanbanTimeManager.handleDelete(kanbanCard.data);
-            return { error: false, data: "Kanban card deleted successfully" };
+            const kanban = this.#kanbanTimeManager.handleDelete(kanbanCard.data);
+            return { error: false, data: kanban };
         } catch (err) {
             console.error("Error deleting kanban card: ", err);
-            return { error: true, data: "Error deleting kanban card" };
+            return { error: true, data: null };
         }
     }
     modify(kanbanItem: KanbanDbItem): GenericResponse<string> {
@@ -68,7 +82,7 @@ export default class KanbanDbService implements IKanbanDbService {
                 return { error: true, data: "Kanban card not found. Cannot modify" };
             }
             kanbanItem = this.#kanbanTimeManager.handleChangeOfState(kanbanCard.data, kanbanItem);
-            const stmt = this.db.prepare(`UPDATE ${TABLE_KANBAN_ITEMS} SET title = ?, description = ?, priority = ?, status = ?, time = ?, start = ?, duration = ? WHERE id = ?`);
+            const stmt = this.#db.prepare(`UPDATE ${TABLE_KANBAN_ITEMS} SET title = ?, description = ?, priority = ?, status = ?, time = ?, start = ?, duration = ? WHERE id = ?`);
             stmt.run(kanbanItem.title, kanbanItem.description, kanbanItem.priority, kanbanItem.status ?? kanbanCard.data.status, kanbanItem.time,
                 kanbanItem.start ?? kanbanCard.data.start, kanbanItem.duration ?? kanbanCard.data.duration, kanbanCard.data.id);
 
@@ -81,7 +95,7 @@ export default class KanbanDbService implements IKanbanDbService {
 
     getKanbanCardByTitleAndDescription(title: string, description: string): GenericResponse<KanbanDbItem> {
         try {
-            const stmt = this.db.prepare(`SELECT * FROM ${TABLE_KANBAN_ITEMS} WHERE title = ? AND description = ?`);
+            const stmt = this.#db.prepare(`SELECT * FROM ${TABLE_KANBAN_ITEMS} WHERE title = ? AND description = ?`);
             const row = stmt.get(title, description) as KanbanDbItem;
             if (row) {
                 return { error: false, data: row };
@@ -98,7 +112,7 @@ export default class KanbanDbService implements IKanbanDbService {
 
     getKanbanCardById(id: number): GenericResponse<KanbanDbItem> {
         try {
-            const stmt = this.db.prepare(`SELECT * FROM ${TABLE_KANBAN_ITEMS} WHERE id = ?`);
+            const stmt = this.#db.prepare(`SELECT * FROM ${TABLE_KANBAN_ITEMS} WHERE id = ?`);
             const row = stmt.get(id) as KanbanDbItem;
             if (row) {
                 return { error: false, data: row };

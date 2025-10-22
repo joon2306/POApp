@@ -1,4 +1,5 @@
-import getDatabase, { TABLE_PRODUCTIVITY_ITEMS } from "../../database/database";
+import Database from "better-sqlite3";
+import { TABLE_PRODUCTIVITY_ITEMS } from "../../database/database";
 import GenericResponse from "../../model/GenericResponse";
 import ProductivityDbItem from "../../model/ProductivityDbItem";
 import getTimeUtils from "../../utils/TimeUtils";
@@ -15,12 +16,11 @@ export default class ProductivityDbService implements IProductivityDbService {
     private static MODIFY_ERROR_MSG = "Could not modify productivity item with id: ";
     private static MODIFY_SUCCESS_MSG = "Successfully modified productivity item with it: ";
 
-    #db = null;
+    #db: Database = null;
 
-    constructor() {
+    constructor(database: Database) {
         if (instance === null) {
-            this.#db = getDatabase();
-            this.#clearExpiredItems();
+            this.#db = database;
             instance = this;
         }
         return instance;
@@ -85,25 +85,6 @@ export default class ProductivityDbService implements IProductivityDbService {
             console.error("could not find this item in productivity table", err);
         }
         return { error: true, data: null };
-    }
-
-    #clearExpiredItems() {
-        const { error, data } = this.getAll();
-        if (error) {
-            console.log("could not retrieve items. skipping clearing expired items");
-            return;
-        }
-
-        const items = data as ProductivityDbItem[];
-        const startOfDay = getTimeUtils().startOfDay;
-        const expiredItems = items.filter(item => item.deleted && item.deleted < startOfDay);
-
-        if (expiredItems.length > 0) {
-            for (const item of expiredItems) {
-                this.delete(item.id);
-            }
-        }
-
     }
 
 

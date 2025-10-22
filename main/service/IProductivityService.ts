@@ -1,6 +1,11 @@
+import { KanbanDbItem } from "../model/KanbanItem";
 import Productivity from "../model/Productivity";
 
 export default interface IProductivityService {
 
-    getProductivity(): Productivity;
+    get(inProgressCards: KanbanDbItem[]): Productivity;
+
+    add(deletedCard: KanbanDbItem): void;
+
+    handleExpired(): void;
 }
