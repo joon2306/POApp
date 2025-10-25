@@ -1,25 +1,33 @@
 
 import Productivity from "../../../main/model/Productivity";
 import useProductivity from "../../hooks/useProductivity";
-import Card from "../Card";
-import TrackingProductivityCard from "./TrackingProductivityCard";
+import Card, { CardType } from "../Card";
+import ProgressBar from "../ProgressBar/ProgressBar";
+import TrackingProductivityCard, { BodyContent, TrackingProductivityCardContent } from "./TrackingProductivityCard";
+import { HiOutlineClock } from 'react-icons/hi';
+import { FaArrowTrendUp, FaRegCalendar, FaRegCircleCheck } from 'react-icons/fa6';
+import { LocalTime } from "../../utils/LocalTime";
+import { useEffect, useState } from "react";
+import Tag from "../Tag/Tag";
+
 
 export default function ProductivityComponent() {
 
-    const { productivity, date } = useProductivity() as {
+    const { productivity, date, trackingProductivityCards } = useProductivity(getTrackingProductivityCards) as {
         productivity: Productivity,
-        date: string
+        date: string,
+        trackingProductivityCards: TrackingProductivityCardContent[]
     };
-
-    
 
 
     return (
         <div className="m-5">
             <Header date={date}></Header>
 
-            <div className="my-10">
-                <TrackingProductivityCard></TrackingProductivityCard>
+            <div className="my-10 grid gap-8 grid-cols-3 ">
+                {
+                    trackingProductivityCards.map((card, index) => <TrackingProductivityCard {...card} key={index} />)
+                }
 
             </div>
         </div>
@@ -46,3 +54,235 @@ function Header({ date }: { date: string }) {
     )
 
 }
+
+function TagFooter({ text }: { text: string }) {
+    return (
+        <div className="mt-3 flex text-xs items-center">
+            <Tag text={text} />
+        </div>
+    )
+}
+
+function getTrackingProductivityCards(productivity: Productivity): TrackingProductivityCardContent[] {
+
+
+    const cardProps: Omit<CardType, "Content"> = {
+        width: {
+            large: "300px",
+            medium: "100px"
+        },
+        height: {
+            large: "200px",
+            medium: "175px"
+        }
+    };
+
+    const contents: IGetTrackingProductivityCardContent[] = [getTimeProductivityCard,
+        getTaskEfficiencyProductivityCard, getOverallEfficiencyProductivityCard, getTaskStatusProductivityCard];
+
+    return contents.map(content => content(productivity, cardProps));
+
+}
+
+const timeFormat = (h, m) => h === 0 ? `${m}m` : `${h}h ${m}m`;
+
+interface IGetTrackingProductivityCardContent {
+    (productivity: Productivity, cardProps: Omit<CardType, "Content">): TrackingProductivityCardContent;
+}
+
+
+const getTimeProductivityCard: IGetTrackingProductivityCardContent = (productivity: Productivity, cardProps: Omit<CardType, "Content">) => {
+    const content: BodyContent[] =
+        [
+            {
+                left: {
+                    text: LocalTime.of(productivity.timeRemaining).format(timeFormat),
+                    color: "#2563EB"
+                }
+            },
+            {
+                left: {
+                    text: "of 8h planned"
+                }
+            }
+        ] as const;
+
+    function Footer() {
+        const [progress, setProgress] = useState<number>(0);
+
+        const calculateProgress = () => {
+            const progress = (productivity.timeConsumed / (8 * 60)) * 100;
+            setProgress(progress);
+        }
+
+        useEffect(() => {
+            let cancelled = false;
+            if (!cancelled) {
+                calculateProgress();
+            }
+
+            return () => {
+                cancelled = true;
+            }
+
+        }, [productivity.timeConsumed]);
+        return (
+            <ProgressBar color="bg-blue-600" progress={progress} />
+        )
+
+    }
+
+    return {
+        Icon: HiOutlineClock,
+        footer: Footer,
+        iconColor: "#2563EB",
+        iconSize: "3vw",
+        title: "TIME LEFT",
+        body: content,
+        cardProps
+    }
+}
+
+const getTaskEfficiencyProductivityCard: IGetTrackingProductivityCardContent = (productivity: Productivity, cardProps: Omit<CardType, "Content">) => {
+    function Footer() {
+        const [txt, setTxt] = useState<string>("");
+
+        useEffect(() => {
+            let cancelled = false;
+            if (!cancelled) {
+                const taskProductivity = productivity.taskProductivity * 100;
+                taskProductivity < 90 ? setTxt("Needs Improvement") : setTxt("Good Pace");
+            }
+
+            return () => {
+                cancelled = true;
+            }
+
+        }, [productivity.taskProductivity])
+        return (
+            <TagFooter text={txt} />
+        )
+    }
+
+    const content: BodyContent[] =
+        [
+            {
+                left: {
+                    text: `${(productivity.taskProductivity * 100)}%`,
+                    color: "#9333EA"
+                }
+            },
+            {
+                left: {
+                    text: "All tasks average"
+                }
+            }
+        ] as const;
+
+    return {
+        Icon: FaArrowTrendUp,
+        footer: Footer,
+        iconColor: "#9333EA",
+        iconSize: "3vw",
+        title: "TASK EFFICIENCY",
+        body: content,
+        cardProps
+    }
+}
+
+const getOverallEfficiencyProductivityCard: IGetTrackingProductivityCardContent = (productivity: Productivity, cardProps: Omit<CardType, "Content">) => {
+    function Footer() {
+        const [txt, setTxt] = useState<string>("");
+
+        useEffect(() => {
+            let cancelled = false;
+            if (!cancelled) {
+                const taskProductivity = productivity.overallProductivity * 100;
+                taskProductivity < 90 ? setTxt("Needs Improvement") : setTxt("Good Pace");
+            }
+
+            return () => {
+                cancelled = true;
+            }
+
+        }, [productivity.overallProductivity])
+        return (
+            <TagFooter text={txt} />
+        )
+    }
+
+    const content: BodyContent[] =
+        [
+            {
+                left: {
+                    text: `${(productivity.overallProductivity * 100)}%`,
+                    color: "#2563EB"
+                }
+            },
+            {
+                left: {
+                    text: `${LocalTime.of(productivity.timeConsumed).format(timeFormat)} time worked`
+                }
+            }
+        ] as const;
+
+    return {
+        Icon: FaRegCalendar,
+        footer: Footer,
+        iconColor: "#2563EB",
+        iconSize: "3vw",
+        title: "TODAY'S EFFICIENCY",
+        body: content,
+        cardProps
+    }
+}
+
+
+const getTaskStatusProductivityCard: IGetTrackingProductivityCardContent = (productivity: Productivity, cardProps: Omit<CardType, "Content">) => {
+    function Footer() {
+        return (
+            <>
+            </>
+        )
+    }
+
+    cardProps.height = {
+        large: "150px",
+        medium: "125px"
+    }
+
+    const content: BodyContent[] =
+        [
+            {
+                left: {
+                    text: "Completed",
+                    style: ""
+                },
+                right: {
+                    text: productivity.completedTasks.length.toString(),
+                    style: "text-[green]"
+                }
+            },
+            {
+                left: {
+                    text: "In Progress"
+                },
+                right: {
+                    text: productivity.inProgressTasks.length.toString(),
+                    style: "text-[red]"
+                }
+            }
+        ] as const;
+
+    return {
+        Icon: FaRegCircleCheck,
+        footer: Footer,
+        iconColor: "green",
+        iconSize: "3vw",
+        title: "TASKS TODAY",
+        body: content,
+        cardProps
+    }
+}
+
+

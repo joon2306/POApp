@@ -7,13 +7,13 @@ type VariableSize = {
     medium: Size;
     large: Size
 }
-type Card = {
+export type CardType = {
     width: VariableSize;
     height: VariableSize;
     Content: React.ComponentType;
 }
 
-export default function Card({ width, height, Content }: Card) {
+export default function Card({ width, height, Content }: CardType) {
     return (
         <>
             <div className={`bg-white rounded-xl shadow-md border border-gray-300 p-5 ${styles.card}`} style={{

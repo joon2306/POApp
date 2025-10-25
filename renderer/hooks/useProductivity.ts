@@ -3,8 +3,9 @@ import CommsService from "../services/impl/CommsService";
 import ProductivityService from "../services/impl/ProductivityService";
 import Productivity from "../../main/model/Productivity";
 import LocalDate from "../utils/LocalDate";
+import { TrackingProductivityCardContent } from "../components/Productivity/TrackingProductivityCard";
 
-export default function useProductivity() {
+export default function useProductivity(getTrackingProductivityCards: (productivity: Productivity) =>TrackingProductivityCardContent[]) {
     const productivityService = useMemo(() => new ProductivityService(new CommsService()), []);
 
     const initProductivity: () => Productivity = () => {
@@ -20,6 +21,7 @@ export default function useProductivity() {
 
     const [productivity, setProductivity] = useState<Productivity>(initProductivity());
     const [date, setDate] = useState<string>("");
+    const [trackingProductivityCards, setTrackingProductivityCards] = useState<TrackingProductivityCardContent[]>([]);
 
     const initDate: () => void = () => {
         try {
@@ -35,10 +37,12 @@ export default function useProductivity() {
     useEffect(() => {
         let cancelled = false;
         initDate();
+        
         const load = async () => {
             productivityService.getProductivity().then(result => {
                 if (!cancelled && result) {
                     setProductivity(result)
+                    setTrackingProductivityCards(getTrackingProductivityCards(result));
                 }
 
             });
@@ -52,5 +56,7 @@ export default function useProductivity() {
         }
     }, [productivityService]);
 
-    return { productivity, date };
+    return { productivity, date, trackingProductivityCards };
 }
+
+

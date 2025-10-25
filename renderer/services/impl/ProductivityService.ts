@@ -20,7 +20,16 @@ export default class ProductivityService implements IProductivityService {
         //return await this.#commsService.sendRequest<Productivity>(CommunicationEvents.getProductivity, null);
         const mockProductivity: () => Productivity = () => {
             return {
-                completedTasks: [],
+                completedTasks: [
+                    {
+                        completed: 60,
+                        duration: 60,
+                        productivity: 60,
+                        start: 60, 
+                        time: 60,
+                        title: "test"
+                    }
+                ],
                 inProgressTasks: [],
                 overallProductivity: 0.88,
                 taskProductivity: 0.92,

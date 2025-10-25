@@ -1,14 +1,14 @@
 @media (min-width: 768px) {
   .card {
-    width: var(--card-w-md);
-    height: var(--card-h-md);
+    min-width: var(--card-w-md);
+    min-height: var(--card-h-md);
   }
 }
 
 /* Large screens */
 @media (min-width: 1280px) {
     .card {
-        width: var(--card-w-lg);
-        height: var(--card-h-lg);
+        min-width: var(--card-w-lg);
+        min-height: var(--card-h-lg);
     }
 }
