@@ -5,6 +5,7 @@ import FeatureGenerator from '../components/FeatureGenerator/FeatureGenerator';
 import EmailGenerator from '../components/EmailGenerator/EmailGenerator';
 import JiraGenerator from '../components/JiraGenerator/JiraGenerator';
 import English from '../components/English/English';
+import ProductivityComponent from '../components/Productivity/Productivity';
 
 export default function HomePage() {
 
@@ -23,7 +24,7 @@ export default function HomePage() {
     },
     Productivity: {
       title: "Productivity",
-      content: null
+      content: ProductivityComponent
     }
   }
 

@@ -1,7 +1,5 @@
 import React, { useRef, useState } from 'react';
 import { MdOutlineViewKanban } from "react-icons/md";
-import ProductivityService from '../services/impl/ProductivityService';
-import CommsService from '../services/impl/CommsService';
 
 interface DashboardItem {
     title: string;
@@ -27,8 +25,6 @@ export default function Dashboard({ dashboardContent, activeDashboardBtn }: { da
     const handleClick = (title: string, content: React.ComponentType) => {
         if (!content) {
             console.log("button has no content");
-            const productivityService = new ProductivityService(new CommsService());
-            productivityService.getProductivity();
             return;
         }
         setActiveDashboard(title);

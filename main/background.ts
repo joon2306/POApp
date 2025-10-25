@@ -55,6 +55,5 @@ translate();
 generateJira();
 improve();
 
-const { kanbanHandler, productivityHandler } = (new HandlerProvider()).provide();
-kanbanHandler.execute();
-productivityHandler.execute();
+const handlerProvider = (new HandlerProvider()).provide();
+handlerProvider.executeAll();

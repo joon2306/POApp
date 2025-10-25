@@ -21,7 +21,7 @@ export default class ProductivityService implements IProductivityService {
 
 
     #getTaskProductivity(dbItem: KanbanDbItem | ProductivityDbItem) {
-        return dbItem.time / dbItem.duration;
+        return isNaN(dbItem.time / dbItem.duration) ? 0 : dbItem.time / dbItem.duration;
     }
 
     #getTimeSpent(): Pick<Productivity, "timeRemaining" | "timeConsumed"> {
@@ -42,9 +42,13 @@ export default class ProductivityService implements IProductivityService {
             return [accumulator[0] + timePlanned, accumulator[1] + timeSpent];
         }, [0, 0]);
 
-        const taskProductivity = sumTimePlanned / sumTimeSpent;
+        const taskProductivity = isNaN(sumTimePlanned / sumTimeSpent)
+            ? 0
+            : sumTimePlanned / sumTimeSpent;
 
-        const overallProductivity = timeConsumed / sumTimeSpent;
+        const overallProductivity = isNaN(timeConsumed / sumTimeSpent)
+            ? 0
+            : timeConsumed / sumTimeSpent;
 
         return { taskProductivity, overallProductivity };
 

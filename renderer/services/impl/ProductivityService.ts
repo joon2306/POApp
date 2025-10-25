@@ -17,9 +17,18 @@ export default class ProductivityService implements IProductivityService {
     }
 
     async getProductivity(): Promise<Productivity> {
-        const productivity = await this.#commsService.sendRequest<Productivity>(CommunicationEvents.getProductivity, null);
-        console.log("productivity: ", productivity);
-        return productivity;
+        //return await this.#commsService.sendRequest<Productivity>(CommunicationEvents.getProductivity, null);
+        const mockProductivity: () => Productivity = () => {
+            return {
+                completedTasks: [],
+                inProgressTasks: [],
+                overallProductivity: 0.88,
+                taskProductivity: 0.92,
+                timeConsumed: 330,
+                timeRemaining: 150
+            };
+        }
+        return Promise.resolve(mockProductivity());
     }
 
 }

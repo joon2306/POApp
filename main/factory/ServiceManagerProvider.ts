@@ -6,7 +6,6 @@ import CommsService from "../service/impl/CommsService";
 import KanbanDbService from "../service/impl/KanbanDbService";
 import ProductivityDbService from "../service/impl/ProductivityDbService";
 import ProductivityService from "../service/impl/ProductivityService";
-import IProductivityDbService from "../service/IProductivityDbService";
 import IProductivityService from "../service/IProductivityService";
 import { Database } from "better-sqlite3";
 import IProvider from "./Provider";
