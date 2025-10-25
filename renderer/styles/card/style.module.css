@@ -6,7 +6,7 @@
 }
 
 /* Large screens */
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
     .card {
         width: var(--card-w-lg);
         height: var(--card-h-lg);

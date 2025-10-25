@@ -16,7 +16,7 @@ type Card = {
 export default function Card({ width, height, Content }: Card) {
     return (
         <>
-            <div className={`bg-white rounded-xl shadow-sm border p-5 ${styles.card}`} style={{
+            <div className={`bg-white rounded-xl shadow-md border border-gray-300 p-5 ${styles.card}`} style={{
                 "--card-w-md": width.medium,
                 "--card-w-lg": width.large,
                 "--card-h-md": height.medium,

@@ -1,0 +1,13 @@
+@media (min-width: 768px) {
+  .header {
+    padding-top: var(--padding-t-md)
+  }
+}
+
+
+/* Large screens */
+@media (min-width: 1280px) {
+    .header {
+        padding-top: var(--padding-t-lg)
+    }
+}

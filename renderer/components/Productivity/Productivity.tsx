@@ -2,6 +2,7 @@
 import Productivity from "../../../main/model/Productivity";
 import useProductivity from "../../hooks/useProductivity";
 import Card from "../Card";
+import TrackingProductivityCard from "./TrackingProductivityCard";
 
 export default function ProductivityComponent() {
 
@@ -10,11 +11,7 @@ export default function ProductivityComponent() {
         date: string
     };
 
-    function cardContent() {
-        return (
-            <p>Arjoon king</p>
-        )
-    }
+    
 
 
     return (
@@ -22,7 +19,7 @@ export default function ProductivityComponent() {
             <Header date={date}></Header>
 
             <div className="my-10">
-                <Card width={{large: "300px", medium: "150px"}} height={{large: "300px", medium: "150px"}} Content={cardContent}></Card>
+                <TrackingProductivityCard></TrackingProductivityCard>
 
             </div>
         </div>
