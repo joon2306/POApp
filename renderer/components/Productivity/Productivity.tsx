@@ -107,7 +107,7 @@ const timeTracking: IGetTrackingProductivityCardContent = (productivity: Product
             },
             {
                 left: {
-                    text: "of 8h planned"
+                    text: "of 7h planned"
                 }
             }
         ] as const;
@@ -116,7 +116,7 @@ const timeTracking: IGetTrackingProductivityCardContent = (productivity: Product
         const [progress, setProgress] = useState<number>(0);
 
         const calculateProgress = () => {
-            const progress = (productivity.timeConsumed / (8 * 60)) * 100;
+            const progress = (productivity.timeConsumed / (7 * 60)) * 100;
             setProgress(progress);
         }
 

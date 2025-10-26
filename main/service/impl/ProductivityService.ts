@@ -29,6 +29,11 @@ export default class ProductivityService implements IProductivityService {
         const { startOfDay, lunchTime, toMinutes } = getTimeUtils();
         const isMorning = now < lunchTime;
         let timeConsumed = toMinutes(now - startOfDay);
+        const fullDay = 7 * 60;
+        if (timeConsumed > fullDay) {
+            // out of working hours
+            return {timeConsumed: fullDay, timeRemaining: 0}
+        }
         if (!isMorning) {
             timeConsumed = timeConsumed - 60;
         }
@@ -41,6 +46,9 @@ export default class ProductivityService implements IProductivityService {
             const timeSpent = completedTask.duration;
             return [accumulator[0] + timePlanned, accumulator[1] + timeSpent];
         }, [0, 0]);
+        if (sumTimePlanned === 0 || sumTimeSpent === 0) {
+            return { taskProductivity: 0, overallProductivity: 0 };
+        }
 
         const taskProductivity = isNaN(sumTimePlanned / sumTimeSpent)
             ? 0

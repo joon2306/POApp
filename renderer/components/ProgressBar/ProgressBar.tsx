@@ -4,10 +4,13 @@ export type ProgressBar = {
 }
 
 export default function ProgressBar({ progress, color }: { progress: number, color: string }) {
+    if (progress > 100) {
+        progress = 100;
+    }
 
     return (
         <div className="rounded-full h-2 w-full bg-gray-300">
-            <div className= {`h-2 rounded-full transition-all`} style={{ width: `${progress}%`, backgroundColor: color}}>
+            <div className={`h-2 rounded-full transition-all`} style={{ width: `${progress}%`, backgroundColor: color }}>
             </div>
         </div>
     )

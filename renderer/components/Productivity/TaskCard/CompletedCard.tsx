@@ -9,6 +9,9 @@ export default function CompletedCard({ productivity, timeFormat }: { productivi
     const [card, setCard] = useState<TaskCardType>(null);
 
     const getTime = (time: number): string => {
+        if(!time) {
+            return "";
+        }
         return LocalTime.of(time).format(timeFormat)
     }
 
@@ -30,7 +33,7 @@ export default function CompletedCard({ productivity, timeFormat }: { productivi
 
         const color: Record<Status, { primary: string; secondary: string }> = {
             EFFICIENT: {
-                primary: "#F0F3F4",
+                primary: "#F0FDF4",
                 secondary: "green",
             },
             GOOD: {

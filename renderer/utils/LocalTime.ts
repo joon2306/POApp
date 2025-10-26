@@ -15,6 +15,9 @@ export class LocalTime implements ILocalTime {
 
 
     format(customFormat: (h: number, m: number) => string) {
+        if(this.#minutes === 0) {
+            return customFormat(0,0);
+        }
         if (!this.#minutes) {
             throw new Error("Minutes have not been added");
         }

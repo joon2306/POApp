@@ -10,6 +10,9 @@ export default function InProgressCard({ productivity, timeFormat }: { productiv
     const [card, setCard] = useState<TaskCardType>(null);
 
     const getTime = (time: number): string => {
+        if(!time) {
+            return "";
+        }
         return LocalTime.of(time).format(timeFormat)
     }
 

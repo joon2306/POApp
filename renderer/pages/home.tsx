@@ -10,6 +10,10 @@ import ProductivityComponent from '../components/Productivity/Productivity';
 export default function HomePage() {
 
   const dashboardContent: DashboardContent = {
+    Productivity: {
+      title: "Productivity",
+      content: ProductivityComponent
+    },
     Kanban: {
       title: "Kanban",
       content: Kanban
@@ -21,16 +25,12 @@ export default function HomePage() {
     Email: {
       title: "email generator",
       content: EmailGeneratorMenu
-    },
-    Productivity: {
-      title: "Productivity",
-      content: ProductivityComponent
     }
   }
 
   return (
     <>
-      <Dashboard dashboardContent={dashboardContent} activeDashboardBtn={dashboardContent.Kanban.title} />
+      <Dashboard dashboardContent={dashboardContent} activeDashboardBtn={dashboardContent.Productivity.title} />
     </>
   )
 }

@@ -3,9 +3,9 @@ import CommsService from "../services/impl/CommsService";
 import ProductivityService from "../services/impl/ProductivityService";
 import Productivity from "../../main/model/Productivity";
 import LocalDate from "../utils/LocalDate";
-import { TrackingProductivityCardContent } from "../components/Productivity/TrackingCard";
+import { TrackingContent } from "../components/Productivity/TrackingCard";
 
-export default function useProductivity(getTrackingProductivityCards: (productivity: Productivity) =>TrackingProductivityCardContent[]) {
+export default function useProductivity(getTrackingProductivityCards: (productivity: Productivity) => TrackingContent[]) {
     const productivityService = useMemo(() => new ProductivityService(new CommsService()), []);
 
     const initProductivity: () => Productivity = () => {
@@ -21,7 +21,7 @@ export default function useProductivity(getTrackingProductivityCards: (productiv
 
     const [productivity, setProductivity] = useState<Productivity>(initProductivity());
     const [date, setDate] = useState<string>("");
-    const [trackingProductivityCards, setTrackingProductivityCards] = useState<TrackingProductivityCardContent[]>([]);
+    const [trackingProductivityCards, setTrackingProductivityCards] = useState<TrackingContent[]>([]);
 
     const initDate: () => void = () => {
         try {
@@ -32,12 +32,11 @@ export default function useProductivity(getTrackingProductivityCards: (productiv
         }
     }
 
-    
 
     useEffect(() => {
         let cancelled = false;
         initDate();
-        
+
         const load = async () => {
             productivityService.getProductivity().then(result => {
                 if (!cancelled && result) {
@@ -48,11 +47,11 @@ export default function useProductivity(getTrackingProductivityCards: (productiv
             });
         }
         load();
-        const timeout = setTimeout(() => load(), 1000 * 60 * 3);
+        const interval = setInterval(() => load(), 1000 * 3);
 
         return () => {
             cancelled = true;
-            clearTimeout(timeout);
+            clearInterval(interval);
         }
     }, [productivityService]);
 
