@@ -2,10 +2,6 @@ import { IconType } from "react-icons";
 import Card, { CardType } from "../Card";
 import ProgressBar from "../ProgressBar/ProgressBar";
 
-type TrackingProductivityCard = {
-    icon: IconType
-}
-
 type BodyContentData = {
     text: string;
     color?: string;
@@ -17,7 +13,7 @@ export type BodyContent = {
     right?: BodyContentData;
 }
 
-export type TrackingProductivityCardContent = {
+export type TrackingContent = {
     Icon: IconType;
     title: string;
     iconSize: string;
@@ -27,7 +23,7 @@ export type TrackingProductivityCardContent = {
     cardProps: Omit<CardType, "Content">
 }
 
-export default function TrackingProductivityCard(content: TrackingProductivityCardContent ) {
+export default function TrackingCard(content: TrackingContent ) {
 
     function Header({ Icon, title, iconSize, color }: { Icon: IconType, title: string, iconSize: string | number, color: string }) {
         return (

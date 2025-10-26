@@ -3,7 +3,7 @@ import CommsService from "../services/impl/CommsService";
 import ProductivityService from "../services/impl/ProductivityService";
 import Productivity from "../../main/model/Productivity";
 import LocalDate from "../utils/LocalDate";
-import { TrackingProductivityCardContent } from "../components/Productivity/TrackingProductivityCard";
+import { TrackingProductivityCardContent } from "../components/Productivity/TrackingCard";
 
 export default function useProductivity(getTrackingProductivityCards: (productivity: Productivity) =>TrackingProductivityCardContent[]) {
     const productivityService = useMemo(() => new ProductivityService(new CommsService()), []);

@@ -3,12 +3,14 @@ import Productivity from "../../../main/model/Productivity";
 import useProductivity from "../../hooks/useProductivity";
 import Card, { CardType } from "../Card";
 import ProgressBar from "../ProgressBar/ProgressBar";
-import TrackingProductivityCard, { BodyContent, TrackingProductivityCardContent } from "./TrackingProductivityCard";
 import { HiOutlineClock } from 'react-icons/hi';
-import { FaArrowTrendUp, FaRegCalendar, FaRegCircleCheck } from 'react-icons/fa6';
+import { FaArrowTrendUp, FaRegCalendar, FaRegCircleCheck, FaRegCirclePlay } from 'react-icons/fa6';
+import { PiWarningCircleBold } from 'react-icons/pi';
 import { LocalTime } from "../../utils/LocalTime";
 import { useEffect, useState } from "react";
 import Tag from "../Tag/Tag";
+import TrackingCard, { BodyContent, TrackingContent } from "./TrackingCard";
+import TaskCard, { TaskCardType } from "./TaskCard";
 
 
 export default function ProductivityComponent() {
@@ -16,26 +18,66 @@ export default function ProductivityComponent() {
     const { productivity, date, trackingProductivityCards } = useProductivity(getTrackingProductivityCards) as {
         productivity: Productivity,
         date: string,
-        trackingProductivityCards: TrackingProductivityCardContent[]
+        trackingProductivityCards: TrackingContent[]
     };
+
+    
+
+    const taskCard: TaskCardType = {
+        Icon: FaRegCirclePlay,
+        iconColor: "#EA580C",
+        title: "In Progress Tasks",
+        subTitle: "Total Time: 4h 30m",
+        header: "3 active",
+        tasks: [
+            {
+                title: "Design API points",
+                Icon: PiWarningCircleBold,
+                timeSpent: { text: "2h30m", color: "#B91C1C" },
+                timePlanned: { text: "2h" },
+                additionalTexts: [{ text: "Overtime: 30m", color: "#B91C1C" }],
+                color: {
+                    primary: "#FEF2F2",
+                    secondary: "#B91C1C"
+                },
+                progress: {progress: 100, color:"#B91C1C"},
+                status: "Efficient"
+            },
+            {
+                title: "Code review PR #234",
+                timeSpent: { text: "30m" },
+                timePlanned: { text: "1h" },
+                progress: {progress: 50, color: "#EA580C"}
+            },
+            {
+                title: "Update documentation",
+                timeSpent: { text: "1h30m" },
+                timePlanned: { text: "3h" },
+                progress: {progress: 30, color: "#EA580C"}
+            }
+        ]
+    }
 
 
     return (
         <div className="m-5">
             <Header date={date}></Header>
 
-            <div className="my-10 grid gap-8 grid-cols-3 ">
+            <div className="my-10 grid gap-8 grid-cols-3">
                 {
-                    trackingProductivityCards.map((card, index) => <TrackingProductivityCard {...card} key={index} />)
+                    trackingProductivityCards.map((card, index) => <TrackingCard {...card} key={index} />)
                 }
 
+            </div>
+            <div className="grid gap-8 grid-cols-2">
+                <TaskCard {...taskCard} />
+                <TaskCard {...taskCard} />
             </div>
         </div>
 
     )
 
 }
-
 
 function Header({ date }: { date: string }) {
 
@@ -63,7 +105,7 @@ function TagFooter({ text }: { text: string }) {
     )
 }
 
-function getTrackingProductivityCards(productivity: Productivity): TrackingProductivityCardContent[] {
+function getTrackingProductivityCards(productivity: Productivity): TrackingContent[] {
 
 
     const cardProps: Omit<CardType, "Content"> = {
@@ -77,21 +119,21 @@ function getTrackingProductivityCards(productivity: Productivity): TrackingProdu
         }
     };
 
-    const contents: IGetTrackingProductivityCardContent[] = [getTimeProductivityCard,
-        getTaskEfficiencyProductivityCard, getOverallEfficiencyProductivityCard, getTaskStatusProductivityCard];
+    const contents: IGetTrackingProductivityCardContent[] = [timeTracking,
+        taskTracking, overallTracking, statusTracking];
 
     return contents.map(content => content(productivity, cardProps));
 
 }
 
-const timeFormat = (h, m) => h === 0 ? `${m}m` : `${h}h ${m}m`;
+const timeFormat = (h: number, m: number) => h === 0 ? `${m}m` : `${h}h ${m}m`;
 
 interface IGetTrackingProductivityCardContent {
-    (productivity: Productivity, cardProps: Omit<CardType, "Content">): TrackingProductivityCardContent;
+    (productivity: Productivity, cardProps: Omit<CardType, "Content">): TrackingContent;
 }
 
 
-const getTimeProductivityCard: IGetTrackingProductivityCardContent = (productivity: Productivity, cardProps: Omit<CardType, "Content">) => {
+const timeTracking: IGetTrackingProductivityCardContent = (productivity: Productivity, cardProps: Omit<CardType, "Content">) => {
     const content: BodyContent[] =
         [
             {
@@ -127,7 +169,7 @@ const getTimeProductivityCard: IGetTrackingProductivityCardContent = (productivi
 
         }, [productivity.timeConsumed]);
         return (
-            <ProgressBar color="bg-blue-600" progress={progress} />
+            <ProgressBar color="#2563EB" progress={progress} />
         )
 
     }
@@ -143,7 +185,7 @@ const getTimeProductivityCard: IGetTrackingProductivityCardContent = (productivi
     }
 }
 
-const getTaskEfficiencyProductivityCard: IGetTrackingProductivityCardContent = (productivity: Productivity, cardProps: Omit<CardType, "Content">) => {
+const taskTracking: IGetTrackingProductivityCardContent = (productivity: Productivity, cardProps: Omit<CardType, "Content">) => {
     function Footer() {
         const [txt, setTxt] = useState<string>("");
 
@@ -190,7 +232,7 @@ const getTaskEfficiencyProductivityCard: IGetTrackingProductivityCardContent = (
     }
 }
 
-const getOverallEfficiencyProductivityCard: IGetTrackingProductivityCardContent = (productivity: Productivity, cardProps: Omit<CardType, "Content">) => {
+const overallTracking: IGetTrackingProductivityCardContent = (productivity: Productivity, cardProps: Omit<CardType, "Content">) => {
     function Footer() {
         const [txt, setTxt] = useState<string>("");
 
@@ -238,7 +280,7 @@ const getOverallEfficiencyProductivityCard: IGetTrackingProductivityCardContent 
 }
 
 
-const getTaskStatusProductivityCard: IGetTrackingProductivityCardContent = (productivity: Productivity, cardProps: Omit<CardType, "Content">) => {
+const statusTracking: IGetTrackingProductivityCardContent = (productivity: Productivity, cardProps: Omit<CardType, "Content">) => {
     function Footer() {
         return (
             <>
