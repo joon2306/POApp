@@ -1,13 +1,13 @@
 import { IconType } from "react-icons"
-import ProgressBar from "../ProgressBar/ProgressBar";
-import Card, { VariableSize } from "../Card";
+import ProgressBar from "../../ProgressBar/ProgressBar";
+import Card, { VariableSize } from "../../Card";
 import { useEffect, useState } from "react";
 
 type TextColor = {
     text: string;
     color?: string;
 }
-type Task = {
+export type TaskCardTypeTask = {
     title: string;
     Icon?: IconType
     timeSpent: TextColor;
@@ -21,7 +21,8 @@ type Task = {
     progress?: {
         color: string;
         progress: number;
-    }
+    }, 
+    bgColor?: string;
 }
 
 export type TaskCardType = {
@@ -30,7 +31,7 @@ export type TaskCardType = {
     title: string;
     subTitle: string;
     header: string;
-    tasks: Task[];
+    tasks: TaskCardTypeTask[];
 }
 
 export default function TaskCard(props: TaskCardType) {
@@ -77,7 +78,7 @@ export default function TaskCard(props: TaskCardType) {
         );
     }
 
-    function Task(task: Task): React.ReactElement {
+    function Task(task: TaskCardTypeTask): React.ReactElement {
 
         function Text({ prefix, val, color }: { prefix?: string, val: string, color: string }) {
             return <span style={color ? { ...{ color: color } } : {}} className="text-xs">{prefix ? `${prefix}:` : ""} {val}</span>
@@ -133,14 +134,14 @@ export default function TaskCard(props: TaskCardType) {
         }
         return (
             <>
-                <Card width={auto} height={auto} Content={Content} bgColor={task.color?.primary} />
+                <Card width={auto} height={auto} Content={Content} bgColor={task.bgColor} />
             </>
         )
     }
 
 
     function Body(): React.ReactElement {
-        const [tasks, setTasks] = useState<Task[]>([]);
+        const [tasks, setTasks] = useState<TaskCardTypeTask[]>([]);
 
         useEffect(() => {
             let cancelled = false;

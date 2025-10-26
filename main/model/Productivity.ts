@@ -12,11 +12,11 @@ export type Task = {
     duration: number;
     start: number;
     productivity: number;
+    time: number;
 }
 
 export type CompletedTask = Task & {
     completed: number;
-    time: number;
 }
 
 export default Productivity;

@@ -1,4 +1,4 @@
-import Productivity from "../../../main/model/Productivity";
+import Productivity, { CompletedTask, Task } from "../../../main/model/Productivity";
 import CommunicationEvents from "../../types/CommunicationEvent";
 import ICommsService from "../ICommsService";
 import IProductivityService from "../IProductivityService";
@@ -22,15 +22,52 @@ export default class ProductivityService implements IProductivityService {
             return {
                 completedTasks: [
                     {
-                        completed: 60,
-                        duration: 60,
-                        productivity: 60,
-                        start: 60, 
-                        time: 60,
-                        title: "test"
+                        title: "Fix Login Bug",
+                        start: 0,
+                        duration: 90,
+                        productivity:0,
+                        time: 120,
+                        completed: 0
+                    },
+                    {
+                        title: "Database Migration",
+                        start: 0,
+                        duration: 180,
+                        productivity:0,
+                        time: 150,
+                        completed: 0
+                    },
+                    {
+                        title: "Team StandUp",
+                        start: 0,
+                        duration: 30,
+                        productivity:0,
+                        time: 15,
+                        completed: 0
                     }
-                ],
-                inProgressTasks: [],
+
+                ] as CompletedTask[],
+                inProgressTasks: [
+                    {
+                        title: "Design API endpoints",
+                        start: 0,
+                        duration: 150,
+                        productivity:0,
+                        time: 120
+                    }, {
+                        title: "Code review PR #234",
+                        start: 0,
+                        duration: 30,
+                        productivity:0,
+                        time: 60
+                    }, {
+                        title: "Update documentation",
+                        start: 0,
+                        duration: 90,
+                        productivity:0,
+                        time: 180
+                    }
+                ] as Task[],
                 overallProductivity: 0.88,
                 taskProductivity: 0.92,
                 timeConsumed: 330,

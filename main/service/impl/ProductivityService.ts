@@ -60,7 +60,7 @@ export default class ProductivityService implements IProductivityService {
 
         const inProgressTasks: Task[] = inProgressCards
             .map(item => {
-                return { duration: item.duration, productivity: this.#getTaskProductivity(item), start: item.start, title: item.title };
+                return { duration: item.duration, productivity: this.#getTaskProductivity(item), start: item.start, title: item.title, time: item.time };
             });
 
         const completedTasks: CompletedTask[] = !productivityErr ? productivityItems.map(item => {

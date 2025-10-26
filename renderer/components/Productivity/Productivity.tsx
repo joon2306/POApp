@@ -4,13 +4,13 @@ import useProductivity from "../../hooks/useProductivity";
 import Card, { CardType } from "../Card";
 import ProgressBar from "../ProgressBar/ProgressBar";
 import { HiOutlineClock } from 'react-icons/hi';
-import { FaArrowTrendUp, FaRegCalendar, FaRegCircleCheck, FaRegCirclePlay } from 'react-icons/fa6';
-import { PiWarningCircleBold } from 'react-icons/pi';
+import { FaArrowTrendUp, FaRegCalendar, FaRegCircleCheck } from 'react-icons/fa6';
 import { LocalTime } from "../../utils/LocalTime";
 import { useEffect, useState } from "react";
 import Tag from "../Tag/Tag";
 import TrackingCard, { BodyContent, TrackingContent } from "./TrackingCard";
-import TaskCard, { TaskCardType } from "./TaskCard";
+import InProgressCard from "./TaskCard/InProgressCards";
+import CompletedCard from "./TaskCard/CompletedCard";
 
 
 export default function ProductivityComponent() {
@@ -20,43 +20,6 @@ export default function ProductivityComponent() {
         date: string,
         trackingProductivityCards: TrackingContent[]
     };
-
-    
-
-    const taskCard: TaskCardType = {
-        Icon: FaRegCirclePlay,
-        iconColor: "#EA580C",
-        title: "In Progress Tasks",
-        subTitle: "Total Time: 4h 30m",
-        header: "3 active",
-        tasks: [
-            {
-                title: "Design API points",
-                Icon: PiWarningCircleBold,
-                timeSpent: { text: "2h30m", color: "#B91C1C" },
-                timePlanned: { text: "2h" },
-                additionalTexts: [{ text: "Overtime: 30m", color: "#B91C1C" }],
-                color: {
-                    primary: "#FEF2F2",
-                    secondary: "#B91C1C"
-                },
-                progress: {progress: 100, color:"#B91C1C"},
-                status: "Efficient"
-            },
-            {
-                title: "Code review PR #234",
-                timeSpent: { text: "30m" },
-                timePlanned: { text: "1h" },
-                progress: {progress: 50, color: "#EA580C"}
-            },
-            {
-                title: "Update documentation",
-                timeSpent: { text: "1h30m" },
-                timePlanned: { text: "3h" },
-                progress: {progress: 30, color: "#EA580C"}
-            }
-        ]
-    }
 
 
     return (
@@ -70,8 +33,8 @@ export default function ProductivityComponent() {
 
             </div>
             <div className="grid gap-8 grid-cols-2">
-                <TaskCard {...taskCard} />
-                <TaskCard {...taskCard} />
+                <InProgressCard productivity={productivity} timeFormat={timeFormat}/>
+                <CompletedCard productivity={productivity} timeFormat={timeFormat} />
             </div>
         </div>
 
