@@ -3,7 +3,6 @@ import Productivity, { CompletedTask, Task } from "../../model/Productivity";
 import ProductivityDbItem from "../../model/ProductivityDbItem";
 import NumberUtils from "../../utils/NumberUtils";
 import getTimeUtils from "../../utils/TimeUtils";
-import IKanbanDbService from "../IKanbanDbService";
 import IProductivityDbService from "../IProductivityDbService";
 import IProductivityService from "../IProductivityService";
 
@@ -42,13 +41,6 @@ export default class ProductivityService implements IProductivityService {
         return { timeConsumed, timeRemaining: (7 * 60) - timeConsumed };
     }
 
-    #calculateDuration(initialTime: number) {
-        const { toMinutes } = getTimeUtils();
-        const now = Date.now();
-        const duration = now - initialTime;
-        return toMinutes(duration);
-    }
-
     #calculateProductivity(completedTasks: CompletedTask[], timeConsumed: number): Pick<Productivity, "taskProductivity" | "overallProductivity"> {
         const [sumTimePlanned, sumTimeSpent] = completedTasks.reduce((accumulator, completedTask) => {
             const timePlanned = completedTask.time;
@@ -77,7 +69,7 @@ export default class ProductivityService implements IProductivityService {
 
         const inProgressTasks: Task[] = inProgressCards
             .map(item => {
-                return { duration: this.#calculateDuration(item.start), productivity: this.#getTaskProductivity(item), start: item.start, title: item.title, time: item.time };
+                return { duration: item.duration, productivity: this.#getTaskProductivity(item), start: item.start, title: item.title, time: item.time };
             });
 
         const completedTasks: CompletedTask[] = !productivityErr ? productivityItems.map(item => {
