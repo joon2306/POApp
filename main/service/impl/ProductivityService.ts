@@ -26,9 +26,9 @@ export default class ProductivityService implements IProductivityService {
 
     #getTimeSpent(): Pick<Productivity, "timeRemaining" | "timeConsumed"> {
         const now = Date.now();
-        const { startOfDay, lunchTime, toMinutes } = getTimeUtils();
+        const { startOfWork, lunchTime, toMinutes } = getTimeUtils();
         const isMorning = now < lunchTime;
-        let timeConsumed = toMinutes(now - startOfDay);
+        let timeConsumed = toMinutes(now - startOfWork);
         const fullDay = 7 * 60;
         if (timeConsumed > fullDay) {
             // out of working hours

@@ -12,6 +12,10 @@ export class LocalTime implements ILocalTime {
         return instance;
     }
 
+    #formatMinutes(min: number) {
+        return Number(min.toFixed(0));
+    }
+
 
 
     format(customFormat: (h: number, m: number) => string) {
@@ -29,7 +33,7 @@ export class LocalTime implements ILocalTime {
         } else {
             m = this.#minutes;
         }
-        return customFormat(h, m);
+        return customFormat(h, this.#formatMinutes(m));
     }
 
 }
