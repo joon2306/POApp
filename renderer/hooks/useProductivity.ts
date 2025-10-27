@@ -40,6 +40,7 @@ export default function useProductivity(getTrackingProductivityCards: (productiv
         const load = async () => {
             productivityService.getProductivity().then(result => {
                 if (!cancelled && result) {
+                    console.log("result: ", result);
                     setProductivity(result)
                     setTrackingProductivityCards(getTrackingProductivityCards(result));
                 }
@@ -47,7 +48,7 @@ export default function useProductivity(getTrackingProductivityCards: (productiv
             });
         }
         load();
-        const interval = setInterval(() => load(), 1000 * 3);
+        const interval = setInterval(() => load(), 1000 * 1 * 60);
 
         return () => {
             cancelled = true;
