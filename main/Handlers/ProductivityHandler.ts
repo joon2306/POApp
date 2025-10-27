@@ -25,7 +25,7 @@ export default class ProductivityHandler implements Handler {
     execute(): void {
         this.#commsService.getRequest(CommunicationEvents.getProductivity, () => {
             this.#productivityService.handleExpired();
-            this.#productivityService.get(this.#kanbanDbService.getInProgressCards())
+            return this.#productivityService.get(this.#kanbanDbService.getInProgressCards())
     });
     }
 
