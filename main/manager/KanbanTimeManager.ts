@@ -54,6 +54,8 @@ export default class KanbanTimeManager implements IKanbanTimeManager {
 
     #getUpdatedDuration = (kanbanItem: KanbanDbItem): number => {
         const originalDuration = kanbanItem.duration ?? 0;
+        console.log("original duration: ", originalDuration);
+        console.log("difference in min: ", this.#getDifferenceInMinutes(kanbanItem.start, Date.now()))
         return this.#getDifferenceInMinutes(kanbanItem.start, Date.now()) + originalDuration;
     }
 
@@ -87,6 +89,7 @@ export default class KanbanTimeManager implements IKanbanTimeManager {
         }
 
         const duration = this.#getUpdatedDuration(kanbanItem);
+        console.log("updated duration during delete: ", duration);
         kanbanItem.duration = duration;
         return kanbanItem;
         

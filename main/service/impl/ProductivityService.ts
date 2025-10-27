@@ -34,12 +34,19 @@ export default class ProductivityService implements IProductivityService {
         const fullDay = 7 * 60;
         if (timeConsumed > fullDay) {
             // out of working hours
-            return {timeConsumed: fullDay, timeRemaining: 0}
+            return { timeConsumed: fullDay, timeRemaining: 0 }
         }
         if (!isMorning) {
             timeConsumed = timeConsumed - 60;
         }
         return { timeConsumed, timeRemaining: (7 * 60) - timeConsumed };
+    }
+
+    #calculateDuration(initialTime: number) {
+        const { toMinutes } = getTimeUtils();
+        const now = Date.now();
+        const duration = now - initialTime;
+        return toMinutes(duration);
     }
 
     #calculateProductivity(completedTasks: CompletedTask[], timeConsumed: number): Pick<Productivity, "taskProductivity" | "overallProductivity"> {
@@ -60,7 +67,7 @@ export default class ProductivityService implements IProductivityService {
             ? 0
             : sumTimeSpent / timeConsumed;
 
-        return { taskProductivity: NumberUtils.of(taskProductivity).toFixed(0), overallProductivity: NumberUtils.of(overallProductivity).toFixed(0) }; 
+        return { taskProductivity: NumberUtils.of(taskProductivity).toFixed(2), overallProductivity: NumberUtils.of(overallProductivity).toFixed(2) };
 
 
     }
@@ -70,7 +77,7 @@ export default class ProductivityService implements IProductivityService {
 
         const inProgressTasks: Task[] = inProgressCards
             .map(item => {
-                return { duration: item.duration, productivity: this.#getTaskProductivity(item), start: item.start, title: item.title, time: item.time };
+                return { duration: this.#calculateDuration(item.start), productivity: this.#getTaskProductivity(item), start: item.start, title: item.title, time: item.time };
             });
 
         const completedTasks: CompletedTask[] = !productivityErr ? productivityItems.map(item => {

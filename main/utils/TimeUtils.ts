@@ -13,7 +13,7 @@ const getStartOfWork = () => {
 
 const getLunchTime = () => {
     const timeAt6 = new Date();
-    timeAt6.setHours(12, 0, 0, 0);
+    timeAt6.setHours(13, 0, 0, 0);
     return timeAt6.getTime();
 }
 
