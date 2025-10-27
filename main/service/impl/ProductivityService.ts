@@ -10,10 +10,12 @@ let instance: ProductivityService = null;
 export default class ProductivityService implements IProductivityService {
 
     #productivityDbService: IProductivityDbService = null;
+    #expiredCleared: { cleared: boolean, timestamp: number };
 
     constructor(productivityDbService: IProductivityDbService) {
         if (instance === null) {
             this.#productivityDbService = productivityDbService;
+            this.#expiredCleared = { cleared: false, timestamp: 0 };
             instance = this;
         }
         return instance;
@@ -106,20 +108,25 @@ export default class ProductivityService implements IProductivityService {
     }
 
     handleExpired(): void {
-        const { error, data } = this.#productivityDbService.getAll();
+        const { error, data: items } = this.#productivityDbService.getAll();
         if (error) {
             console.log("could not retrieve items. skipping clearing expired items");
             return;
         }
-
-        const items = data as ProductivityDbItem[];
         const startOfDay = getTimeUtils().startOfDay;
+        if (this.#expiredCleared.cleared && this.#expiredCleared.timestamp > startOfDay) {
+            console.log("expired items have already been handled.");
+            return;
+        }
+
         const expiredItems = items.filter(item => item.deleted && item.deleted < startOfDay);
 
         if (expiredItems.length > 0) {
             for (const item of expiredItems) {
                 this.#productivityDbService.delete(item.id);
             }
+            this.#expiredCleared.cleared = true;
+            this.#expiredCleared.timestamp = Date.now();
         }
     }
 
