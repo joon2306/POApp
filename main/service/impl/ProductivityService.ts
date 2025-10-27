@@ -108,14 +108,14 @@ export default class ProductivityService implements IProductivityService {
     }
 
     handleExpired(): void {
-        const { error, data: items } = this.#productivityDbService.getAll();
-        if (error) {
-            console.log("could not retrieve items. skipping clearing expired items");
-            return;
-        }
         const startOfDay = getTimeUtils().startOfDay;
         if (this.#expiredCleared.cleared && this.#expiredCleared.timestamp > startOfDay) {
             console.log("expired items have already been handled.");
+            return;
+        }
+        const { error, data: items } = this.#productivityDbService.getAll();
+        if (error) {
+            console.log("could not retrieve items. skipping clearing expired items");
             return;
         }
 
