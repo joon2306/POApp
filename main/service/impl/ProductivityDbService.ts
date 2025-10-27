@@ -26,17 +26,13 @@ export default class ProductivityDbService implements IProductivityDbService {
         return instance;
     }
     create(item: ProductivityDbItem): GenericResponse<string> {
-        const { error } = this.findById(item.id);
-        if (!error) {
-            try {
-                const stmt = this.#db.prepare(`INSERT INTO ${TABLE_PRODUCTIVITY_ITEMS} (title, priority, status, time, deleted, duration, start) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
-                stmt.run(item.title, item.priority, item.status, item.time, item.deleted, item.duration, item.start);
-                return { error: false, data: ProductivityDbService.CREATE_SUCCESS_MSG };
+        try {
+            const stmt = this.#db.prepare(`INSERT INTO ${TABLE_PRODUCTIVITY_ITEMS} (title, priority, status, time, deleted, duration, start) VALUES (?, ?, ?, ?, ?, ?, ?)`);
+            stmt.run(item.title, item.priority, item.status, item.time, item.deleted, item.duration, item.start);
+            return { error: false, data: ProductivityDbService.CREATE_SUCCESS_MSG };
 
-            } catch (err) {
-                console.error("error creating db item: ", err);
-            }
-
+        } catch (err) {
+            console.error("error creating db item: ", err);
         }
         return { error: true, data: ProductivityDbService.CREATE_ERROR_MSG }
 

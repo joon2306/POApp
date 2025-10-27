@@ -1,6 +1,7 @@
 import { KanbanDbItem } from "../../model/KanbanItem";
 import Productivity, { CompletedTask, Task } from "../../model/Productivity";
 import ProductivityDbItem from "../../model/ProductivityDbItem";
+import NumberUtils from "../../utils/NumberUtils";
 import getTimeUtils from "../../utils/TimeUtils";
 import IKanbanDbService from "../IKanbanDbService";
 import IProductivityDbService from "../IProductivityDbService";
@@ -55,11 +56,11 @@ export default class ProductivityService implements IProductivityService {
             ? 0
             : sumTimePlanned / sumTimeSpent;
 
-        const overallProductivity = isNaN(timeConsumed / sumTimeSpent)
+        const overallProductivity = isNaN(sumTimeSpent / timeConsumed)
             ? 0
-            : timeConsumed / sumTimeSpent;
+            : sumTimeSpent / timeConsumed;
 
-        return { taskProductivity, overallProductivity };
+        return { taskProductivity: NumberUtils.of(taskProductivity).toFixed(0), overallProductivity: NumberUtils.of(overallProductivity).toFixed(0) }; 
 
 
     }

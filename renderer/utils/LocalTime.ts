@@ -1,3 +1,5 @@
+import NumberUtils from "./NumberUtils";
+
 export default interface ILocalTime {
     format(customFormat: (h: number, m: number) => string);
 }
@@ -11,12 +13,6 @@ export class LocalTime implements ILocalTime {
         instance.#minutes = minutes;
         return instance;
     }
-
-    #formatMinutes(min: number) {
-        return Number(min.toFixed(0));
-    }
-
-
 
     format(customFormat: (h: number, m: number) => string) {
         if(this.#minutes === 0) {
@@ -33,7 +29,7 @@ export class LocalTime implements ILocalTime {
         } else {
             m = this.#minutes;
         }
-        return customFormat(h, this.#formatMinutes(m));
+        return customFormat(h, NumberUtils.of(m).toFixed(0));
     }
 
 }
