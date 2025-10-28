@@ -50,7 +50,7 @@ export default class ProductivityDbService implements IProductivityDbService {
     }
     delete(id: number): GenericResponse<string> {
         try {
-            const stmt = this.#db.prepare(`DELETE * from ${TABLE_PRODUCTIVITY_ITEMS} where id = ?`);
+            const stmt = this.#db.prepare(`DELETE from ${TABLE_PRODUCTIVITY_ITEMS} where id = ?`);
             stmt.run(id);
             return { error: false, data: ProductivityDbService.DELETE_SUCCESS_MSG };
 

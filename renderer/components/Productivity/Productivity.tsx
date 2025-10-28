@@ -11,6 +11,7 @@ import Tag from "../Tag/Tag";
 import TrackingCard, { BodyContent, TrackingContent } from "./TrackingCard";
 import InProgressCard from "./TaskCard/InProgressCards";
 import CompletedCard from "./TaskCard/CompletedCard";
+import NumberUtils from "../../utils/NumberUtils";
 
 
 export default function ProductivityComponent() {
@@ -155,7 +156,7 @@ const taskTracking: IGetTrackingProductivityCardContent = (productivity: Product
         useEffect(() => {
             let cancelled = false;
             if (!cancelled) {
-                const taskProductivity = productivity.taskProductivity * 100;
+                const taskProductivity =   productivity.taskProductivity * 100;
                 taskProductivity < 90 ? setTxt("Needs Improvement") : setTxt("Good Pace");
             }
 
@@ -173,7 +174,7 @@ const taskTracking: IGetTrackingProductivityCardContent = (productivity: Product
         [
             {
                 left: {
-                    text: `${(productivity.taskProductivity * 100)}%`,
+                    text: `${(NumberUtils.of(productivity.taskProductivity * 100).toFixed(2))}%`,
                     color: "#9333EA"
                 }
             },
@@ -203,7 +204,7 @@ const overallTracking: IGetTrackingProductivityCardContent = (productivity: Prod
             let cancelled = false;
             if (!cancelled) {
                 const taskProductivity = productivity.overallProductivity * 100;
-                taskProductivity < 90 ? setTxt("Needs Improvement") : setTxt("Good Pace");
+                taskProductivity < 75 ? setTxt("Needs Improvement") : setTxt("Good Pace");
             }
 
             return () => {
@@ -220,7 +221,7 @@ const overallTracking: IGetTrackingProductivityCardContent = (productivity: Prod
         [
             {
                 left: {
-                    text: `${(productivity.overallProductivity * 100)}%`,
+                    text: `${(NumberUtils.of(productivity.overallProductivity * 100).toFixed(2))}%`,
                     color: "#2563EB"
                 }
             },

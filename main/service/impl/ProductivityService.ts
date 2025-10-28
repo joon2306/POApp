@@ -83,6 +83,8 @@ export default class ProductivityService implements IProductivityService {
 
         const { timeConsumed, timeRemaining } = this.#getTimeSpent();
         const { taskProductivity, overallProductivity } = this.#calculateProductivity(completedTasks, timeConsumed);
+        console.log("taskProductivity: ", taskProductivity);
+        console.log("overall productivity: ", overallProductivity);
 
         return {
             completedTasks,
