@@ -25,20 +25,22 @@ export default class ProductivityService implements IProductivityService {
     }
 
     #getTimeSpent(): Pick<Productivity, "timeRemaining" | "timeConsumed"> {
+        const fullDay = 7 * 60;
+        const { startOfWork, startLunchTime, endLunchTime, toMinutes, endOfDay } = getTimeUtils();
         const now = Date.now();
-        const { startOfWork, lunchTime, toMinutes } = getTimeUtils();
-        const isMorning = now < lunchTime;
-        let timeConsumed = toMinutes(now - startOfWork);
-        console.log("timeConsumed: ", timeConsumed);
-        const fullDay = 8 * 60;
-        if (timeConsumed > fullDay) {
-            // out of working hours
+        if (now >= endOfDay || now <= startOfWork) {
             return { timeConsumed: fullDay, timeRemaining: 0 }
         }
-        if (!isMorning) {
-            timeConsumed = timeConsumed - 60;
+        let timeConsumed: number;
+        if (now < startLunchTime) {
+            timeConsumed = toMinutes(now - startOfWork);
+        } else if (now < endLunchTime) {
+            timeConsumed = toMinutes(startLunchTime - startOfWork);
+        } else {
+            timeConsumed = toMinutes(startLunchTime - startOfWork) + toMinutes(now - endLunchTime);
         }
-        return { timeConsumed, timeRemaining: (7 * 60) - timeConsumed };
+        const timeRemaining = fullDay - timeConsumed;
+        return { timeConsumed, timeRemaining };
     }
 
     #calculateProductivity(completedTasks: CompletedTask[], timeConsumed: number): Pick<Productivity, "taskProductivity" | "overallProductivity"> {
