@@ -30,7 +30,7 @@ export default class ProductivityService implements IProductivityService {
         const isMorning = now < lunchTime;
         let timeConsumed = toMinutes(now - startOfWork);
         console.log("timeConsumed: ", timeConsumed);
-        const fullDay = 7 * 60;
+        const fullDay = 8 * 60;
         if (timeConsumed > fullDay) {
             // out of working hours
             return { timeConsumed: fullDay, timeRemaining: 0 }
