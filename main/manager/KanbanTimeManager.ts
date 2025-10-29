@@ -17,6 +17,7 @@ export interface IKanbanTimeManager {
 }
 
 const IN_PROGRESS = 2;
+const PENDING = 1;
 let instance: KanbanTimeManager = null;
 export default class KanbanTimeManager implements IKanbanTimeManager {
 
@@ -34,7 +35,7 @@ export default class KanbanTimeManager implements IKanbanTimeManager {
         return kanbanCards.filter(item => item.status === IN_PROGRESS && item.start && item.start < this.#startOfDay)
         .map(expiredKanbanItem => {
             expiredKanbanItem.duration = 0;
-            expiredKanbanItem.start = Date.now();
+            expiredKanbanItem.status = PENDING; // move back to pending
             return expiredKanbanItem;
         })
     }

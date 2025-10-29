@@ -55,7 +55,6 @@ export default class KanbanHandler implements Handler {
     }
 
     execute() {
-        this.#kanbanDbService.resetInProgressCards();
         this.#getKanbanCards();
         this.#saveKanbanCard();
         this.#deleteCard();

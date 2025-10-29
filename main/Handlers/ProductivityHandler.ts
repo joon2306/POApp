@@ -2,6 +2,7 @@ import CommunicationEvents from "../../renderer/types/CommunicationEvent";
 import ICommunicationService from "../service/ICommunicationService";
 import IKanbanDbService from "../service/IKanbanDbService";
 import IProductivityService from "../service/IProductivityService";
+import ExpiryHandler from "./ExpiryHandler";
 import Handler from "./Handler";
 
 let instance: ProductivityHandler = null;
@@ -24,9 +25,9 @@ export default class ProductivityHandler implements Handler {
 
     execute(): void {
         this.#commsService.getRequest(CommunicationEvents.getProductivity, () => {
-            this.#productivityService.handleExpired();
+            (new ExpiryHandler(this.#productivityService, this.#kanbanDbService)).execute();
             return this.#productivityService.get(this.#kanbanDbService.getInProgressCards())
-    });
+        });
     }
 
 
