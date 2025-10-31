@@ -29,7 +29,7 @@ export default class ExpiryHandler implements Handler {
         }
 
         this.#productivityService.handleExpired();
-        this.#kanbanDbService.resetInProgressCards();
+        this.#kanbanDbService.resetCards();
 
         this.#expired.cleared = true;
         this.#expired.timestamp = Date.now();

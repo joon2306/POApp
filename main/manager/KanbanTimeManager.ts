@@ -32,12 +32,20 @@ export default class KanbanTimeManager implements IKanbanTimeManager {
     }
 
     getExpiredKanbans(kanbanCards: KanbanDbItem[]) {
-        return kanbanCards.filter(item => item.status === IN_PROGRESS && item.start && item.start < this.#startOfDay)
+        const inProgress = kanbanCards.filter(item => item.status === IN_PROGRESS && item.start && item.start < this.#startOfDay)
         .map(expiredKanbanItem => {
             expiredKanbanItem.duration = 0;
             expiredKanbanItem.status = PENDING; // move back to pending
             return expiredKanbanItem;
         })
+
+        const pendingOrBlocked =  kanbanCards.filter(item => item.status !== IN_PROGRESS && item.duration && item.duration !== 0)
+        .map(item => {
+            item.duration = 0;
+            return item;
+        })
+;
+        return [...inProgress, ...pendingOrBlocked];
     }
 
     updateInProgress(kanbanCards: KanbanDbItem[]) {

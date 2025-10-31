@@ -18,7 +18,7 @@ export default class KanbanDbService implements IKanbanDbService {
         }
         return instance;
     }
-    resetInProgressCards(): void {
+    resetCards(): void {
         const { error, data: kanbanCards } = this.getAll();
         if (!error) {
             const expiredCards = this.#kanbanTimeManager.getExpiredKanbans(kanbanCards);
