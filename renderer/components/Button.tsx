@@ -1,14 +1,14 @@
 import { ButtonProps, SubmitButtonProps, variant } from "../types/ButtonTypes";
 import styles from "../styles/button/style.module.css";
 
-type ButtonColors = {
+export type ButtonColors = {
     [key in variant]: {
         color: string;
         hover: string;
     };
 };
 
-const buttonColors: ButtonColors = {
+export const buttonColors: ButtonColors = {
     primary: {
         color: "#007bff",
         hover: "#0056b3"
@@ -33,21 +33,21 @@ const buttonColors: ButtonColors = {
 
 } as const;
 
-const Button = ({ onClick, variant, label }: ButtonProps
-
-
-) => {
+const Button = ({ onClick, variant, label, icon, customStyles }: ButtonProps) => {
+    const Icon = icon?.Icon;
     return (
         <button
             style={{
                 backgroundColor: buttonColors[variant].color
             }}
-            className={styles.btn}
+            className={`${styles.btn} ${customStyles ?? ''}`}
             onClick={onClick}
             onMouseOver={(e) => e.currentTarget.style.backgroundColor = buttonColors[variant].hover}
             onMouseOut={(e) => e.currentTarget.style.backgroundColor = buttonColors[variant].color}
         >
-            {label}
+            <div className="flex flex-wrap gap-2 items-center justify-center">
+                {icon && <Icon color={icon.color} />} {label}
+            </div>
         </button>
     )
 
@@ -55,7 +55,7 @@ const Button = ({ onClick, variant, label }: ButtonProps
 }
 
 
-const SubmitButton = ({  variant, label, isDisabled }: SubmitButtonProps
+const SubmitButton = ({ variant, label, isDisabled }: SubmitButtonProps
 
 
 ) => {

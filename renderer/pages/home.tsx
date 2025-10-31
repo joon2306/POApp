@@ -6,6 +6,7 @@ import EmailGenerator from '../components/EmailGenerator/EmailGenerator';
 import JiraGenerator from '../components/JiraGenerator/JiraGenerator';
 import English from '../components/English/English';
 import ProductivityComponent from '../components/Productivity/Productivity';
+import VaultComponent from '../components/Vault/VaultComponent';
 
 export default function HomePage() {
 
@@ -18,13 +19,9 @@ export default function HomePage() {
       title: "Kanban",
       content: Kanban
     },
-    Feature: {
-      title: "feature generator",
-      content: FeatureGeneratorMenu
-    },
-    Email: {
-      title: "email generator",
-      content: EmailGeneratorMenu
+    Vault: {
+      title: "Vault", 
+      content: VaultComponent
     }
   }
 

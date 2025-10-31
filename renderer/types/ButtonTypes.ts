@@ -1,7 +1,14 @@
+import { IconType } from "react-icons";
+
 export interface ButtonProps {
     onClick: () => void;
     variant: variant;
     label: string;
+    icon?: {
+        Icon: IconType;
+        color?: string;
+    },
+    customStyles?: string
 }
 
 export interface SubmitButtonProps {
