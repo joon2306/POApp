@@ -1,5 +1,5 @@
 import getDatabase from "../database/database";
-import KanbanTimeManager, { IKanbanTimeManager } from "../manager/KanbanTimeManager";
+import KanbanTimeManager from "../manager/KanbanTimeManager";
 import ICommunicationService from "../service/ICommunicationService";
 import IKanbanDbService from "../service/IKanbanDbService";
 import CommsService from "../service/impl/CommsService";
@@ -9,11 +9,15 @@ import ProductivityService from "../service/impl/ProductivityService";
 import IProductivityService from "../service/IProductivityService";
 import { Database } from "better-sqlite3";
 import IProvider from "./Provider";
+import ICopyService from "../service/ICopyService";
+import CopyService from "../service/CopyService";
 
 type ServiceManagerProviderType = {
     productivityService: IProductivityService;
     kanbanDbService: IKanbanDbService;
     commsService: ICommunicationService;
+    copyService: ICopyService;
+
 }
 
 
@@ -34,12 +38,14 @@ export class ServiceManagerProvider implements IProvider<ServiceManagerProviderT
         const productivityService = new ProductivityService(productivityDbService);
         const kanbanTimeManager = new KanbanTimeManager();
         const kanbanDbService = new KanbanDbService(this.#db, kanbanTimeManager);
-        const commsService = new CommsService();
+        const commsService = new CommsService();        
+        const copyService = new CopyService();
 
         return {
             productivityService,
             kanbanDbService,
-            commsService
+            commsService,
+            copyService
         }
     }
 

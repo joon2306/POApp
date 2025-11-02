@@ -10,7 +10,8 @@ const CommunicationEvents = Object.freeze({
     translateEmail: "translate-email",
     generateJira: "generate-jira",
     improveEnglish: "improve-english",
-    getProductivity: "getProductivity"
+    getProductivity: "getProductivity",
+    copy: "copy"
 });
 
 export default CommunicationEvents;

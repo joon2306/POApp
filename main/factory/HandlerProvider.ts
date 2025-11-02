@@ -1,3 +1,4 @@
+import CopyHandler from "../Handlers/CopyHandler";
 import Handler from "../Handlers/Handler";
 import KanbanHandler from "../Handlers/KanbanHandler"
 import ProductivityHandler from "../Handlers/ProductivityHandler";
@@ -62,10 +63,11 @@ export default class HandlerProvider implements IProvider<IHandlerProviderRespon
     }
 
     provide(): IHandlerProviderResponse {
-        const { kanbanDbService, commsService, productivityService } = this.#serviceManagerProvider.provide();
+        const { kanbanDbService, commsService, productivityService, copyService } = this.#serviceManagerProvider.provide();
         const kanbanHandler = new KanbanHandler(kanbanDbService, commsService, productivityService);
         const productivityHandler = new ProductivityHandler(productivityService, commsService, kanbanDbService);
-        return new HandlerProviderResponse([kanbanHandler, productivityHandler]);
+        const copyHandler = new CopyHandler(copyService, commsService);
+        return new HandlerProviderResponse([kanbanHandler, productivityHandler, copyHandler]);
     }
 
 }

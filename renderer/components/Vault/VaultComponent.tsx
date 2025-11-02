@@ -1,15 +1,23 @@
 import { variant } from "../../types/ButtonTypes";
 import Button, { buttonColors } from "../Button";
 import { BsFloppy } from 'react-icons/bs';
+import { MdOutlineCancel } from 'react-icons/md';
 import Input from "../Form/Input";
 import Card from "../Card";
+import { useState } from "react";
+import Vault from "../../models/Vault/Vault";
+import useVault from "../../hooks/useVault";
+import CopyService from "../../services/impl/CopyService";
+import CommsService from "../../services/impl/CommsService";
 
 export default function VaultComponent() {
+    const { vaults } = useVault();
+
     return (
         <div className="m-5">
             <Header />
             <div className="border my-5"></div>
-            <Body />
+            <Body vaults={vaults}/>
         </div>
     )
 }
@@ -23,27 +31,32 @@ function Header(): React.ReactElement<void> {
     )
 }
 
-function Body(): React.ReactElement<void> {
+function Body({ vaults }: { vaults: Vault[] }): React.ReactElement<{ vaults: Vault[] }> {
 
-    const labels = ["hello", "world", "test", "test2", "test3", "test4", "test5", "test6", "test7", "test8", "test9", "test10"];
+    const [toggle, setToggle] = useState<boolean>(false);
+
+    const doToggle = () => {
+        setToggle(!toggle);
+    }
 
     return (
         <>
-            <Button label="Add New Secret" onClick={() => console.log("button clicked")} variant="primary" icon={{ Icon: BsFloppy }} />
+            {!toggle && <Button label="Add New Secret" onClick={doToggle} variant="primary" icon={{ Icon: BsFloppy }} />}
+            {toggle && <Button label="Cancel" onClick={doToggle} variant="danger" icon={{ Icon: MdOutlineCancel }} />}
 
             <div>
+                {toggle &&
+                    <div className="mt-5">
+                        <Card Content={StoredForm} height={{ large: "auto", medium: "auto" }} width={{ large: "auto", medium: "auto" }} />
+                    </div>
+                }
                 <h1 className="text-2xl font-bold text-[black] mt-5">Your Stored Items</h1>
-
-                <div className="mt-5">
-                    <Card Content={StoredForm} height={{ large: "auto", medium: "auto" }} width={{ large: "auto", medium: "auto" }}/>
-                </div>
-
 
                 <div className="mt-10 grid md:grid-cols-4 lg:grid-cols-6 gap-10">
                     {
-                        labels && labels.map((label, index) => (
+                        vaults && vaults.map((vault, index) => (
                             <>
-                                <StoredBtn label={label} key={index} index={index} />
+                                <StoredBtn vault={vault} key={index} index={index} />
                             </>
                         ))
                     }
@@ -56,7 +69,9 @@ function Body(): React.ReactElement<void> {
 }
 
 
-function StoredBtn({ label, index }: { label: string, index: number }): React.ReactElement<{ label: string, index: number }> {
+function StoredBtn({ vault, index }: { vault: Vault, index: number }): React.ReactElement<{ vault: Vault, index: number }> {
+
+    const copyService = new CopyService(new CommsService());
 
     const getBtnColor = (index: number): variant => {
         index = index > 4 ? index % 5 : index;
@@ -67,7 +82,7 @@ function StoredBtn({ label, index }: { label: string, index: number }): React.Re
 
         <>
             <div className="flex justify-center">
-                <Button onClick={() => console.log("button clicked")} label={label} variant={getBtnColor(index)} key={index} customStyles="w-[150px] h-[100px]" />
+                <Button onClick={() => copyService.copy(vault.texts)} label={vault.title} variant={getBtnColor(index)} key={index} customStyles="w-[150px] h-[100px]" />
             </div>
 
         </>
@@ -86,7 +101,7 @@ function StoredForm() {
                     <Input title="Text 3" onChange={() => console.log("a change")} error={false} errorMessage="" value={""} />
                 </div>
                 <div className="mt-5">
-                    <Button label="Save New Item" onClick={() => console.log("save")} variant="success" icon={{Icon: BsFloppy}}/>
+                    <Button label="Save New Item" onClick={() => console.log("save")} variant="success" icon={{ Icon: BsFloppy }} />
                 </div>
             </div>
 

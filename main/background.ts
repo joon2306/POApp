@@ -47,13 +47,5 @@ ipcMain.on('message', async (event, arg) => {
   event.reply('message', `${arg} World!`)
 })
 
-generateFeature();
-refineFeature();
-summaryFeature();
-exportFeature();
-translate();
-generateJira();
-improve();
-
 const handlerProvider = (new HandlerProvider()).provide();
 handlerProvider.executeAll();
