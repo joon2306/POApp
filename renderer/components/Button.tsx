@@ -1,5 +1,6 @@
 import { ButtonProps, SubmitButtonProps, variant } from "../types/ButtonTypes";
 import styles from "../styles/button/style.module.css";
+import { useEffect, useState } from "react";
 
 export type ButtonColors = {
     [key in variant]: {
@@ -33,22 +34,32 @@ export const buttonColors: ButtonColors = {
 
 } as const;
 
-const Button = ({ onClick, variant, label, icon, customStyles }: ButtonProps) => {
+const Button = ({ onClick, variant, label, icon, customStyles, isLoading }: ButtonProps) => {
     const Icon = icon?.Icon;
+    isLoading = !!isLoading;
+
+    const handleClick = () => {
+        if(isLoading) {
+            return;
+        }
+        onClick();
+    }
     return (
+
         <button
             style={{
                 backgroundColor: buttonColors[variant].color
             }}
             className={`${styles.btn} ${customStyles ?? ''}`}
-            onClick={onClick}
+            onClick={handleClick}
             onMouseOver={(e) => e.currentTarget.style.backgroundColor = buttonColors[variant].hover}
             onMouseOut={(e) => e.currentTarget.style.backgroundColor = buttonColors[variant].color}
         >
             <div className="flex flex-wrap gap-2 items-center justify-center">
-                {icon && <Icon color={icon.color} />} {label}
+                {!isLoading && icon && <Icon color={icon.color} />} {!isLoading ? label: <LoadingText/>}
             </div>
         </button>
+
     )
 
 
@@ -77,6 +88,20 @@ const SubmitButton = ({ variant, label, isDisabled }: SubmitButtonProps
 
 
 }
+
+const LoadingText = () => {
+    const [dots, setDots] = useState<number>(1);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setDots(prev => (prev % 3) + 1);
+        }, 500);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    return <span>Processing{'.'.repeat(dots)}</span>;
+};
 
 
 export default Button;

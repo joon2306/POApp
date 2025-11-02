@@ -1,3 +1,3 @@
 export default interface ICopyService {
-    copy(input: string[]): void;
+    copy(input: string[]): Promise<void>;
 }

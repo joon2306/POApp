@@ -8,7 +8,8 @@ export interface ButtonProps {
         Icon: IconType;
         color?: string;
     },
-    customStyles?: string
+    customStyles?: string;
+    isLoading?: boolean;
 }
 
 export interface SubmitButtonProps {

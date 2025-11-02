@@ -17,7 +17,7 @@ export default function VaultComponent() {
         <div className="m-5">
             <Header />
             <div className="border my-5"></div>
-            <Body vaults={vaults}/>
+            <Body vaults={vaults} key="body" />
         </div>
     )
 }
@@ -55,9 +55,9 @@ function Body({ vaults }: { vaults: Vault[] }): React.ReactElement<{ vaults: Vau
                 <div className="mt-10 grid md:grid-cols-4 lg:grid-cols-6 gap-10">
                     {
                         vaults && vaults.map((vault, index) => (
-                            <>
-                                <StoredBtn vault={vault} key={index} index={index} />
-                            </>
+
+                            <StoredBtn vault={vault} key={index} index={index} />
+
                         ))
                     }
                 </div>
@@ -73,16 +73,24 @@ function StoredBtn({ vault, index }: { vault: Vault, index: number }): React.Rea
 
     const copyService = new CopyService(new CommsService());
 
+    const [isLoading, setLoading] = useState<boolean>(false);
+
     const getBtnColor = (index: number): variant => {
         index = index > 4 ? index % 5 : index;
         return (Object.keys(buttonColors)[index]) as variant;
+    }
+
+    const handleClick = () => {
+        setLoading(true);
+        copyService.copy(vault.texts)
+        .then(() => setLoading(false));
     }
 
     return (
 
         <>
             <div className="flex justify-center">
-                <Button onClick={() => copyService.copy(vault.texts)} label={vault.title} variant={getBtnColor(index)} key={index} customStyles="w-[150px] h-[100px]" />
+                <Button onClick={handleClick} label={vault.title} variant={getBtnColor(index)} key={index} customStyles="w-[150px] h-[100px]" isLoading={isLoading} />
             </div>
 
         </>

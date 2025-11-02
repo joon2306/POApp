@@ -19,6 +19,6 @@ export default class CopyHandler implements Handler {
 
     }
     execute() {
-        this.#commsService.getRequest(CommunicationEvents.copy, ([{ input }]: Array<{ input: string[] }>) => this.#copyService.copy(input));
+        this.#commsService.getRequest(CommunicationEvents.copy, async ([{ input }]: Array<{ input: string[] }>) => await this.#copyService.copy(input));
     }
 }

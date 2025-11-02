@@ -13,7 +13,7 @@ export default class CopyService implements ICopyService {
         }
         return instance;
     }
-    copy(input: string[]): void {
+    async copy(input: string[]): Promise<void> {
         if (input && input.length === 0) {
             throw new Error("cannot copy as empty array");
         }
@@ -21,7 +21,7 @@ export default class CopyService implements ICopyService {
             navigator.clipboard.writeText(input[0]);
             return;
         }
-        this.#commsServide.sendRequest(CommunicationEvents.copy, { input });
+        await this.#commsServide.sendRequest(CommunicationEvents.copy, { input });
     }
 
 }
