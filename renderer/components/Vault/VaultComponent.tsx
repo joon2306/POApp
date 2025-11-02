@@ -9,7 +9,7 @@ import Vault from "../../models/Vault/Vault";
 import useVault from "../../hooks/useVault";
 import Form from "../Form";
 import useVaultForm, { useVaultFormType } from "../../hooks/useVaultForm";
-import { StringValidator } from "../../utils/StringValidator";
+import Validator from "../../utils/Validator";
 
 export default function VaultComponent() {
     const { vaults, copy } = useVault();
@@ -131,8 +131,8 @@ function StoredForm() {
     const { title, text1, text2, text3, titleError, setTitleError, text1Error, setText1Error } = formState;
 
     const validateForm = () => {
-        const titleError = StringValidator.validate(title).blank().hasError();
-        const text1Error = StringValidator.validate(text1).blank().hasError();
+        const titleError = Validator.string(title).isBlank().validate();
+        const text1Error = Validator.string(text1).isBlank().validate();
         setTitleError(titleError);
         setText1Error(text1Error);
         return titleError || text1Error;
@@ -154,13 +154,13 @@ function StoredForm() {
             <div className="mt-5">
                 <Form
                     Content={FormContent}
-                    error={false}
+                    error={titleError || text1Error}
                     handleSubmit={handleSubmit}
                     submitOnEnter={true}
                     formProps={formState}
                 />
                 <div className="mt-5">
-                    <Button label="Save New Item" onClick={() => console.log("save")} variant="success" icon={{ Icon: BsFloppy }} />
+                    <Button label="Save New Item" onClick={handleSubmit} variant="success" icon={{ Icon: BsFloppy }} />
                 </div>
             </div>
         </div>
