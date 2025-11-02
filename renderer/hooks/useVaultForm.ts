@@ -1,27 +1,83 @@
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
+import Validator from "../utils/Validator";
+
+type InputData = {
+    key: string;
+    value: string;
+    isMandatory: boolean;
+    hasError: boolean;
+    errorMsg?: string;
+}
+
+type FormConfig = {
+    mainInputs: InputData[];
+    subInputs: InputData[];
+}
+
 
 export type useVaultFormType = {
-    title: string;
-    text1: string;
-    text2: string;
-    text3: string;
-    titleError: boolean;
-    text1Error: boolean;
-    setTitle(val: string): void;
-    setText1(val: string): void;
-    setText2(val: string): void;
-    setText3(val: string): void;
-    setTitleError(val: boolean): void;
-    setText1Error(val: boolean): void;
+    handleChange(key: string, type: "main" | "sub", e: ChangeEvent<HTMLInputElement>): void;
+    validateForm(): boolean;
+    formConfig: FormConfig;
+    error: boolean;
+    reset(): void;
 
 }
 
+const DEFAULT_FORM_CONFIG: FormConfig = {
+    mainInputs: [
+        { hasError: false, isMandatory: true, value: "", key: "Title", errorMsg: "Title required" }
+    ],
+    subInputs: [
+        { hasError: false, isMandatory: true, value: "", key: "Text1", errorMsg: "Text1 required" },
+        { hasError: false, isMandatory: false, value: "", key: "Text2" },
+        { hasError: false, isMandatory: false, value: "", key: "Text3" }
+    ]
+}
+
 export default function useVaultForm(): useVaultFormType {
-    const [title, setTitle] = useState<string>("");
-    const [text1, setText1] = useState<string>("");
-    const [text2, setText2] = useState<string>("");
-    const [text3, setText3] = useState<string>("");
-    const [titleError, setTitleError] = useState<boolean>(false);
-    const [text1Error, setText1Error] = useState<boolean>(false);
-    return { title, text1, text2, text3, titleError, text1Error, setTitle, setText1, setText2, setText3, setTitleError, setText1Error };
+
+    const [formConfig, setFormConfig] = useState<FormConfig>(DEFAULT_FORM_CONFIG);
+    const [error, setError] = useState<boolean>(false);
+
+    const handleChange = (key: string, type: "main" | "sub", e: ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+
+        setFormConfig(prev => ({
+            ...prev,
+            [`${type}Inputs`]: prev[`${type}Inputs`].map(input =>
+                input.key === key ? { ...input, value } : input
+            ),
+        }));
+    };
+
+
+    const validateForm = () => {
+
+        const validateInputs = (inputs: InputData[]) => {
+            return inputs.map(input => {
+                input.hasError = input.isMandatory && Validator.string(input.value).isBlank().validate()
+                return input;
+            });
+        }
+
+        const mainInputs = validateInputs(formConfig.mainInputs);
+        const subInputs = validateInputs(formConfig.subInputs);
+
+        if (mainInputs.some(input => input.hasError) || subInputs.some(input => input.hasError)) {
+            setFormConfig({ mainInputs, subInputs });
+            setError(true);
+            return true;
+        }
+
+        setError(false);
+        return false;
+    }
+
+    const reset = () => {
+        setFormConfig(DEFAULT_FORM_CONFIG);
+    }
+
+
+    return { formConfig, handleChange, validateForm, error, reset };
 }

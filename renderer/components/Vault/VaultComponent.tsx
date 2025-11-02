@@ -4,12 +4,11 @@ import { BsFloppy } from 'react-icons/bs';
 import { MdOutlineCancel } from 'react-icons/md';
 import Input from "../Form/Input";
 import Card from "../Card";
-import { ChangeEvent, FormEvent, SyntheticEvent, useMemo, useState } from "react";
+import { useState } from "react";
 import Vault from "../../models/Vault/Vault";
 import useVault from "../../hooks/useVault";
 import Form from "../Form";
 import useVaultForm, { useVaultFormType } from "../../hooks/useVaultForm";
-import Validator from "../../utils/Validator";
 
 export default function VaultComponent() {
     const { vaults, copy } = useVault();
@@ -97,54 +96,41 @@ function StoredBtn({ vault, index, copy }: { vault: Vault, index: number, copy: 
 }
 
 function FormContent({ formProps }: { formProps: useVaultFormType }) {
-    const { title, text1, text2, text3, titleError, text1Error, setTitle, setText1, setText2, setText3, setTitleError, setText1Error } = formProps;
-
-    const callbackMap = {
-        Title: setTitle,
-        Text1: setText1,
-        Text2: setText2,
-        Text3: setText3
-    } as const;
-
-    type Key = keyof typeof callbackMap;
-
-    const handleChange = (key: Key, e: ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value; // do not trim
-        callbackMap[key](value);
-    };
+    const { formConfig, handleChange } = formProps;
 
     return (
         <>
-            <Input title="Title" onChange={(e) => handleChange("Title", e)} value={title} error={titleError} errorMessage="Title required" />
+            {
+                formConfig.mainInputs && formConfig.mainInputs.length > 0 && (
+                    formConfig.mainInputs.map((input, index) => {
+                        return <Input key={index} title={input.key} onChange={(e) => handleChange(input.key, "main", e)} value={input.value} error={input.hasError} errorMessage={input.errorMsg ?? ""} />
+                    })
+                )
+            }
             <div className="grid grid-cols-3 mt-5 gap-3">
-                <Input title="Text 1" onChange={(e) => handleChange("Text1", e)} value={text1} error={text1Error} errorMessage="Text required" />
-                <Input title="Text 2" onChange={(e) => handleChange("Text2", e)} value={text2} error={false} errorMessage="" />
-                <Input title="Text 3" onChange={(e) => handleChange("Text3", e)} value={text3} error={false} errorMessage="" />
+                {
+                    formConfig.subInputs && formConfig.subInputs.length > 0 && (
+                        formConfig.subInputs.map((input, index) => {
+                            return <Input key={index} title={input.key} onChange={(e) => handleChange(input.key, "sub", e)} value={input.value} error={input.hasError} errorMessage={input.errorMsg ?? ""} />
+                        })
+                    )
+                }
             </div>
         </>
     );
 }
 
 function StoredForm() {
-    const formState = useVaultForm(); // hook at top level
+    const formState = useVaultForm();
 
-    const { title, text1, text2, text3, titleError, setTitleError, text1Error, setText1Error } = formState;
-
-    const validateForm = () => {
-        const titleError = Validator.string(title).isBlank().validate();
-        const text1Error = Validator.string(text1).isBlank().validate();
-        setTitleError(titleError);
-        setText1Error(text1Error);
-        return titleError || text1Error;
-    }
+    const { validateForm, error, reset } = formState;
 
     const handleSubmit = () => {
         const hasError = validateForm();
-        if(hasError) {
+        if (hasError) {
             console.log("form invalid");
             return;
         }
-
         console.log("form has been submitted");
     };
 
@@ -154,7 +140,7 @@ function StoredForm() {
             <div className="mt-5">
                 <Form
                     Content={FormContent}
-                    error={titleError || text1Error}
+                    error={error}
                     handleSubmit={handleSubmit}
                     submitOnEnter={true}
                     formProps={formState}

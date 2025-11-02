@@ -12,7 +12,7 @@ export type CardType = {
     height: VariableSize;
     Content: React.ComponentType;
     bgColor?: string;
-    customStyles?: string
+    customStyles?: string;
 }
 
 export default function Card({ width, height, Content, bgColor, customStyles }: CardType) {
