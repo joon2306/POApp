@@ -9,6 +9,7 @@ export default class CopyService implements ICopyService {
 
     constructor() {
         if (instance === null) {
+            this.copy = this.copy.bind(this)
             instance = this;
         }
         return this;
@@ -20,7 +21,7 @@ export default class CopyService implements ICopyService {
             const clipboardyInput = ["write", ...input];
             console.log("clipboardyInput: ", clipboardyInput);
             execFile(exePath, clipboardyInput, (err) => {
-                console.error(err)
+                if (err) console.error(err)
                 resolve();
             });
         })

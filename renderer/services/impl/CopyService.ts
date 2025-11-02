@@ -8,6 +8,7 @@ export default class CopyService implements ICopyService {
     #commsServide: ICommsService;
     constructor(commsService: ICommsService) {
         if (instance === null) {
+            this.copy = this.copy.bind(this)
             this.#commsServide = commsService;
             instance = this;
         }
