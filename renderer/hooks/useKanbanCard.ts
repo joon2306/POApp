@@ -1,23 +1,11 @@
 import { useEffect, useState } from "react";
+import useDelete from "./useDelete";
 
 export const useKanbanCard = (deleteCard: (id: string) => void, id: string) => {
     const [isHovered, setIsHovered] = useState(false);
 
     const handleDeleteCard = () => deleteCard(id);
-
-    useEffect(() => {
-        const handleKeyDown = (event) => {
-            if (isHovered && event.key === 'Delete') {
-                handleDeleteCard();
-            }
-        };
-
-        document.addEventListener('keydown', handleKeyDown);
-
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [isHovered]);
+    useDelete({isHovered, callback: handleDeleteCard, arg: id});
 
     return { setIsHovered }
 }

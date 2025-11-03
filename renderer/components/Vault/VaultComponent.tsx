@@ -9,6 +9,7 @@ import Vault from "../../models/Vault/Vault";
 import useVault from "../../hooks/useVault";
 import Form from "../Form";
 import useVaultForm, { useVaultFormType } from "../../hooks/useVaultForm";
+import useDelete from "../../hooks/useDelete";
 
 export default function VaultComponent() {
     const { vaults, copy, add, deleteVault } = useVault();
@@ -113,19 +114,7 @@ function StoredBtn({ vault, index, copy, deleteVault }: { vault: Vault, index: n
             .then(() => setLoading(false));
     }
 
-    useEffect(() => {
-        const handleKeyDown = (event) => {
-            if (isHovered && event.key === 'Delete') {
-                deleteVault(vault.title);
-            }
-        };
-
-        document.addEventListener('keydown', handleKeyDown);
-
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [isHovered]);
+    useDelete({isHovered, callback: deleteVault, arg: vault.title});
 
     return (
 
