@@ -1,8 +1,6 @@
 export type VaultInput = {
     title: string;
-    text1: string;
-    text2?: string;
-    text3?: string;
+    texts: string[]
 }
 
 export default interface Vault {
@@ -12,13 +10,15 @@ export default interface Vault {
 
 export class VaultImpl implements Vault {
     #texts: string[] = [];
+    #title: string;
 
-    constructor({ title, text1, text2, text3 }: VaultInput) {
-        this.#texts = [title, text1, text2, text3];
+    constructor({ title, texts}: VaultInput) {
+        this.#title = title;
+        this.#texts = texts;
     }
 
     get title() {
-        return this.#texts[0];
+        return this.#title;
     }
 
     get texts() {

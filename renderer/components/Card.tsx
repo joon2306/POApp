@@ -7,15 +7,16 @@ export type VariableSize = {
     medium: Size;
     large: Size
 }
-export type CardType = {
+export type CardType<T> = {
     width: VariableSize;
     height: VariableSize;
     Content: React.ComponentType;
     bgColor?: string;
     customStyles?: string;
+    contentProps?: T;
 }
 
-export default function Card({ width, height, Content, bgColor, customStyles }: CardType) {
+export default function Card<T>({ width, height, Content, bgColor, customStyles, contentProps }: CardType<T>) {
     return (
         <>
             <div className={`bg-white rounded-xl shadow-md border border-gray-300 p-5 ${styles.card} ${customStyles ? customStyles : ""}`} style={{
@@ -25,7 +26,7 @@ export default function Card({ width, height, Content, bgColor, customStyles }: 
                 "--card-h-lg": height.large,
                 ...(bgColor && { backgroundColor: bgColor }),
             } as React.CSSProperties}>
-                <Content></Content>
+                <Content {...contentProps}></Content>
             </div>
         </>
     )

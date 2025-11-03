@@ -18,10 +18,6 @@ export default class CopyService implements ICopyService {
         if (input && input.length === 0) {
             throw new Error("cannot copy as empty array");
         }
-        if (input.length === 1) {
-            navigator.clipboard.writeText(input[0]);
-            return;
-        }
         await this.#commsServide.sendRequest(CommunicationEvents.copy, { input });
     }
 

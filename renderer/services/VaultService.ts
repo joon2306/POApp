@@ -26,9 +26,9 @@ export class VaultService implements IVaultService {
 
     #initVaults() {
         this.#vaults = [
-            new VaultImpl({title: "test", text1: "text1"}),
-            new VaultImpl({title: "test1", text1: "text12", text2: "text22"}),
-            new VaultImpl({title: "test3", text1: "text13", text2: "text23", text3: "text33"})
+            new VaultImpl({ title: "test", texts: ["text1"] }),
+            new VaultImpl({ title: "test1", texts: ["text12", "text22"] }),
+            new VaultImpl({ title: "test3", texts: ["text13", "text23", "text33"] })
         ]
     }
 

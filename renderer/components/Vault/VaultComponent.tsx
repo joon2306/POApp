@@ -4,20 +4,20 @@ import { BsFloppy } from 'react-icons/bs';
 import { MdOutlineCancel } from 'react-icons/md';
 import Input from "../Form/Input";
 import Card from "../Card";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Vault from "../../models/Vault/Vault";
 import useVault from "../../hooks/useVault";
 import Form from "../Form";
 import useVaultForm, { useVaultFormType } from "../../hooks/useVaultForm";
 
 export default function VaultComponent() {
-    const { vaults, copy } = useVault();
+    const { vaults, copy, add, deleteVault } = useVault();
 
     return (
         <div className="m-5">
             <Header />
             <div className="border my-5"></div>
-            <Body vaults={vaults} copy={copy} />
+            <Body vaults={vaults} copy={copy} add={add} deleteVault={deleteVault} />
         </div>
     )
 }
@@ -31,7 +31,16 @@ function Header(): React.ReactElement<void> {
     )
 }
 
-function Body({ vaults, copy }: { vaults: Vault[], copy: (input: string[]) => Promise<void> }): React.ReactElement<{ vaults: Vault[], copy: (input: string[]) => Promise<void> }> {
+
+function EmptyContent(): React.ReactElement {
+    return (
+        <>
+            <h1 className="text-xl font-bold"> There are no stored items </h1>
+        </>
+    )
+}
+
+function Body({ vaults, copy, add, deleteVault }: { vaults: Vault[], copy: (input: string[]) => Promise<void>, add: (texts: string[]) => void, deleteVault: (title: string) => void }): React.ReactElement {
 
     const [toggle, setToggle] = useState<boolean>(false);
 
@@ -39,28 +48,47 @@ function Body({ vaults, copy }: { vaults: Vault[], copy: (input: string[]) => Pr
         setToggle(!toggle);
     }
 
+    const handleAdd = (texts: string[]) => {
+        add(texts);
+        if (vaults.length === 1) {
+            return;
+        }
+        doToggle();
+    }
+
     return (
         <>
-            {!toggle && <Button label="Add New Secret" onClick={doToggle} variant="primary" icon={{ Icon: BsFloppy }} />}
-            {toggle && <Button label="Cancel" onClick={doToggle} variant="danger" icon={{ Icon: MdOutlineCancel }} />}
+
+            {vaults && vaults.length > 0 && !toggle && <Button label="Add New Secret" onClick={doToggle} variant="primary" icon={{ Icon: BsFloppy }} />}
+            {vaults && vaults.length > 0 && toggle && <Button label="Cancel" onClick={doToggle} variant="danger" icon={{ Icon: MdOutlineCancel }} />}
 
             <div>
-                {toggle &&
+                {(toggle || vaults && vaults.length === 0) &&
                     <div className="mt-5">
-                        <Card Content={StoredForm} height={{ large: "auto", medium: "auto" }} width={{ large: "auto", medium: "auto" }} />
+                        <Card Content={StoredForm} height={{ large: "auto", medium: "auto" }} width={{ large: "auto", medium: "auto" }} contentProps={{ add: handleAdd }} />
                     </div>
                 }
-                <h1 className="text-2xl font-bold text-[black] mt-5">Your Stored Items</h1>
+                <h1 className="text-2xl font-bold mt-5 text-[black]">Your Stored Items</h1>
 
-                <div className="mt-10 grid md:grid-cols-4 lg:grid-cols-6 gap-10">
-                    {
-                        vaults && vaults.map((vault, index) => (
+                {vaults && vaults.length > 0 &&
+                    <div className="mt-10 grid md:grid-cols-4 lg:grid-cols-6 gap-10">
+                        {
+                            vaults.map((vault, index) => (
 
-                            <StoredBtn vault={vault} key={index} index={index} copy={copy} />
+                                <StoredBtn vault={vault} key={index} index={index} copy={copy} deleteVault={deleteVault} />
 
-                        ))
-                    }
-                </div>
+                            ))
+                        }
+                    </div>
+                }
+                {
+                    !vaults || vaults.length === 0 && (
+                        <div className="mt-5">
+                            <Card height={{ large: "75px", medium: "75px" }} width={{ large: "auto", medium: "auto" }} Content={EmptyContent} />
+                        </div>
+
+                    )
+                }
 
             </div>
 
@@ -69,9 +97,10 @@ function Body({ vaults, copy }: { vaults: Vault[], copy: (input: string[]) => Pr
 }
 
 
-function StoredBtn({ vault, index, copy }: { vault: Vault, index: number, copy: (input: string[]) => Promise<void> }): React.ReactElement<{ vault: Vault, index: number }> {
+function StoredBtn({ vault, index, copy, deleteVault }: { vault: Vault, index: number, copy: (input: string[]) => Promise<void>, deleteVault: (title: string) => void }): React.ReactElement {
 
     const [isLoading, setLoading] = useState<boolean>(false);
+    const [isHovered, setIsHovered] = useState<boolean>(false);
 
     const getBtnColor = (index: number): variant => {
         index = index > 4 ? index % 5 : index;
@@ -84,10 +113,24 @@ function StoredBtn({ vault, index, copy }: { vault: Vault, index: number, copy: 
             .then(() => setLoading(false));
     }
 
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (isHovered && event.key === 'Delete') {
+                deleteVault(vault.title);
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [isHovered]);
+
     return (
 
         <>
-            <div className="flex justify-center">
+            <div className="flex justify-center" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
                 <Button onClick={handleClick} label={vault.title} variant={getBtnColor(index)} key={index} customStyles="w-[150px] h-[100px]" isLoading={isLoading} />
             </div>
 
@@ -120,18 +163,17 @@ function FormContent({ formProps }: { formProps: useVaultFormType }) {
     );
 }
 
-function StoredForm() {
+function StoredForm({ add }: { add: (texts: string[]) => void }) {
     const formState = useVaultForm();
 
-    const { validateForm, error, reset } = formState;
+    const { validateForm, error, getTexts } = formState;
 
     const handleSubmit = () => {
         const hasError = validateForm();
         if (hasError) {
-            console.log("form invalid");
             return;
         }
-        console.log("form has been submitted");
+        add(getTexts());
     };
 
     return (

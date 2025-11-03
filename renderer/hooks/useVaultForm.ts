@@ -20,7 +20,7 @@ export type useVaultFormType = {
     validateForm(): boolean;
     formConfig: FormConfig;
     error: boolean;
-    reset(): void;
+    getTexts(): string[];
 
 }
 
@@ -37,7 +37,7 @@ const DEFAULT_FORM_CONFIG: FormConfig = {
 
 export default function useVaultForm(): useVaultFormType {
 
-    const [formConfig, setFormConfig] = useState<FormConfig>(DEFAULT_FORM_CONFIG);
+    const [formConfig, setFormConfig] = useState<FormConfig>(structuredClone(DEFAULT_FORM_CONFIG));
     const [error, setError] = useState<boolean>(false);
 
     const handleChange = (key: string, type: "main" | "sub", e: ChangeEvent<HTMLInputElement>) => {
@@ -74,10 +74,10 @@ export default function useVaultForm(): useVaultFormType {
         return false;
     }
 
-    const reset = () => {
-        setFormConfig(DEFAULT_FORM_CONFIG);
+
+    const getTexts = (): string[] => {
+        return [...formConfig.mainInputs.filter(item => item.value && item.value.trim()).map(item => item.value),
+        ...formConfig.subInputs.filter(item => item.value && item.value.trim()).map(item => item.value)]
     }
-
-
-    return { formConfig, handleChange, validateForm, error, reset };
+    return { formConfig, handleChange, validateForm, error, getTexts };
 }
