@@ -40,6 +40,15 @@ export class VaultService implements IVaultService {
         this.#vaults.push(new VaultImpl(input));
     }
 
+    modify(vault: Vault): void {
+        this.#vaults = this.#vaults.map(item => {
+            if(item.title === vault.title) {
+                item.texts = vault.texts;
+            }
+            return item;
+        })
+    }
+
     delete(title: string): void {
         const index = this.#vaults.findIndex(item => item.title === title);
         this.#vaults.splice(index, 1);

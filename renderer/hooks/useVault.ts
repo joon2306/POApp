@@ -9,6 +9,8 @@ type useVaultType = {
     copy: (input: string[]) => Promise<void>;
     add: (texts: string[]) => void;
     deleteVault: (title: string) => void;
+    activeVault: Vault;
+    setActiveVault(vault: Vault): void;
 }
 
 export default function useVault(): useVaultType {
@@ -16,6 +18,7 @@ export default function useVault(): useVaultType {
     const [count, setCount] = useState<number>(0);
 
     const [vaults, setVaults] = useState<Vault[]>([]);
+    const [activeVault, setActiveVault] = useState<Vault>(null);
     const vaultService = useMemo(() => new VaultService(), []);
     const copyService = useMemo(() => new CopyService(new CommsService()), []);
 
@@ -23,13 +26,15 @@ export default function useVault(): useVaultType {
 
     const add = (texts: string[]) => {
         const [title, ...remaining] = texts;
-        vaultService.add({title, texts: remaining});
+
+        !activeVault ? vaultService.add({ title, texts: remaining }) : vaultService.modify({ title, texts: remaining });
+        setActiveVault(null);
         setCount(prev => prev + 1);
     }
 
     const deleteVault = (title: string) => {
         vaultService.delete(title);
-        setCount(prev => prev + 1 );
+        setCount(prev => prev + 1);
     }
 
     useEffect(() => {
@@ -43,5 +48,5 @@ export default function useVault(): useVaultType {
         }
     }, [count])
 
-    return { vaults, copy, add, deleteVault };
+    return { vaults, copy, add, deleteVault, activeVault, setActiveVault };
 }

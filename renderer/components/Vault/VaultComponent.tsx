@@ -10,15 +10,42 @@ import useVault from "../../hooks/useVault";
 import Form from "../Form";
 import useVaultForm, { useVaultFormType } from "../../hooks/useVaultForm";
 import useDelete from "../../hooks/useDelete";
+import useInsert from "../../hooks/useInsert";
+
+
+type BodyType = {
+    vaults: Vault[];
+    copy: (input: string[]) => Promise<void>;
+    add: (texts: string[]) => void;
+    deleteVault: (title: string) => void;
+    activeVault: Vault;
+    setActiveVault: (vault: Vault) => void;
+}
+
+type StoreBtnType = {
+    vault: Vault;
+    index: number;
+    copy: (input: string[]) => Promise<void>;
+    deleteVault: (title: string) => void;
+    setActiveVault: (vault: Vault) => void;
+    doToggle: () => void;
+    toggle: boolean;
+}
+
+type StoreFormType = {
+    add: (texts: string[]) => void;
+    activeVault: Vault;
+    setActiveVault: (vault: Vault) => void;
+}
 
 export default function VaultComponent() {
-    const { vaults, copy, add, deleteVault } = useVault();
+    const { vaults, copy, add, deleteVault, activeVault, setActiveVault } = useVault();
 
     return (
         <div className="m-5">
             <Header />
             <div className="border my-5"></div>
-            <Body vaults={vaults} copy={copy} add={add} deleteVault={deleteVault} />
+            <Body vaults={vaults} copy={copy} add={add} deleteVault={deleteVault} activeVault={activeVault} setActiveVault={setActiveVault} />
         </div>
     )
 }
@@ -41,7 +68,7 @@ function EmptyContent(): React.ReactElement {
     )
 }
 
-function Body({ vaults, copy, add, deleteVault }: { vaults: Vault[], copy: (input: string[]) => Promise<void>, add: (texts: string[]) => void, deleteVault: (title: string) => void }): React.ReactElement {
+function Body({ vaults, copy, add, deleteVault, activeVault, setActiveVault }: BodyType): React.ReactElement {
 
     const [toggle, setToggle] = useState<boolean>(false);
 
@@ -66,7 +93,7 @@ function Body({ vaults, copy, add, deleteVault }: { vaults: Vault[], copy: (inpu
             <div>
                 {(toggle || vaults && vaults.length === 0) &&
                     <div className="mt-5">
-                        <Card Content={StoredForm} height={{ large: "auto", medium: "auto" }} width={{ large: "auto", medium: "auto" }} contentProps={{ add: handleAdd }} />
+                        <Card Content={StoredForm} height={{ large: "auto", medium: "auto" }} width={{ large: "auto", medium: "auto" }} contentProps={{ add: handleAdd, activeVault, setActiveVault }} />
                     </div>
                 }
                 <h1 className="text-2xl font-bold mt-5 text-[black]">Your Stored Items</h1>
@@ -76,7 +103,7 @@ function Body({ vaults, copy, add, deleteVault }: { vaults: Vault[], copy: (inpu
                         {
                             vaults.map((vault, index) => (
 
-                                <StoredBtn vault={vault} key={index} index={index} copy={copy} deleteVault={deleteVault} />
+                                <StoredBtn vault={vault} key={index} index={index} copy={copy} deleteVault={deleteVault} setActiveVault={setActiveVault} doToggle={doToggle} toggle={toggle} />
 
                             ))
                         }
@@ -98,7 +125,7 @@ function Body({ vaults, copy, add, deleteVault }: { vaults: Vault[], copy: (inpu
 }
 
 
-function StoredBtn({ vault, index, copy, deleteVault }: { vault: Vault, index: number, copy: (input: string[]) => Promise<void>, deleteVault: (title: string) => void }): React.ReactElement {
+function StoredBtn({ vault, index, copy, deleteVault, setActiveVault, doToggle, toggle }: StoreBtnType): React.ReactElement {
 
     const [isLoading, setLoading] = useState<boolean>(false);
     const [isHovered, setIsHovered] = useState<boolean>(false);
@@ -108,18 +135,35 @@ function StoredBtn({ vault, index, copy, deleteVault }: { vault: Vault, index: n
         return (Object.keys(buttonColors)[index]) as variant;
     }
 
+    const handleMouseEnter = () => {
+        setIsHovered(true);
+
+    }
+
+    const handleMouseLeave = () => {
+        setIsHovered(false);
+    }
+
     const handleClick = () => {
         setLoading(true);
         copy(vault.texts)
             .then(() => setLoading(false));
     }
 
-    useDelete({isHovered, callback: deleteVault, arg: vault.title});
+    const handleInsert = () => {
+        if (!toggle) {
+            setActiveVault(vault);
+            doToggle();
+        }
+    }
+
+    useDelete({ isHovered, callback: deleteVault, arg: vault.title });
+    useInsert({ isHovered, callback: handleInsert, arg: null });
 
     return (
 
         <>
-            <div className="flex justify-center" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+            <div className="flex justify-center" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
                 <Button onClick={handleClick} label={vault.title} variant={getBtnColor(index)} key={index} customStyles="w-[150px] h-[100px]" isLoading={isLoading} />
             </div>
 
@@ -152,8 +196,8 @@ function FormContent({ formProps }: { formProps: useVaultFormType }) {
     );
 }
 
-function StoredForm({ add }: { add: (texts: string[]) => void }) {
-    const formState = useVaultForm();
+function StoredForm({ add, activeVault, setActiveVault }: StoreFormType) {
+    const formState = useVaultForm(activeVault);
 
     const { validateForm, error, getTexts } = formState;
 
@@ -164,6 +208,12 @@ function StoredForm({ add }: { add: (texts: string[]) => void }) {
         }
         add(getTexts());
     };
+
+    useEffect(() => {
+        return () => {
+            setActiveVault(null);
+        }
+    }, []);
 
     return (
         <div className="mb-5">

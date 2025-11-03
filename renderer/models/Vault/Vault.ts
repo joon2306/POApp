@@ -24,4 +24,8 @@ export class VaultImpl implements Vault {
     get texts() {
         return this.#texts;
     }
+
+    set texts(texts: string[]) {
+        this.#texts = texts;
+    }
 }

@@ -1,5 +1,6 @@
 import { ChangeEvent, useState } from "react";
 import Validator from "../utils/Validator";
+import Vault from "../models/Vault/Vault";
 
 type InputData = {
     key: string;
@@ -35,9 +36,29 @@ const DEFAULT_FORM_CONFIG: FormConfig = {
     ]
 }
 
-export default function useVaultForm(): useVaultFormType {
+export default function useVaultForm(vault: Vault): useVaultFormType {
 
-    const [formConfig, setFormConfig] = useState<FormConfig>(structuredClone(DEFAULT_FORM_CONFIG));
+    console.log("vault: ", vault);
+
+    const initFormConfig = (): FormConfig => {
+        const clone = structuredClone(DEFAULT_FORM_CONFIG);
+        if (!vault) {
+            return clone;
+        }
+
+        clone.mainInputs[0].value = vault.title;
+        for (let i = 0; i < vault.texts.length; i++) {
+            const text = vault.texts[i];
+            if (Validator.string(text).isBlank().validate()) {
+                break;
+            }
+            clone.subInputs[i].value = text;
+        }
+
+        return clone;
+    }
+
+    const [formConfig, setFormConfig] = useState<FormConfig>(structuredClone(initFormConfig()));
     const [error, setError] = useState<boolean>(false);
 
     const handleChange = (key: string, type: "main" | "sub", e: ChangeEvent<HTMLInputElement>) => {
