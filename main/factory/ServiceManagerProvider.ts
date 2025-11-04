@@ -11,12 +11,19 @@ import { Database } from "better-sqlite3";
 import IProvider from "./Provider";
 import ICopyService from "../service/ICopyService";
 import CopyService from "../service/CopyService";
+import ExeService from "../service/impl/ExeService";
+import TokenGeneratorService from "../service/impl/TokenGeneratorServie";
+import ITokenGeneratorService from "../service/ITokenGeneratorService";
+import IVaultDbService from "../service/VaultDbService";
+import VaultDbService from "../service/impl/VaultDbService";
 
 type ServiceManagerProviderType = {
     productivityService: IProductivityService;
     kanbanDbService: IKanbanDbService;
     commsService: ICommunicationService;
     copyService: ICopyService;
+    tokenGeneratorService: ITokenGeneratorService;
+    vaultDbService: IVaultDbService;
 
 }
 
@@ -38,14 +45,19 @@ export class ServiceManagerProvider implements IProvider<ServiceManagerProviderT
         const productivityService = new ProductivityService(productivityDbService);
         const kanbanTimeManager = new KanbanTimeManager();
         const kanbanDbService = new KanbanDbService(this.#db, kanbanTimeManager);
-        const commsService = new CommsService();        
-        const copyService = new CopyService();
+        const commsService = new CommsService();
+        const exeService = new ExeService();       
+        const copyService = new CopyService(exeService);
+        const tokenGeneratorService = new TokenGeneratorService(exeService, copyService);
+        const vaultDbService = new VaultDbService(this.#db);
 
         return {
             productivityService,
             kanbanDbService,
             commsService,
-            copyService
+            copyService,
+            tokenGeneratorService, 
+            vaultDbService
         }
     }
 

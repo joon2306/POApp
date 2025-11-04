@@ -20,6 +20,7 @@ type BodyType = {
     deleteVault: (title: string) => void;
     activeVault: Vault;
     setActiveVault: (vault: Vault) => void;
+    executeUniqueVAult: (id: string) => Promise<void>;
 }
 
 type StoreBtnType = {
@@ -30,6 +31,7 @@ type StoreBtnType = {
     setActiveVault: (vault: Vault) => void;
     doToggle: () => void;
     toggle: boolean;
+    executeUniqueVAult: (id: string) => Promise<void>;
 }
 
 type StoreFormType = {
@@ -39,13 +41,13 @@ type StoreFormType = {
 }
 
 export default function VaultComponent() {
-    const { vaults, copy, add, deleteVault, activeVault, setActiveVault } = useVault();
+    const { vaults, copy, add, deleteVault, activeVault, setActiveVault, executeUniqueVault } = useVault();
 
     return (
         <div className="m-5">
             <Header />
             <div className="border my-5"></div>
-            <Body vaults={vaults} copy={copy} add={add} deleteVault={deleteVault} activeVault={activeVault} setActiveVault={setActiveVault} />
+            <Body vaults={vaults} copy={copy} add={add} deleteVault={deleteVault} activeVault={activeVault} setActiveVault={setActiveVault} executeUniqueVAult={executeUniqueVault} />
         </div>
     )
 }
@@ -68,7 +70,7 @@ function EmptyContent(): React.ReactElement {
     )
 }
 
-function Body({ vaults, copy, add, deleteVault, activeVault, setActiveVault }: BodyType): React.ReactElement {
+function Body({ vaults, copy, add, deleteVault, activeVault, setActiveVault, executeUniqueVAult }: BodyType): React.ReactElement {
 
     const [toggle, setToggle] = useState<boolean>(false);
 
@@ -103,7 +105,8 @@ function Body({ vaults, copy, add, deleteVault, activeVault, setActiveVault }: B
                         {
                             vaults.map((vault, index) => (
 
-                                <StoredBtn vault={vault} key={index} index={index} copy={copy} deleteVault={deleteVault} setActiveVault={setActiveVault} doToggle={doToggle} toggle={toggle} />
+                                <StoredBtn vault={vault} key={index} index={index} copy={copy} deleteVault={deleteVault}
+                                    setActiveVault={setActiveVault} doToggle={doToggle} toggle={toggle} executeUniqueVAult={executeUniqueVAult} />
 
                             ))
                         }
@@ -125,7 +128,7 @@ function Body({ vaults, copy, add, deleteVault, activeVault, setActiveVault }: B
 }
 
 
-function StoredBtn({ vault, index, copy, deleteVault, setActiveVault, doToggle, toggle }: StoreBtnType): React.ReactElement {
+function StoredBtn({ vault, index, copy, deleteVault, setActiveVault, doToggle, toggle, executeUniqueVAult }: StoreBtnType): React.ReactElement {
 
     const [isLoading, setLoading] = useState<boolean>(false);
     const [isHovered, setIsHovered] = useState<boolean>(false);
@@ -146,18 +149,33 @@ function StoredBtn({ vault, index, copy, deleteVault, setActiveVault, doToggle, 
 
     const handleClick = () => {
         setLoading(true);
-        copy(vault.texts)
-            .then(() => setLoading(false));
+        if (vault.uniqueVault) {
+            executeUniqueVAult(vault.title)
+                .then(() => setLoading(false));
+        } else {
+            copy(vault.texts)
+                .then(() => setLoading(false));
+        }
     }
 
     const handleInsert = () => {
+        if (vault.uniqueVault) {
+            return;
+        }
         if (!toggle) {
             setActiveVault(vault);
             doToggle();
         }
     }
 
-    useDelete({ isHovered, callback: deleteVault, arg: vault.title });
+    const handleDelete = () => {
+        if (vault.uniqueVault) {
+            return;
+        }
+        deleteVault(vault.title);
+    }
+
+    useDelete({ isHovered, callback: handleDelete, arg: null });
     useInsert({ isHovered, callback: handleInsert, arg: null });
 
     return (

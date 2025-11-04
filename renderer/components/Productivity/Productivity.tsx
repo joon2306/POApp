@@ -1,7 +1,7 @@
 
 import Productivity from "../../../main/model/Productivity";
 import useProductivity from "../../hooks/useProductivity";
-import Card, { CardType } from "../Card";
+import { CardType } from "../Card";
 import ProgressBar from "../ProgressBar/ProgressBar";
 import { HiOutlineClock } from 'react-icons/hi';
 import { FaArrowTrendUp, FaRegCalendar, FaRegCircleCheck } from 'react-icons/fa6';
@@ -72,7 +72,7 @@ function TagFooter({ text }: { text: string }) {
 function getTrackingProductivityCards(productivity: Productivity): TrackingContent[] {
 
 
-    const cardProps: Omit<CardType, "Content"> = {
+    const cardProps: Omit<CardType<null>, "Content"> = {
         width: {
             large: "300px",
             medium: "100px"
@@ -97,7 +97,7 @@ interface IGetTrackingProductivityCardContent {
 }
 
 
-const timeTracking: IGetTrackingProductivityCardContent = (productivity: Productivity, cardProps: Omit<CardType, "Content">) => {
+const timeTracking: IGetTrackingProductivityCardContent = (productivity: Productivity, cardProps: Omit<CardType<null>, "Content">) => {
     const content: BodyContent[] =
         [
             {
@@ -149,7 +149,7 @@ const timeTracking: IGetTrackingProductivityCardContent = (productivity: Product
     }
 }
 
-const taskTracking: IGetTrackingProductivityCardContent = (productivity: Productivity, cardProps: Omit<CardType, "Content">) => {
+const taskTracking: IGetTrackingProductivityCardContent = (productivity: Productivity, cardProps: Omit<CardType<null>, "Content">) => {
     function Footer() {
         const [txt, setTxt] = useState<string>("");
 
@@ -196,7 +196,7 @@ const taskTracking: IGetTrackingProductivityCardContent = (productivity: Product
     }
 }
 
-const overallTracking: IGetTrackingProductivityCardContent = (productivity: Productivity, cardProps: Omit<CardType, "Content">) => {
+const overallTracking: IGetTrackingProductivityCardContent = (productivity: Productivity, cardProps: Omit<CardType<null>, "Content">) => {
     function Footer() {
         const [txt, setTxt] = useState<string>("");
 
@@ -244,7 +244,7 @@ const overallTracking: IGetTrackingProductivityCardContent = (productivity: Prod
 }
 
 
-const statusTracking: IGetTrackingProductivityCardContent = (productivity: Productivity, cardProps: Omit<CardType, "Content">) => {
+const statusTracking: IGetTrackingProductivityCardContent = (productivity: Productivity, cardProps: Omit<CardType<null>, "Content">) => {
     function Footer() {
         return (
             <>

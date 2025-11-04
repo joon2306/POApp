@@ -20,7 +20,7 @@ export type TrackingContent = {
     iconColor: string;
     body: BodyContent[];
     footer: React.ComponentType;
-    cardProps: Omit<CardType, "Content">
+    cardProps: Omit<CardType<null>, "Content">
 }
 
 export default function TrackingCard(content: TrackingContent ) {

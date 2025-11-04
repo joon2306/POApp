@@ -3,6 +3,8 @@ import Vault, { VaultImpl } from "../models/Vault/Vault";
 import { VaultService } from "../services/VaultService";
 import CopyService from "../services/impl/CopyService";
 import CommsService from "../services/impl/CommsService";
+import UniqueVaultService from "../services/impl/UniqueVaultService";
+import TokenService from "../services/impl/TokenService";
 
 type useVaultType = {
     vaults: Vault[];
@@ -11,6 +13,7 @@ type useVaultType = {
     deleteVault: (title: string) => void;
     activeVault: Vault;
     setActiveVault(vault: Vault): void;
+    executeUniqueVault(id: string): Promise<void>;
 }
 
 export default function useVault(): useVaultType {
@@ -19,15 +22,18 @@ export default function useVault(): useVaultType {
 
     const [vaults, setVaults] = useState<Vault[]>([]);
     const [activeVault, setActiveVault] = useState<Vault>(null);
-    const vaultService = useMemo(() => new VaultService(), []);
-    const copyService = useMemo(() => new CopyService(new CommsService()), []);
+    const uniqueVaultService = useMemo(() => new UniqueVaultService(), []);
+    const commsService = useMemo(() => new CommsService(), []);
+    const tokenService = useMemo(() => new TokenService(commsService), []);
+    const vaultService = useMemo(() => new VaultService(uniqueVaultService, tokenService, commsService), []);
+    const copyService = useMemo(() => new CopyService(commsService), []);
 
     const copy = copyService.copy;
 
     const add = (texts: string[]) => {
         const [title, ...remaining] = texts;
 
-        !activeVault ? vaultService.add({ title, texts: remaining }) : vaultService.modify({ title, texts: remaining });
+        !activeVault ? vaultService.add({ title, texts: remaining, uniqueVault: false }) : vaultService.modify({ title, texts: remaining, uniqueVault: false });
         setActiveVault(null);
         setCount(prev => prev + 1);
     }
@@ -37,10 +43,14 @@ export default function useVault(): useVaultType {
         setCount(prev => prev + 1);
     }
 
+    const executeUniqueVault = async (id: string) => {
+        await uniqueVaultService.execute(id);
+    }
+
     useEffect(() => {
         let cancelled = false;
         if (!cancelled) {
-            setVaults(vaultService.get());
+            vaultService.get().then(vaults => !cancelled && setVaults(vaults));
         }
 
         return () => {
@@ -48,5 +58,5 @@ export default function useVault(): useVaultType {
         }
     }, [count])
 
-    return { vaults, copy, add, deleteVault, activeVault, setActiveVault };
+    return { vaults, copy, add, deleteVault, activeVault, setActiveVault, executeUniqueVault };
 }

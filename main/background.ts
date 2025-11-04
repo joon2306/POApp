@@ -2,13 +2,6 @@ import path from 'path'
 import { app, ipcMain } from 'electron'
 import serve from 'electron-serve'
 import { createWindow } from './helpers'
-import { generateFeature } from './generate'
-import { refineFeature } from './refine'
-import { summaryFeature } from './summary'
-import { exportFeature } from './export'
-import translate from "./translate";
-import { generateJira } from './jira'
-import improve from './english'
 import HandlerProvider from './factory/HandlerProvider'
 
 const isProd = process.env.NODE_ENV === 'production'

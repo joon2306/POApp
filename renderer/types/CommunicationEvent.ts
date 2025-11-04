@@ -1,3 +1,5 @@
+import { get } from "http";
+
 const CommunicationEvents = Object.freeze({
     getKanbanCards: "kanban-cards",
     saveKanbanCard: "save-kanban-card",
@@ -11,7 +13,12 @@ const CommunicationEvents = Object.freeze({
     generateJira: "generate-jira",
     improveEnglish: "improve-english",
     getProductivity: "getProductivity",
-    copy: "copy"
+    copy: "copy",
+    generateToken: "generateToken",
+    getVaultItems: "getVaultItems",
+    saveVaultItem: "saveVaultItem",
+    deleteVaultItem: "deleteVaultItem",
+    modifyVaultItem: "modifyVaultItem"
 });
 
 export default CommunicationEvents;

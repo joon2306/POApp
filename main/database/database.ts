@@ -4,7 +4,8 @@ import { app } from "electron";
 
 
 const TABLE_KANBAN_ITEMS = "kanban_items";
-const TABLE_PRODUCTIVITY_ITEMS = "productivity_items"
+const TABLE_PRODUCTIVITY_ITEMS = "productivity_items";
+const TABLE_VAULT_ITEMS = "vault_items";
 
 let db: Database = null;
 export default function getDatabase() {
@@ -24,7 +25,11 @@ export default function getDatabase() {
 
         const createProductivityTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_PRODUCTIVITY_ITEMS} (id INTEGER PRIMARY KEY, title text, priority INTEGER, status INTEGER, time INTEGER, deleted INTEGER, duration INTEGER, start INTEGER)`);
         createProductivityTbl.run();
+
+        const createVaultTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_VAULT_ITEMS} (title TEXT PRIMARY KEY, text1  NOT NULL, text2 TEXT, text3 TEXT)`);
+        createVaultTbl.run();
     }
+
 
     if (!db) {
         initDatabase();
@@ -41,4 +46,4 @@ export default function getDatabase() {
 
 
 
-export { TABLE_KANBAN_ITEMS, TABLE_PRODUCTIVITY_ITEMS };
+export { TABLE_KANBAN_ITEMS, TABLE_PRODUCTIVITY_ITEMS, TABLE_VAULT_ITEMS };

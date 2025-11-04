@@ -2,13 +2,14 @@ import ICopyService from "./ICopyService";
 let instance: CopyService = null;
 import { execFile } from "child_process";
 import path from "path";
+import IExeService from "./IExeService";
 
-const exePath = path.join(process.env.NODE_ENV === 'production' ? process.resourcesPath : __dirname, "..", "resources", "bin", "clipboardy.exe");
-console.log("exePath: ", exePath)
 export default class CopyService implements ICopyService {
 
-    constructor() {
+    #exeService: IExeService;
+    constructor(exeService: IExeService) {
         if (instance === null) {
+            this.#exeService = exeService;
             this.copy = this.copy.bind(this)
             instance = this;
         }
@@ -16,15 +17,10 @@ export default class CopyService implements ICopyService {
     }
 
     copy(input: string[]): Promise<void> {
-        return new Promise(resolve => {
-            input = input.filter(element => element);
-            const clipboardyInput = ["write", ...input];
-            console.log("clipboardyInput: ", clipboardyInput);
-            execFile(exePath, clipboardyInput, (err) => {
-                if (err) console.error(err)
-                resolve();
-            });
-        })
+        input = input.filter(element => element);
+        const clipboardyInput = ["write", ...input];
+        console.log("clipboardyInput: ", clipboardyInput);
+        return this.#exeService.execute("clipboardy", clipboardyInput);
 
     }
 

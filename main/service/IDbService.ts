@@ -1,5 +1,5 @@
 export default interface IDbService<TCreate, RCreate, TGetAll, TDelete, RDelete, TModify, RModify> {
-    create(arg: TCreate): RModify;
+    create(arg: TCreate): RCreate;
 
     getAll(): TGetAll;
 
