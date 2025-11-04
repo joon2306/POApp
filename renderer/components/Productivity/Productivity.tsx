@@ -93,7 +93,7 @@ function getTrackingProductivityCards(productivity: Productivity): TrackingConte
 const timeFormat = (h: number, m: number) => h === 0 ? `${m}m` : `${h}h ${m}m`;
 
 interface IGetTrackingProductivityCardContent {
-    (productivity: Productivity, cardProps: Omit<CardType, "Content">): TrackingContent;
+    (productivity: Productivity, cardProps: Omit<CardType<null>, "Content">): TrackingContent;
 }
 
 
