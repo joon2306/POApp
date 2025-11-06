@@ -47,13 +47,8 @@ export default class KanbanDbService implements IKanbanDbService {
 
     create(kanbanItem: KanbanDbItem): GenericResponse<string> {
         try {
-            const { error } = this.getKanbanCardById(kanbanItem.id);
-            if (!error) {
-                console.log("Kanban card with id already exists. Cannot save duplicate");
-                return { error: true, data: "Kanban card with id already exists. Cannot save duplicate" };
-            }
-            const stmt = this.#db.prepare(`INSERT INTO ${TABLE_KANBAN_ITEMS} (id, title, description, priority, status, time, type) VALUES (?, ?, ?, ?, ?, ?, ?)`);
-            stmt.run(+kanbanItem.id, kanbanItem.title, kanbanItem.description, kanbanItem.priority, kanbanItem.status, kanbanItem.time, kanbanItem.type);
+            const stmt = this.#db.prepare(`INSERT INTO ${TABLE_KANBAN_ITEMS} (title, description, priority, status, time, type) VALUES (?, ?, ?, ?, ?, ?)`);
+            stmt.run(kanbanItem.title, kanbanItem.description, kanbanItem.priority, kanbanItem.status, kanbanItem.time, kanbanItem.type);
             return { error: false, data: "Kanban card saved successfully" };
         } catch (err) {
             console.error("Error saving kanban card: ", err);
