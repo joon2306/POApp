@@ -10,7 +10,7 @@ export default interface IKanbanDbService extends IDbService<KanbanDbItem,
 
         getKanbanCardById(id: number): GenericResponse<KanbanDbItem>;
 
-        resetCards(): void;
+        resetToDoCards(): void;
 
         getInProgressCards(): KanbanDbItem[];
 

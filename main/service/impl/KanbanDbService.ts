@@ -28,10 +28,10 @@ export default class KanbanDbService implements IKanbanDbService {
             return { error: true, data: [] };
         }
     }
-    resetCards(): void {
+    resetToDoCards(): void {
         const { error, data: kanbanCards } = this.getAll();
         if (!error) {
-            const expiredCards = this.#kanbanTimeManager.getExpiredKanbans(kanbanCards);
+            const expiredCards = this.#kanbanTimeManager.getExpiredToDoKanbans(kanbanCards);
             for (const expiredCard of expiredCards) {
                 this.modify(expiredCard);
             }
@@ -57,8 +57,8 @@ export default class KanbanDbService implements IKanbanDbService {
 
     create(kanbanItem: KanbanDbItem): GenericResponse<string> {
         try {
-            const stmt = this.#db.prepare(`INSERT INTO ${TABLE_KANBAN_ITEMS} (title, description, priority, status, time, type) VALUES (?, ?, ?, ?, ?, ?)`);
-            stmt.run(kanbanItem.title, kanbanItem.description, kanbanItem.priority, kanbanItem.status, kanbanItem.time, kanbanItem.type);
+            const stmt = this.#db.prepare(`INSERT INTO ${TABLE_KANBAN_ITEMS} (title, description, priority, status, time, type, feature_id) VALUES (?, ?, ?, ?, ?, ?, ?)`);
+            stmt.run(kanbanItem.title, kanbanItem.description, kanbanItem.priority, kanbanItem.status, kanbanItem.time, kanbanItem.type, kanbanItem.feature_id);
             return { error: false, data: "Kanban card saved successfully" };
         } catch (err) {
             console.error("Error saving kanban card: ", err);
@@ -87,9 +87,9 @@ export default class KanbanDbService implements IKanbanDbService {
                 return { error: true, data: "Kanban card not found. Cannot modify" };
             }
             kanbanItem = this.#kanbanTimeManager.handleChangeOfState(kanbanCard.data, kanbanItem);
-            const stmt = this.#db.prepare(`UPDATE ${TABLE_KANBAN_ITEMS} SET title = ?, description = ?, priority = ?, status = ?, time = ?, start = ?, duration = ?, type = ? WHERE id = ?`);
+            const stmt = this.#db.prepare(`UPDATE ${TABLE_KANBAN_ITEMS} SET title = ?, description = ?, priority = ?, status = ?, time = ?, start = ?, duration = ?, type = ?, feature_id = ? WHERE id = ?`);
             stmt.run(kanbanItem.title, kanbanItem.description, kanbanItem.priority, kanbanItem.status ?? kanbanCard.data.status, kanbanItem.time,
-                kanbanItem.start ?? kanbanCard.data.start, kanbanItem.duration ?? kanbanCard.data.duration, kanbanCard.data.type, kanbanCard.data.id);
+                kanbanItem.start ?? kanbanCard.data.start, kanbanItem.duration ?? kanbanCard.data.duration, kanbanCard.data.type, kanbanCard.data.feature_id, kanbanCard.data.id);
 
             return { error: false, data: "Kanban card modified successfully" };
         } catch (err) {

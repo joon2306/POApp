@@ -12,6 +12,7 @@ interface KanbanDbItem {
     start?: number;
     duration?: number;
     type: typeof KanbanType[keyof typeof KanbanType]
+    feature_id?: string;
 }
 
 export type { KanbanDbItem };

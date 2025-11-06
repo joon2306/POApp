@@ -1,9 +1,4 @@
-import GenericResponse from "../model/GenericResponse";
-import { KanbanDbItem } from "../model/KanbanItem";
-import ProductivityDbItem from "../model/ProductivityDbItem";
-import IKanbanDbService from "../service/IKanbanDbService";
-import ProductivityDbService from "../service/impl/ProductivityDbService";
-import IProductivityDbService from "../service/IProductivityDbService";
+import { KanbanDbItem, KanbanType } from "../model/KanbanItem";
 import getTimeUtils from "../utils/TimeUtils";
 
 export interface IKanbanTimeManager {
@@ -11,7 +6,7 @@ export interface IKanbanTimeManager {
 
     handleDelete: (kanbanItem: KanbanDbItem) => KanbanDbItem;
 
-    getExpiredKanbans: (kanbanCards: KanbanDbItem[]) => KanbanDbItem[];
+    getExpiredToDoKanbans: (kanbanCards: KanbanDbItem[]) => KanbanDbItem[];
 
     updateInProgress: (kanbanCards: KanbanDbItem[]) => KanbanDbItem[];
 }
@@ -31,15 +26,15 @@ export default class KanbanTimeManager implements IKanbanTimeManager {
         return instance;
     }
 
-    getExpiredKanbans(kanbanCards: KanbanDbItem[]) {
-        const inProgress = kanbanCards.filter(item => item.status === IN_PROGRESS && item.start && item.start < this.#startOfDay)
+    getExpiredToDoKanbans(kanbanCards: KanbanDbItem[]) {
+        const inProgress = kanbanCards.filter(item => item.type === KanbanType.TODO && item.status === IN_PROGRESS && item.start && item.start < this.#startOfDay)
         .map(expiredKanbanItem => {
             expiredKanbanItem.duration = 0;
             expiredKanbanItem.status = PENDING; // move back to pending
             return expiredKanbanItem;
         })
 
-        const pendingOrBlocked =  kanbanCards.filter(item => item.status !== IN_PROGRESS && item.duration && item.duration !== 0)
+        const pendingOrBlocked =  kanbanCards.filter(item => item.type === KanbanType.TODO && item.status !== IN_PROGRESS && item.duration && item.duration !== 0)
         .map(item => {
             item.duration = 0;
             return item;
