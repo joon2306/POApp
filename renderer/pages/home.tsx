@@ -7,6 +7,8 @@ import JiraGenerator from '../components/JiraGenerator/JiraGenerator';
 import English from '../components/English/English';
 import ProductivityComponent from '../components/Productivity/Productivity';
 import VaultComponent from '../components/Vault/VaultComponent';
+import { LuListTodo } from "react-icons/lu";
+import { RiLockPasswordLine } from "react-icons/ri";
 
 export default function HomePage() {
 
@@ -15,14 +17,16 @@ export default function HomePage() {
       title: "Productivity",
       content: ProductivityComponent
     },
-    Kanban: {
-      title: "Kanban",
+    Todo: {
+      title: "Todo",
       content: Kanban,
-      props: { type: "TODO" }
+      props: { type: "TODO" },
+      icon: LuListTodo
     },
     Vault: {
       title: "Vault", 
-      content: VaultComponent
+      content: VaultComponent,
+      icon: RiLockPasswordLine
     }
   }
 

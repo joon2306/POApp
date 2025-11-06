@@ -40,7 +40,6 @@ export default function useProductivity(getTrackingProductivityCards: (productiv
         const load = async () => {
             productivityService.getProductivity().then(result => {
                 if (!cancelled && result) {
-                    console.log("result: ", result);
                     setProductivity(result)
                     setTrackingProductivityCards(getTrackingProductivityCards(result));
                 }

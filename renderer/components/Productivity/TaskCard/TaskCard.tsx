@@ -114,9 +114,9 @@ export default function TaskCard(props: TaskCardType) {
                         {
                             task.additionalTexts && task.additionalTexts.length > 0 && task.additionalTexts.map((item, i) => {
                                 return (
-                                    <>
-                                        <Text val={item.text} color={item.color} key={i} />
-                                    </>
+                                    <div key={i}>
+                                        <Text val={item.text} color={item.color} />
+                                    </div>
                                 )
                             })
                         }

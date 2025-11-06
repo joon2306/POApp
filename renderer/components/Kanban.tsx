@@ -57,7 +57,6 @@ const showErrorModal = (errorMessage: string, modalService: IModalService): Moda
 
 
 export default function Kanban({ calculateHeight, type}: { calculateHeight: () => number; type: KanbanType }) {
-
     const kanbanService = KanbanFactory.of(type).build();
 
     const { handleDragStart, handleDrop, kanbanCards, updateHeight, deleteCard, saveCard, modifyCard, loadData } = useKanban(kanbanService);

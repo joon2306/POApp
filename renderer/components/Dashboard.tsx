@@ -1,10 +1,12 @@
 import React, { useRef, useState } from 'react';
+import { IconType } from 'react-icons';
 import { MdOutlineViewKanban } from "react-icons/md";
 
 interface DashboardItem {
     title: string;
     content: React.ComponentType;
     props?: unknown;
+    icon?: IconType;
 }
 
 export interface DashboardContent {
@@ -53,7 +55,7 @@ export default function Dashboard({ dashboardContent, activeDashboardBtn }: { da
                 {Object.entries(dashboardContent).map(([key, value]) => (
                     <li key={key}>
                         <DashboardButton
-                            icon={MdOutlineViewKanban}
+                            icon={value.icon ?? MdOutlineViewKanban}
                             title={value.title}
                             active={value.title === activeDashboard}
                             handleClick={() => handleClick(value.title, value.content)}
