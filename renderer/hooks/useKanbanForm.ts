@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { KanbanFormType } from "../types/KanbanTypes";
 
-export const useKanbanForm = ({ onValidSubmit, kanbanFormValue }: KanbanFormType) => {
+export const useKanbanForm = ({ onValidSubmit, kanbanFormValue }: Omit<KanbanFormType, "type">) => {
     let defaultTitle = kanbanFormValue ? kanbanFormValue.title : "";
     let defaultDescription = kanbanFormValue ? kanbanFormValue.description : "";
     let defaultPriority = kanbanFormValue ? kanbanFormValue.priority : 1;

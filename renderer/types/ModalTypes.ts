@@ -4,7 +4,7 @@ import { ButtonProps } from "./ButtonTypes"
 interface ModalConfig {
     title: string,
     content: ReactNode,
-    closeOnBackdrop?: boolean
+    closeOnBackdrop?: boolean,
 }
 export interface ModalType extends ModalConfig {
     buttons: ButtonProps[]

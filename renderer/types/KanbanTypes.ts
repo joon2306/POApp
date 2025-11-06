@@ -1,3 +1,4 @@
+import { KanbanType } from "../factory/KanbanFactory";
 import { IModalService } from "../services/impl/ModalService";
 
 export type KanbanStatus = 1 | 2 | 3;
@@ -16,7 +17,8 @@ export type HeaderSwimLane = {
   deleteCard: (id: string) => void,
   saveCard: (arg: KanbanFormValue) => void,
   modifyCard: (arg: KanbanFormValue) => void
-  modalService: IModalService
+  modalService: IModalService,
+  type: KanbanType
 }
 
 export type KanbanCardType = {
@@ -35,8 +37,9 @@ export type KanbanResponse<T> = {
 export interface KanbanCardProp extends KanbanCardType {
   setActiveCard: (value: string) => void,
   deleteCard: (id: string) => void,
-  modifyCard: (arg: KanbanFormValue) => void
-  modalService: IModalService
+  modifyCard: (arg: KanbanFormValue) => void,
+  modalService: IModalService,
+  type: KanbanType
 };
 
 export type SwimLaneConfig = {
@@ -98,5 +101,6 @@ export type KanbanFormValue = {
 
 export type KanbanFormType = {
   onValidSubmit: (arg: KanbanFormValue) => void,
-  kanbanFormValue?: KanbanFormValue
+  kanbanFormValue?: KanbanFormValue,
+  type: KanbanType
 }
