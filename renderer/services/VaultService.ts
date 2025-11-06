@@ -40,7 +40,7 @@ export class VaultService implements IVaultService {
     }
 
     #initUniqueVaults() {
-        this.#uniqueVaultService.subscribe("tokenGenerator", this.#generateToken.bind(this));
+        this.#uniqueVaultService.subscribe("Token", this.#generateToken.bind(this));
         this.#uniqueVaults = [
             new VaultImpl({ title: "Token", texts: ["token"], uniqueVault: true })
         ]

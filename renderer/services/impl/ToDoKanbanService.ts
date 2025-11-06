@@ -8,9 +8,9 @@ import IMediator from "../IMediator";
 import Mediator from "./Mediator";
 import MediatorEvents from "../../constants/MediatorEvents";
 
-let kanbanService: KanbanService = null;
+let kanbanService: ToDoKanbanService = null;
 
-export class KanbanService implements IKanbanService {
+export class ToDoKanbanService implements IKanbanService {
 
     private commsService: ICommsService = null;
     private mediator: IMediator = null;

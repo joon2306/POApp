@@ -2,7 +2,6 @@ import styles from "../styles/kanban/style.module.css";
 
 import React, { useEffect, useMemo, useRef } from "react";
 import { HeaderSwimLane, KANBAN_SWIM_LANE_CONFIG, KanbanCardProp, KanbanCardType, KanbanFormValue, KanbanStatus, PRIORITY_CONFIG, PriorityLevel } from "../types/KanbanTypes";
-import { KanbanService } from "../services/impl/KanbanService";
 import { useKanban } from "../hooks/useKanban";
 import { useDroppable } from "../hooks/useDroppable";
 import { useKanbanCard } from "../hooks/useKanbanCard";
@@ -12,6 +11,7 @@ import { sortKanbanCards } from "../utils/KanbanUtils";
 import MediatorEvents from "../constants/MediatorEvents";
 import Mediator from "../services/impl/Mediator";
 import { IModalService, useModalService } from "../services/impl/ModalService";
+import { KanbanFactory, KanbanType } from "../factory/KanbanFactory";
 
 
 const getKanbanForm = (isModify, handleSave, kanbanFormValue, modalService): ModalType => {
@@ -56,9 +56,9 @@ const showErrorModal = (errorMessage: string, modalService: IModalService): Moda
 }
 
 
-export default function Kanban({ calculateHeight }) {
+export default function Kanban({ calculateHeight, type}: { calculateHeight: () => number; type: KanbanType }) {
 
-    const kanbanService = new KanbanService();
+    const kanbanService = KanbanFactory.of(type).build();
 
     const { handleDragStart, handleDrop, kanbanCards, updateHeight, deleteCard, saveCard, modifyCard, loadData } = useKanban(kanbanService);
     const modalService = useModalService();

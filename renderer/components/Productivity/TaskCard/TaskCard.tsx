@@ -168,8 +168,8 @@ export default function TaskCard(props: TaskCardType) {
                             {
                                 tasks.map((task, index) => {
                                     return (
-                                        <div className="my-2">
-                                            <Task {...task} key={index} />
+                                        <div className="my-2" key={index}>
+                                            <Task {...task} />
                                         </div>
 
                                     );

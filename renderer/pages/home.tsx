@@ -17,7 +17,8 @@ export default function HomePage() {
     },
     Kanban: {
       title: "Kanban",
-      content: Kanban
+      content: Kanban,
+      props: { type: "TODO" }
     },
     Vault: {
       title: "Vault", 

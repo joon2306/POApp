@@ -4,6 +4,7 @@ import { MdOutlineViewKanban } from "react-icons/md";
 interface DashboardItem {
     title: string;
     content: React.ComponentType;
+    props?: unknown;
 }
 
 export interface DashboardContent {
@@ -33,13 +34,15 @@ export default function Dashboard({ dashboardContent, activeDashboardBtn }: { da
     function renderDashboardContent() {
         const getActiveContent = () => {
             const content = Object.entries(dashboardContent).find(([k, v]) => v.title === activeDashboard);
-            return content ? content[1].content : dashboardContent.kanban.content;
+            const activeContent = content ? content[1].content : dashboardContent.kanban.content;
+            return {activeContent, props: content ? content[1].props : {}}
         };
 
-        const ActiveContent = getActiveContent();
+        const {activeContent: ActiveContent, props } = getActiveContent();
+    
         return (
             <>
-                {<ActiveContent {...({ calculateHeight } as any)} />}
+                {<ActiveContent {...{ calculateHeight, ...props as any }} />}
             </>
         )
     }
