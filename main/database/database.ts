@@ -10,7 +10,7 @@ const TABLE_VAULT_ITEMS = "vault_items";
 let db: Database = null;
 export default function getDatabase() {
 
-    const dbPath = path.join(app.getPath("userData"), "appdata3.db");
+    const dbPath = path.join(app.getPath("userData"), "appdata4.db");
 
 
     const initDatabase = () => {
@@ -20,7 +20,7 @@ export default function getDatabase() {
     }
 
     const createTables = () => {
-        const createKanbanTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_KANBAN_ITEMS} (id INTEGER PRIMARY KEY, title TEXT, description TEXT, priority INTEGER, status INTEGER, time INTEGER, start INTEGER, duration INTEGER)`);
+        const createKanbanTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_KANBAN_ITEMS} (id INTEGER PRIMARY KEY, title TEXT, description TEXT, priority INTEGER, status INTEGER, time INTEGER, start INTEGER, duration INTEGER, type INTEGER)`);
         createKanbanTbl.run();
 
         const createProductivityTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_PRODUCTIVITY_ITEMS} (id INTEGER PRIMARY KEY, title text, priority INTEGER, status INTEGER, time INTEGER, deleted INTEGER, duration INTEGER, start INTEGER)`);

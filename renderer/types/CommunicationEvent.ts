@@ -1,10 +1,10 @@
 import { get } from "http";
 
 const CommunicationEvents = Object.freeze({
-    getKanbanCards: "kanban-cards",
-    saveKanbanCard: "save-kanban-card",
-    deleteKanbanCard: "delete-kanban-card",
-    modifyKanbanCard: "modify-kanban-card",
+    getTodoKanbanCards: "todo-cards",
+    saveTodoKanbanCard: "save-todo-card",
+    deleteTodoKanbanCard: "delete-todo-card",
+    modifyTodoKanbanCard: "modify-todo-card",
     generateFeature: "generate-feature",
     refineFeature: "refine-feature",
     summaryFeature: "summary-feature",

@@ -1,7 +1,7 @@
 import CopyHandler from "../Handlers/CopyHandler";
 import Handler from "../Handlers/Handler";
-import KanbanHandler from "../Handlers/KanbanHandler"
 import ProductivityHandler from "../Handlers/ProductivityHandler";
+import TodoKanbanHandler from "../Handlers/TodoKanbanHandler";
 import TokenHandler from "../Handlers/TokenHandler";
 import VaultHandler from "../Handlers/VaultHandler";
 import IProvider from "./Provider";
@@ -66,7 +66,7 @@ export default class HandlerProvider implements IProvider<IHandlerProviderRespon
 
     provide(): IHandlerProviderResponse {
         const { kanbanDbService, commsService, productivityService, copyService, tokenGeneratorService, vaultDbService } = this.#serviceManagerProvider.provide();
-        const kanbanHandler = new KanbanHandler(kanbanDbService, commsService, productivityService);
+        const kanbanHandler = new TodoKanbanHandler(kanbanDbService, commsService, productivityService);
         const productivityHandler = new ProductivityHandler(productivityService, commsService, kanbanDbService);
         const copyHandler = new CopyHandler(copyService, commsService);
         const tokenHandler = new TokenHandler(tokenGeneratorService, commsService);

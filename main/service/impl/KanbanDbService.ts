@@ -52,8 +52,8 @@ export default class KanbanDbService implements IKanbanDbService {
                 console.log("Kanban card with id already exists. Cannot save duplicate");
                 return { error: true, data: "Kanban card with id already exists. Cannot save duplicate" };
             }
-            const stmt = this.#db.prepare(`INSERT INTO ${TABLE_KANBAN_ITEMS} (id, title, description, priority, status, time) VALUES (?, ?, ?, ?, ?, ?)`);
-            stmt.run(+kanbanItem.id, kanbanItem.title, kanbanItem.description, kanbanItem.priority, kanbanItem.status, kanbanItem.time);
+            const stmt = this.#db.prepare(`INSERT INTO ${TABLE_KANBAN_ITEMS} (id, title, description, priority, status, time, type) VALUES (?, ?, ?, ?, ?, ?, ?)`);
+            stmt.run(+kanbanItem.id, kanbanItem.title, kanbanItem.description, kanbanItem.priority, kanbanItem.status, kanbanItem.time, kanbanItem.type);
             return { error: false, data: "Kanban card saved successfully" };
         } catch (err) {
             console.error("Error saving kanban card: ", err);
@@ -82,9 +82,9 @@ export default class KanbanDbService implements IKanbanDbService {
                 return { error: true, data: "Kanban card not found. Cannot modify" };
             }
             kanbanItem = this.#kanbanTimeManager.handleChangeOfState(kanbanCard.data, kanbanItem);
-            const stmt = this.#db.prepare(`UPDATE ${TABLE_KANBAN_ITEMS} SET title = ?, description = ?, priority = ?, status = ?, time = ?, start = ?, duration = ? WHERE id = ?`);
+            const stmt = this.#db.prepare(`UPDATE ${TABLE_KANBAN_ITEMS} SET title = ?, description = ?, priority = ?, status = ?, time = ?, start = ?, duration = ?, type = ? WHERE id = ?`);
             stmt.run(kanbanItem.title, kanbanItem.description, kanbanItem.priority, kanbanItem.status ?? kanbanCard.data.status, kanbanItem.time,
-                kanbanItem.start ?? kanbanCard.data.start, kanbanItem.duration ?? kanbanCard.data.duration, kanbanCard.data.id);
+                kanbanItem.start ?? kanbanCard.data.start, kanbanItem.duration ?? kanbanCard.data.duration, kanbanCard.data.type, kanbanCard.data.id);
 
             return { error: false, data: "Kanban card modified successfully" };
         } catch (err) {

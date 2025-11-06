@@ -1,16 +1,18 @@
 import CommunicationEvents from "../../renderer/types/CommunicationEvent";
-import { KanbanDbItem } from "../model/KanbanItem";
+import { KanbanDbItem, KanbanType } from "../model/KanbanItem";
 import ICommunicationService from "../service/ICommunicationService";
 import IKanbanDbService from "../service/IKanbanDbService";
 import IProductivityService from "../service/IProductivityService";
 import Handler from "./Handler";
 
-let instance: KanbanHandler = null;
+let instance: TodoKanbanHandler = null;
 
-export default class KanbanHandler implements Handler {
+export default class TodoKanbanHandler implements Handler {
     #kanbanDbService: IKanbanDbService;
     #commsService: ICommunicationService;
     #productivityService: IProductivityService;
+
+    private static KANBAN_TYPE = KanbanType.TODO;
 
     constructor(kanbanDbService: IKanbanDbService, commsService: ICommunicationService, productivityService: IProductivityService) {
         if (instance === null) {
@@ -25,14 +27,14 @@ export default class KanbanHandler implements Handler {
 
     #getKanbanCards() {
         const getKanbanCards = () => this.#kanbanDbService.getAll();
-        this.#commsService.getRequest(CommunicationEvents.getKanbanCards, () => getKanbanCards());
+        this.#commsService.getRequest(CommunicationEvents.getTodoKanbanCards, () => getKanbanCards());
     }
 
     #saveKanbanCard() {
         const save = ([{ id, title, description, priority, status, time }]: KanbanDbItem[]) => {
-            return this.#kanbanDbService.create({ id, title, description, priority, status, time });
+            return this.#kanbanDbService.create({ id, title, description, priority, status, time, type: TodoKanbanHandler.KANBAN_TYPE });
         }
-        this.#commsService.getRequest(CommunicationEvents.saveKanbanCard, (kanbanCard: KanbanDbItem[]) => save(kanbanCard));
+        this.#commsService.getRequest(CommunicationEvents.saveTodoKanbanCard, (kanbanCard: KanbanDbItem[]) => save(kanbanCard));
     }
 
     #deleteCard() {
@@ -42,16 +44,16 @@ export default class KanbanHandler implements Handler {
                 this.#productivityService.add(deletedCard);
             }
         }
-        this.#commsService.getRequest(CommunicationEvents.deleteKanbanCard, ([{ id }]: Array<{ id: number }>) => {
+        this.#commsService.getRequest(CommunicationEvents.deleteTodoKanbanCard, ([{ id }]: Array<{ id: number }>) => {
             deleteCard([{ id }])
         });
     }
 
     #modifyCard() {
         const modifyCard = ([{ id, title, description, priority, status, time }]: KanbanDbItem[]) => {
-            this.#kanbanDbService.modify({ id, title, description, priority, status, time });
+            this.#kanbanDbService.modify({ id, title, description, priority, status, time, type: TodoKanbanHandler.KANBAN_TYPE });
         }
-        this.#commsService.getRequest(CommunicationEvents.modifyKanbanCard, (kanbanCard: KanbanDbItem[]) => modifyCard(kanbanCard));
+        this.#commsService.getRequest(CommunicationEvents.modifyTodoKanbanCard, (kanbanCard: KanbanDbItem[]) => modifyCard(kanbanCard));
     }
 
     execute() {

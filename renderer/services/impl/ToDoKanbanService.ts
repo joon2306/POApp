@@ -26,7 +26,7 @@ export class ToDoKanbanService implements IKanbanService {
     }
 
     async getKanbanCards(): Promise<KanbanCardType[]> {
-        const { error, data } = await this.commsService.sendRequest<KanbanResponse<KanbanCardType[]>>(CommunicationEvents.getKanbanCards, null);
+        const { error, data } = await this.commsService.sendRequest<KanbanResponse<KanbanCardType[]>>(CommunicationEvents.getTodoKanbanCards, null);
         if (error) {
             console.error("Error fetching kanban cards");
             this.mediator.publish<string>(MediatorEvents.GENERIC_KANBAN_ERROR, "Error fetching kanban cards");
@@ -36,11 +36,11 @@ export class ToDoKanbanService implements IKanbanService {
     }
 
     deleteKanbanCards(id: string): void {
-        this.commsService.sendRequest(CommunicationEvents.deleteKanbanCard, { id: +id });
+        this.commsService.sendRequest(CommunicationEvents.deleteTodoKanbanCard, { id: +id });
     }
 
     modifyKanbanCard({ title, description, priority, id, time }: KanbanFormValue, status: number | undefined) {
-        this.commsService.sendRequest(CommunicationEvents.modifyKanbanCard, { title, description, priority, id, time, status });
+        this.commsService.sendRequest(CommunicationEvents.modifyTodoKanbanCard, { title, description, priority, id, time, status });
     }
 
     async addKanbanCard({ title, description, priority, time }: KanbanFormValue) {
@@ -55,7 +55,7 @@ export class ToDoKanbanService implements IKanbanService {
             time
         }
 
-        const { error } = await this.commsService.sendRequest<KanbanResponse<string>>(CommunicationEvents.saveKanbanCard, kanbanCard);
+        const { error } = await this.commsService.sendRequest<KanbanResponse<string>>(CommunicationEvents.saveTodoKanbanCard, kanbanCard);
 
         if (error) {
             this.mediator.publish<string>(MediatorEvents.GENERIC_KANBAN_ERROR, "Error saving kanban card");
