@@ -18,6 +18,16 @@ export default class KanbanDbService implements IKanbanDbService {
         }
         return instance;
     }
+    getAllByType(type: number): GenericResponse<KanbanDbItem[]> {
+        const stmt = this.#db.prepare(`SELECT * FROM ${TABLE_KANBAN_ITEMS} WHERE type = ?`);
+        try {
+            const rows = stmt.all(type) as KanbanDbItem[];
+            return { error: false, data: rows }
+        } catch (err) {
+            console.error("Error fetching kanban cards by type: ", err);
+            return { error: true, data: [] };
+        }
+    }
     resetCards(): void {
         const { error, data: kanbanCards } = this.getAll();
         if (!error) {

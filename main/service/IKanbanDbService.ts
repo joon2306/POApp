@@ -14,4 +14,6 @@ export default interface IKanbanDbService extends IDbService<KanbanDbItem,
 
         getInProgressCards(): KanbanDbItem[];
 
+        getAllByType(type: number): GenericResponse<KanbanDbItem[]>;
+
 }

@@ -44,10 +44,9 @@ export class ToDoKanbanService implements IKanbanService {
     }
 
     async addKanbanCard({ title, description, priority, time }: KanbanFormValue) {
-        const id = generateKanbanId(await this.getKanbanCards()).toString();
         const status = 1;
         const kanbanCard: KanbanCardType = {
-            id,
+            id: "fakeId", // a fake Id which will be replaced in the main process
             title,
             description,
             priority: priority as unknown as PriorityLevel,

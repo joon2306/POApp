@@ -26,7 +26,7 @@ export default class TodoKanbanHandler implements Handler {
     }
 
     #getKanbanCards() {
-        const getKanbanCards = () => this.#kanbanDbService.getAll();
+        const getKanbanCards = () => this.#kanbanDbService.getAllByType(TodoKanbanHandler.KANBAN_TYPE);
         this.#commsService.getRequest(CommunicationEvents.getTodoKanbanCards, () => getKanbanCards());
     }
 
