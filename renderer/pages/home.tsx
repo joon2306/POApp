@@ -9,6 +9,8 @@ import ProductivityComponent from '../components/Productivity/Productivity';
 import VaultComponent from '../components/Vault/VaultComponent';
 import { LuListTodo } from "react-icons/lu";
 import { RiLockPasswordLine } from "react-icons/ri";
+import { FaHeartPulse } from "react-icons/fa6";
+import PulseBoard from '../components/PulseBoard/PulseBoard';
 
 export default function HomePage() {
 
@@ -22,6 +24,11 @@ export default function HomePage() {
       content: Kanban,
       props: { type: "TODO" },
       icon: LuListTodo
+    },
+    PulseBoard: {
+      title: "Pulse Board",
+      content: PulseBoard,
+      icon: FaHeartPulse
     },
     Vault: {
       title: "Vault", 
