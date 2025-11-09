@@ -6,6 +6,7 @@ import { PulseUtils } from "../../utils/PulseUtils";
 import Card from "../Card";
 import ProgressBar from "../ProgressBar/ProgressBar";
 import Tag from "../Tag/Tag";
+import ProgressUtils from "../../utils/ProgressUtils";
 
 type Row = {
     title: string;
@@ -95,7 +96,8 @@ function Content(pulse: Pulse) {
             <Row title="TARGET" value={PulseUtils.getSprintTarget(pulse.target)} />
 
             <div className="mt-5">
-                <ProgressBar color={StateColors[pulse.state].progressColor} progress={pulse.progress} />
+                <ProgressBar color={StateColors[pulse.state].progressColor}
+                progress={ProgressUtils.getProgress(pulse.userStories.length + pulse.completedStories.length, pulse.completedStories.length)} />
             </div>
 
             <Footer tags={pulse.tags} />

@@ -1,4 +1,4 @@
-type JiraKey = `ADTCUST-${number}` | `ADTDEVI-${number}` | `GXDD-${number}`;
+export type JiraKey = `ADTCUST-${number}` | `ADTDEVI-${number}` | `GXDD-${number}`;
 
 type JiraState = "PENDING" | "IN_PROGRESS" | "ON_HOLD";
 
@@ -19,4 +19,5 @@ export type Feature = {
     featureKey: JiraKey;
     userStories: Array<JiraTicket>;
     dependencies: Array<JiraTicket>;
+    completedStories: Array<JiraKey>;
 }

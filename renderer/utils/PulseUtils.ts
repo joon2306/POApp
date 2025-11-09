@@ -1,4 +1,4 @@
-import { JIRA_STATE, JiraTicket } from "../types/Feature/Feature";
+import { Feature, JIRA_STATE, JiraKey, JiraTicket } from "../types/Feature/Feature";
 import { Pulse, State } from "../types/Pulse/Pulse";
 
 type FeatureTarget = Pulse["target"];
@@ -27,14 +27,15 @@ class SprintMapper {
 class StateMapper {
 
 
-    constructor(private readonly userStories: Array<JiraTicket>, private readonly dependencies: Array<JiraTicket>) { }
+    constructor(private readonly userStories: Array<JiraTicket>,
+        private readonly dependencies: Array<JiraTicket>, private readonly completedStories: Array<JiraKey>) { }
 
     computeState(): State {
-        if (this.userStories.length === 0) {
+        if (this.userStories.length === 0 && this.completedStories.length > 0) {
             return "COMPLETED";
         }
 
-        if (this.userStories.every(userStory => userStory.state === JIRA_STATE.ON_HOLD)) {
+        if (this.userStories.length > 0 && this.userStories.every(userStory => userStory.state === JIRA_STATE.ON_HOLD)) {
             return "BLOCKED";
         }
 
@@ -73,11 +74,11 @@ export class PulseUtils {
         return new SprintMapper(featureTarget).getSprint();
     }
 
-    static getState(userStories: Array<JiraTicket>, dependencies: Array<JiraTicket>) {
-        return new StateMapper(userStories, dependencies).computeState();
+    static getState(feature: Feature) {
+        return new StateMapper(feature.userStories, feature.dependencies, feature.completedStories).computeState();
     }
 
-    static getTags(userStories: Array<JiraTicket>, dependencies: Array<JiraTicket>) {
-        return new StateMapper(userStories, dependencies).getTags();
+    static getTags(feature: Feature) {
+        return new StateMapper(feature.userStories, feature.dependencies, feature.completedStories).getTags();
     }
 }

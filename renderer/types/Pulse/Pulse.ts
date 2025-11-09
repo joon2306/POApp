@@ -43,7 +43,6 @@ export const StateColors: Record<State, PulseColor> = {
 }
 
 export type Pulse = Feature & {
-    progress: number;
     state: State;
     tags: Array<State>;
 }

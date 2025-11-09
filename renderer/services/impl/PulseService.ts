@@ -1,4 +1,4 @@
-import { JiraTicket } from "../../types/Feature/Feature";
+import { Feature, JiraTicket } from "../../types/Feature/Feature";
 import { Pulse } from "../../types/Pulse/Pulse";
 import { PulseUtils } from "../../utils/PulseUtils";
 import IPulseService from "../IPulseService";
@@ -7,6 +7,8 @@ let instance: PulseService = null;
 export default class PulseService implements IPulseService {
 
     #pulses: Array<Pulse>;
+
+    #features: Array<Feature>;
 
     constructor() {
         if (instance === null) {
@@ -45,16 +47,19 @@ export default class PulseService implements IPulseService {
             ]
         }
 
-        this.#pulses = [
+        this.#features = [
             {
-                featureKey: "ADTCUST-1", title: "SDV_UI", target: 3, progress: 55, userStories: userStories1, dependencies: [],
-                state: PulseUtils.getState(userStories1, []), tags: PulseUtils.getTags(userStories1, [])
+                featureKey: "ADTCUST-1", title: "SDV_UI", target: 3, userStories: userStories1, dependencies: [], completedStories: ["ADTCUST-111", "ADTCUST-222"]
             },
-            { featureKey: "ADTCUST-2", title: "SDV MAC Secoc Impl", target: 4, progress: 20, userStories: userStories2, dependencies: dependencies2, state: PulseUtils.getState(userStories2, dependencies2), tags: PulseUtils.getTags(userStories2, dependencies2) },
-            { featureKey: "ADTCUST-3", title: "remove status 500", target: 1, progress: 40, userStories: [], dependencies: [], state: PulseUtils.getState([], []), tags: PulseUtils.getTags([], []) },
-            { featureKey: "ADTDEVI-1", title: "Java 17 migration", target: 6, progress: 10, userStories: getTickt("ADTDEVI-31", 1), dependencies: getTickt("GXDD-123", 1), state: PulseUtils.getState(getTickt("ADTDEVI-31", 1), getTickt("GXDD-123", 1)), tags: PulseUtils.getTags(getTickt("ADTDEVI-31", 1), getTickt("GXDD-123", 1)) },
-            { featureKey: "ADTCUST-5", title: "ADT Converter DTC masking", target: 3, progress: 70, userStories: [], dependencies: [], state: PulseUtils.getState([], []), tags: PulseUtils.getTags([], []) }
+            { featureKey: "ADTCUST-2", title: "SDV MAC Secoc Impl", target: 4, userStories: userStories2, dependencies: dependencies2, completedStories: [] },
+            { featureKey: "ADTCUST-3", title: "remove status 500", target: 1, userStories: [], dependencies: [], completedStories: ["ADTCUST-333"] },
+            { featureKey: "ADTDEVI-1", title: "Java 17 migration", target: 6, userStories: getTickt("ADTDEVI-31", 1), dependencies: getTickt("GXDD-123", 1), completedStories: ["ADTDEVI-111", "ADTDEVI-222", "ADTDEVI-333", "ADTDEVI-444"] },
+            { featureKey: "ADTCUST-5", title: "ADT Converter DTC masking", target: 3, userStories: [], dependencies: [], completedStories: [] }
         ]
+
+        this.#pulses = this.#features.map(feature => {
+            return { ...feature, state: PulseUtils.getState(feature), tags: PulseUtils.getTags(feature) }
+        })
     }
 
     getAll(): Promise<Pulse[]> {
