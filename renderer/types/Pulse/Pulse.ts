@@ -1,7 +1,7 @@
 import { Feature } from "../Feature/Feature";
 
 
-export type State = "NORMAL" | "COMPLETED" | "BLOCKED" | "HAS_DEPENDENCIES";
+export type State = "NORMAL" | "COMPLETED" | "BLOCKED" | "HAS_DEPENDENCIES" | "INCONSISTENT";
 
 type PulseColor = {
     bgColor: string;
@@ -9,6 +9,7 @@ type PulseColor = {
     borderHoverColor: string;
     boxShadow: string;
     progressColor: string;
+    bgImage?: string;
 }
 
 export const StateColors: Record<State, PulseColor> = {
@@ -17,7 +18,7 @@ export const StateColors: Record<State, PulseColor> = {
         hoverColor: "#F9FAFB",
         borderHoverColor: "#60A5FA",
         boxShadow: "0 2px 6px rgba(96, 165, 250, 0.3)",
-        progressColor: "#3B82F6" 
+        progressColor: "#3B82F6"
     },
     COMPLETED: {
         bgColor: "#F0FDF4",
@@ -39,6 +40,14 @@ export const StateColors: Record<State, PulseColor> = {
         borderHoverColor: "#F59E0B",
         boxShadow: "0 2px 6px rgba(245, 158, 11, 0.3)",
         progressColor: "#F97316"
+    },
+    INCONSISTENT: {
+        bgColor: "#FFFFFF",
+        hoverColor: "#FEF2F2",
+        borderHoverColor: "#DC2626",
+        progressColor: "#DC2626",
+        boxShadow: "0 2px 6px rgba(220, 38, 38, 0.3)",
+        bgImage: "repeating-linear-gradient(45deg, rgb(255, 255, 255), rgb(255, 255, 255) 15px, rgb(254, 226, 226) 15px, rgb(254, 226, 226) 30px)"
     }
 }
 

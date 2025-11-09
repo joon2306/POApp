@@ -24,10 +24,10 @@ export default class PiService implements IPiService {
         this.#pi = {
             title: "SL25.4",
             sprintTimestamp: {
-                first: new Date(2025, 9, 22).getTime(),
-                second: new Date(2025, 10, 5).getTime(),
-                third: new Date(2025, 10, 9).getTime(),
-                fourth: new Date(2025, 11, 3).getTime(),
+                first: new Date(2025, 9, 9).getTime(),
+                second: new Date(2025, 9, 20).getTime(),
+                third: new Date(2025, 10, 1).getTime(),
+                fourth: new Date(2025, 10, 8).getTime(),
                 fifth: new Date(2025, 11, 17).getTime(),
                 ip: new Date(2025, 11, 31).getTime()
             }

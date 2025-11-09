@@ -1,12 +1,10 @@
 import { Feature, JiraTicket } from "../../types/Feature/Feature";
 import { Pulse } from "../../types/Pulse/Pulse";
-import { PulseUtils } from "../../utils/PulseUtils";
+import { PulseUtils, Sprint } from "../../utils/PulseUtils";
 import IPulseService from "../IPulseService";
 
 let instance: PulseService = null;
 export default class PulseService implements IPulseService {
-
-    #pulses: Array<Pulse>;
 
     #features: Array<Feature>;
 
@@ -54,16 +52,17 @@ export default class PulseService implements IPulseService {
             { featureKey: "ADTCUST-2", title: "SDV MAC Secoc Impl", target: 4, userStories: userStories2, dependencies: dependencies2, completedStories: [] },
             { featureKey: "ADTCUST-3", title: "remove status 500", target: 1, userStories: [], dependencies: [], completedStories: ["ADTCUST-333"] },
             { featureKey: "ADTDEVI-1", title: "Java 17 migration", target: 6, userStories: getTickt("ADTDEVI-31", 1), dependencies: getTickt("GXDD-123", 1), completedStories: ["ADTDEVI-111", "ADTDEVI-222", "ADTDEVI-333", "ADTDEVI-444"] },
-            { featureKey: "ADTCUST-5", title: "ADT Converter DTC masking", target: 3, userStories: [], dependencies: [], completedStories: [] }
+            { featureKey: "ADTCUST-5", title: "ADT Converter DTC masking", target: 4, userStories: [], dependencies: [], completedStories: [] }
         ]
 
-        this.#pulses = this.#features.map(feature => {
-            return { ...feature, state: PulseUtils.getState(feature), tags: PulseUtils.getTags(feature) }
-        })
+
     }
 
-    getAll(): Promise<Pulse[]> {
-        const sortedPulses = this.#pulses.sort((a, b) => {
+    getAll(activeSprint: Sprint ): Promise<Pulse[]> {
+        const pulses = this.#features.map(feature => {
+            return { ...feature, state: PulseUtils.getState(feature, activeSprint), tags: PulseUtils.getTags(feature, activeSprint) }
+        })
+        const sortedPulses = pulses.sort((a, b) => {
             const aCompleted = a.state === "COMPLETED";
             const bCompleted = b.state === "COMPLETED";
 

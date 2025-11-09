@@ -2,27 +2,32 @@ import { useEffect, useState } from "react";
 import IPulseService from "../services/IPulseService";
 import { Pulse } from "../types/Pulse/Pulse";
 import IPiService from "../services/IPiService";
-import { Pi } from "../types/Feature/Pi";
+import { PulseUtils, Sprint } from "../utils/PulseUtils";
 
 
 export type usePulse = {
     pulses: Array<Pulse>;
-    pi: Pi;
+    activeSprint: Sprint;
+    piTitle: string;
 }
 
 export function usePulse(pulseService: IPulseService, piService: IPiService): usePulse {
 
     const [pulses, setPulses] = useState<Array<Pulse>>([]);
-    const [pi, setPi] = useState<Pi>(null);
+    const [activeSprint, setActiveSprint] = useState<Sprint | "Inactive">("Inactive");
+    const [piTitle, setPiTitle] = useState<string>("");
 
     let cancelled = false;
 
     useEffect(() => {
         if (!cancelled) {
-            pulseService.getAll()
+            piService.getCurrent().then(pi => {
+                setPiTitle(pi.title);
+                const activeSprint = PulseUtils.getActiveSprint(pi);
+                setActiveSprint(activeSprint);
+                return activeSprint;
+            }).then((activeSprint) => pulseService.getAll(activeSprint))
                 .then(response => setPulses(response));
-            
-            piService.getCurrent().then(pi => setPi(pi));
         }
 
         return () => {
@@ -33,6 +38,6 @@ export function usePulse(pulseService: IPulseService, piService: IPiService): us
 
 
 
-    return { pulses, pi };
+    return { pulses, activeSprint, piTitle };
 
 }

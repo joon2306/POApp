@@ -5,10 +5,10 @@ import { Pulse, State } from "../types/Pulse/Pulse";
 
 type FeatureTarget = Pulse["target"];
 
-type Sprint = "Sprint 1" | "Sprint 2" | "Sprint 3" | "Sprint 4" | "Sprint 5" | "Sprint IP";
+export type Sprint = "Sprint 1" | "Sprint 2" | "Sprint 3" | "Sprint 4" | "Sprint 5" | "Sprint IP" | "Inactive";
 
 class SprintMapper {
-    private static readonly SPRINT_MAP = {
+    public static readonly SPRINT_MAP: Record<number, Sprint> = {
         1: "Sprint 1",
         2: "Sprint 2",
         3: "Sprint 3",
@@ -29,19 +29,27 @@ class SprintMapper {
 class StateMapper {
 
 
-    constructor(private readonly userStories: Array<JiraTicket>,
-        private readonly dependencies: Array<JiraTicket>, private readonly completedStories: Array<JiraKey>) { }
+    constructor(private readonly feature: Feature,
+        private readonly activeSprint: Sprint) { }
 
     computeState(): State {
-        if (this.userStories.length === 0 && this.completedStories.length > 0) {
+        if (this.feature.userStories.length === 0 && this.feature.completedStories.length > 0) {
             return "COMPLETED";
         }
 
-        if (this.userStories.length > 0 && this.userStories.every(userStory => userStory.state === JIRA_STATE.ON_HOLD)) {
+        const activeSprint = parseInt(Object.entries(SprintMapper.SPRINT_MAP).find(([_, value]) => value === this.activeSprint)?.[0]);
+
+        if (activeSprint) {
+            if (activeSprint > this.feature.target) {
+                return "INCONSISTENT";
+            }
+        }
+
+        if (this.feature.userStories.length > 0 && this.feature.userStories.every(userStory => userStory.state === JIRA_STATE.ON_HOLD)) {
             return "BLOCKED";
         }
 
-        if (this.dependencies.length !== 0) {
+        if (this.feature.dependencies.length !== 0) {
             return "HAS_DEPENDENCIES";
         }
 
@@ -60,7 +68,7 @@ class StateMapper {
             return ["COMPLETED"];
         }
 
-        if (this.dependencies.length !== 0) {
+        if (this.feature.dependencies.length !== 0) {
             set.add("HAS_DEPENDENCIES");
         }
 
@@ -88,9 +96,9 @@ class SprintUtils {
                 accumulator = key;
             }
             return accumulator;
-        }, "first");
+        }, "");
 
-        return SprintUtils.SPRINT_MAP[returnValue] ?? "Sprint 1";
+        return SprintUtils.SPRINT_MAP[returnValue] ?? "Inactive";
     }
 }
 
@@ -101,12 +109,12 @@ export class PulseUtils {
         return new SprintMapper(featureTarget).getSprint();
     }
 
-    static getState(feature: Feature) {
-        return new StateMapper(feature.userStories, feature.dependencies, feature.completedStories).computeState();
+    static getState(feature: Feature, activeSprint: Sprint) {
+        return new StateMapper(feature, activeSprint).computeState();
     }
 
-    static getTags(feature: Feature) {
-        return new StateMapper(feature.userStories, feature.dependencies, feature.completedStories).getTags();
+    static getTags(feature: Feature, activeSprint: Sprint) {
+        return new StateMapper(feature, activeSprint).getTags();
     }
 
     static getActiveSprint(pi: Pi) {

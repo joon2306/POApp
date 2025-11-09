@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { usePulse } from "../../hooks/usePulse";
 import PulseService from "../../services/impl/PulseService";
 import { Pulse, State, StateColors } from "../../types/Pulse/Pulse";
-import { PulseUtils } from "../../utils/PulseUtils";
+import { PulseUtils, Sprint } from "../../utils/PulseUtils";
 import Card from "../Card";
 import ProgressBar from "../ProgressBar/ProgressBar";
 import Tag from "../Tag/Tag";
@@ -20,16 +20,17 @@ type Body = {
 }
 
 type Header = {
-    pi: Pi
+    piTitle: string;
+    activeSprint: Sprint;
 }
 
 export default function PulseBoard() {
 
-    let { pulses, pi }: usePulse = usePulse(new PulseService(), new PiService());
+    let { pulses, piTitle, activeSprint }: usePulse = usePulse(new PulseService(), new PiService());
 
     return (
         <div className="m-5">
-            <Header pi={pi} />
+            <Header  piTitle={piTitle} activeSprint={activeSprint}/>
             <div className="border mt-5 mb-10"></div>
             <Body pulses={pulses} />
         </div>
@@ -37,10 +38,10 @@ export default function PulseBoard() {
 }
 
 
-function Header({ pi }: Header) {
+function Header({ piTitle, activeSprint }: Header) {
     return (
         <div>
-            {pi &&
+            {piTitle && activeSprint &&
                 <div className="flex justify-between">
                     <div>
                         <h1 className="text-2xl font-bold text-[#000000]">Pulse Board</h1>
@@ -48,8 +49,8 @@ function Header({ pi }: Header) {
                     </div>
 
                     <div>
-                        <p>{pi.title}</p>
-                        <h1 className="text-xl font-semibold text-[#000000]">{PulseUtils.getActiveSprint(pi)}</h1>
+                        <p>{piTitle}</p>
+                        <h1 className="text-xl font-semibold text-[#000000]">{activeSprint}</h1>
                     </div>
 
                 </div>
@@ -84,8 +85,11 @@ function PulseCard(pulse: Pulse) {
         transitionProperty: "all",
         transitionDuration: ".2s",
         borderWidth: "2px",
-        boxShadow: state.boxShadow
-    } : {}
+        boxShadow: state.boxShadow,
+        backgroundImage: state.bgImage ?? "none"
+    } : {
+        backgroundImage: state.bgImage ?? "none"
+    }
 
 
     return (
