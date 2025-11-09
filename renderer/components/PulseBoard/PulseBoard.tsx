@@ -7,6 +7,8 @@ import Card from "../Card";
 import ProgressBar from "../ProgressBar/ProgressBar";
 import Tag from "../Tag/Tag";
 import ProgressUtils from "../../utils/ProgressUtils";
+import PiService from "../../services/impl/PiService";
+import { Pi } from "../../types/Feature/Pi";
 
 type Row = {
     title: string;
@@ -17,13 +19,17 @@ type Body = {
     pulses: Pulse[];
 }
 
+type Header = {
+    pi: Pi
+}
+
 export default function PulseBoard() {
 
-    let { pulses }: usePulse = usePulse(new PulseService());
+    let { pulses, pi }: usePulse = usePulse(new PulseService(), new PiService());
 
     return (
         <div className="m-5">
-            <Header />
+            <Header pi={pi} />
             <div className="border mt-5 mb-10"></div>
             <Body pulses={pulses} />
         </div>
@@ -31,20 +37,25 @@ export default function PulseBoard() {
 }
 
 
-function Header() {
+function Header({ pi }: Header) {
     return (
-        <div className="flex justify-between">
-            <div>
-                <h1 className="text-2xl font-bold text-[#000000]">Pulse Board</h1>
-                <p>Track your features progress for this PI</p>
-            </div>
+        <div>
+            {pi &&
+                <div className="flex justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold text-[#000000]">Pulse Board</h1>
+                        <p>Track your features progress for this PI</p>
+                    </div>
 
-            <div>
-                <p>Active Sprint</p>
-                <h1 className="text-xl font-semibold text-[#000000]">Sprint 1</h1>
-            </div>
+                    <div>
+                        <p>{pi.title}</p>
+                        <h1 className="text-xl font-semibold text-[#000000]">{PulseUtils.getActiveSprint(pi)}</h1>
+                    </div>
 
+                </div>
+            }
         </div>
+
 
     )
 }
@@ -97,7 +108,7 @@ function Content(pulse: Pulse) {
 
             <div className="mt-5">
                 <ProgressBar color={StateColors[pulse.state].progressColor}
-                progress={ProgressUtils.getProgress(pulse.userStories.length + pulse.completedStories.length, pulse.completedStories.length)} />
+                    progress={ProgressUtils.getProgress(pulse.userStories.length + pulse.completedStories.length, pulse.completedStories.length)} />
             </div>
 
             <Footer tags={pulse.tags} />

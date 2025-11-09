@@ -1,9 +1,11 @@
+import { prefetchDNS } from "react-dom";
 import { Feature, JIRA_STATE, JiraKey, JiraTicket } from "../types/Feature/Feature";
+import { Pi } from "../types/Feature/Pi";
 import { Pulse, State } from "../types/Pulse/Pulse";
 
 type FeatureTarget = Pulse["target"];
 
-type SprintTarget = "Sprint 1" | "Sprint 2" | "Sprint 3" | "Sprint 4" | "Sprint 5" | "Sprint IP";
+type Sprint = "Sprint 1" | "Sprint 2" | "Sprint 3" | "Sprint 4" | "Sprint 5" | "Sprint IP";
 
 class SprintMapper {
     private static readonly SPRINT_MAP = {
@@ -17,7 +19,7 @@ class SprintMapper {
 
     constructor(private readonly featureTarget: FeatureTarget) { }
 
-    getSprint(): SprintTarget {
+    getSprint(): Sprint {
         return SprintMapper.SPRINT_MAP[this.featureTarget];
     }
 
@@ -67,6 +69,31 @@ class StateMapper {
     }
 }
 
+class SprintUtils {
+    private static readonly SPRINT_MAP = {
+        first: "Sprint 1",
+        second: "Sprint 2",
+        third: "Sprint 3",
+        fourth: "Sprint 4",
+        fifth: "Sprint 5",
+        ip: "Sprint IP"
+    } as const;
+
+    constructor(private readonly pi: Pi) { }
+
+    getActiveSprint(): Sprint {
+        const now = Date.now();
+        const returnValue = Object.entries(this.pi.sprintTimestamp).reduce((accumulator: string, [key, value]: [string, number]) => {
+            if (value < now) {
+                accumulator = key;
+            }
+            return accumulator;
+        }, "first");
+
+        return SprintUtils.SPRINT_MAP[returnValue] ?? "Sprint 1";
+    }
+}
+
 
 export class PulseUtils {
 
@@ -80,5 +107,9 @@ export class PulseUtils {
 
     static getTags(feature: Feature) {
         return new StateMapper(feature.userStories, feature.dependencies, feature.completedStories).getTags();
+    }
+
+    static getActiveSprint(pi: Pi) {
+        return new SprintUtils(pi).getActiveSprint();
     }
 }
