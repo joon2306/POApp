@@ -1,7 +1,7 @@
 import { SelectType } from "../../types/FormTypes";
 import styles from "../../styles/Form/Select/style.module.css";
 
-const Select = ({ name, onChange, options, defaultValue }: SelectType) => {
+const Select = ({ name, onChange, options, defaultValue, customStyles }: SelectType) => {
 
     return (
         <select
@@ -9,6 +9,7 @@ const Select = ({ name, onChange, options, defaultValue }: SelectType) => {
             onChange={onChange}
             className={styles.select}
             value={defaultValue}
+            style={customStyles ? customStyles : {}}
         >
 
             {

@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect, ChangeEvent } from 'react';
 
 export type DatePicker = {
-    value: string;
-    onChange:(date: string) => void;
-    error: boolean;
-    errorMessage: string;
-    label: string;
+  value: string;
+  onChange: (date: string) => void;
+  error: boolean;
+  errorMessage: string;
+  label: string;
 
 }
 
@@ -42,7 +42,7 @@ const DatePicker = ({ value, onChange, error, errorMessage, label }: DatePicker)
   };
 
   const handleDateClick = (day) => {
-    const newDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+    const newDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day + 1);
     onChange(newDate.toISOString().split('T')[0]);
     setIsOpen(false);
   };
@@ -90,16 +90,16 @@ const DatePicker = ({ value, onChange, error, errorMessage, label }: DatePicker)
     for (let day = 1; day <= totalDays; day++) {
       const today = isToday(day);
       const selected = isSelected(day);
-      
+
       days.push(
         <button
           key={day}
           onClick={() => handleDateClick(day)}
           className={`
             p-2.5 text-sm font-medium rounded-lg transition-all
-            ${selected 
-              ? 'bg-blue-500 text-white font-semibold' 
-              : today 
+            ${selected
+              ? 'bg-blue-500 text-white font-semibold'
+              : today
                 ? 'bg-gray-100 text-gray-900 font-semibold'
                 : 'text-gray-700 hover:bg-gray-50'
             }
@@ -124,7 +124,11 @@ const DatePicker = ({ value, onChange, error, errorMessage, label }: DatePicker)
         className={`
           w-full p-2 text-[15px] rounded-lg bg-white cursor-pointer
           flex justify-between items-center transition-all outline-none
-          border ${error ? 'border-red-500' : 'border-gray-300'}
+          border ${error ? 'border-[#ef4444]' : 'border-gray-300'}
+          ${!error && isOpen
+            ? 'border-[#E8A03A] border-2'
+            : ''
+          }
         `}
       >
         <span className={value ? 'text-gray-800' : 'text-gray-400'}>
@@ -148,7 +152,7 @@ const DatePicker = ({ value, onChange, error, errorMessage, label }: DatePicker)
       </button>
 
       {error && (
-        <p className="text-red-500 text-xs mt-1.5 ml-1">
+        <p className="text-[#ef4444] mt-1.5 ml-1">
           {errorMessage}
         </p>
       )}

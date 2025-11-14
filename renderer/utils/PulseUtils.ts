@@ -1,4 +1,3 @@
-import { prefetchDNS } from "react-dom";
 import { Feature, JIRA_STATE, JiraKey, JiraTicket } from "../types/Feature/Feature";
 import { Pi } from "../types/Feature/Pi";
 import { Pulse, State } from "../types/Pulse/Pulse";

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { usePulse } from "../../hooks/usePulse";
 import PulseService from "../../services/impl/PulseService";
 import { Pulse, State, StateColors } from "../../types/Pulse/Pulse";
@@ -9,12 +9,12 @@ import Tag from "../Tag/Tag";
 import ProgressUtils from "../../utils/ProgressUtils";
 import PiService from "../../services/impl/PiService";
 import Button from "../Button";
-import { GrPlan } from "react-icons/gr";
 import Form from "../Form";
 import Input from "../Form/Input";
 import DatePicker from "../Form/DatePicker";
 import { IoAddOutline } from "react-icons/io5";
 import Select from "../Form/Select";
+import usePulseForm, { usePulseForm as usePulseFormType } from "../../hooks/usePulseForm";
 
 type Row = {
     title: string;
@@ -30,15 +30,14 @@ type Header = {
     activeSprint: Sprint;
 }
 
-
 const SPRINT_OPTIONS = [
-        { value: 1, label: "Sprint 1" },
-        { value: 2, label: "Sprint 2" },
-        { value: 3, label: "Sprint 3" },
-        { value: 4, label: "Sprint 4" },
-        { value: 5, label: "Sprint 5" },
-        { value: 6, label: "Sprint IP" }
-    ]
+    { value: 1, label: "Sprint 1" },
+    { value: 2, label: "Sprint 2" },
+    { value: 3, label: "Sprint 3" },
+    { value: 4, label: "Sprint 4" },
+    { value: 5, label: "Sprint 5" },
+    { value: 6, label: "Sprint IP" }
+]
 
 export default function PulseBoard() {
 
@@ -78,10 +77,14 @@ function Header({ piTitle, activeSprint }: Header) {
 }
 
 function Body({ pulses }: Body) {
+    const pulseForm = usePulseForm();
+    const { handleSubmit } = pulseForm;
+
+
     return (
         <div>
             <div>
-                <Form error={false} formProps={{}} Content={PulseFormContent} handleSubmit={() => console.log("Form submitted")}
+                <Form error={false} formProps={pulseForm} Content={PulseFormContent} handleSubmit={handleSubmit}
                     submitOnEnter={true} />
             </div>
 
@@ -169,37 +172,37 @@ function Footer({ tags }: { tags: Array<State> }) {
 }
 
 
-function PulseFormContent() {
+function PulseFormContent({ formProps }: { formProps: usePulseFormType }) {
     return (
         <div className="mt-3">
 
-            <Card Content={PulseFormCardContent} height={{ large: "auto", medium: "auto" }} width={{ large: "auto", medium: "auto" }} />
+            <Card Content={PulseFormCardContent} height={{ large: "auto", medium: "auto" }} width={{ large: "auto", medium: "auto" }} contentProps={formProps} />
 
         </div>
     )
 }
 
-function PulseFormCardContent() {
+function PulseFormCardContent({ formData, handleChange, handleSubmit }: usePulseFormType) {
+
     return (
         <>
             <h1 className="text-2xl font-bold mb-5">Add Your PI Details</h1>
-            <Input error={false} errorMessage="" onChange={() => console.log("change")} title="Program Increment" value={""} />
+            <Input error={formData.piTitle.error} errorMessage={formData.piTitle.errorMessage} onChange={(e) => handleChange(e, "piTitle")} title="Program Increment" value={formData.piTitle.value} />
             <div className="my-3">
-                <DatePicker error={false} errorMessage={"Invalid start PI date"} label="Select PI Start Date" onChange={(date) => console.log("date: ", date)} value=""/>
+                <DatePicker error={formData.piDate.error} errorMessage={formData.piDate.errorMessage} label="Select PI Start Date" onChange={(e) => handleChange(e, "piDate")} value={formData.piDate.value.toString()} />
             </div>
-            
+
             <h1 className="text-2xl font-bold my-5">Add Your First Feature</h1>
             <div className="my-3 grid grid-cols-3 gap-5">
-                <Input error={false} errorMessage="" onChange={() => console.log("change")} title="Jira Key" value={""} />
-                <Input error={false} errorMessage="" onChange={() => console.log("change")} title="Title" value={""} />
-               <Select name="Sprint Target" options={SPRINT_OPTIONS} onChange={() => console.log("change")} defaultValue={1} />
-
+                <Input error={formData.featureKey.error} errorMessage={formData.featureKey.errorMessage} onChange={(e) => handleChange(e, "featureKey")} title="Jira Key" value={formData.featureKey.value} />
+                <Input error={formData.featureTitle.error} errorMessage={formData.featureTitle.errorMessage} onChange={(e) => handleChange(e, "featureTitle")} title="Title" value={formData.featureTitle.value} />
+                    <Select name="Sprint Target" options={SPRINT_OPTIONS} onChange={(e) => handleChange(e, "featureTarget")} defaultValue={+formData.featureTarget.value} customStyles={{maxHeight: "42px"}}/>
             </div>
 
             <div className="mt-5">
-                <Button label="Add" onClick={() => console.log("dummy button")} variant="success" icon={{Icon: IoAddOutline}}/>
+                <Button label="Add" onClick={handleSubmit} variant="success" icon={{ Icon: IoAddOutline }} />
             </div>
-            
+
         </>
     )
 }
