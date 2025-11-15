@@ -16,10 +16,7 @@ import { IoAddOutline } from "react-icons/io5";
 import Select from "../Form/Select";
 import usePulseForm, { PulseFormData, usePulseForm as usePulseFormType } from "../../hooks/usePulseForm";
 import CommsService from "../../services/impl/CommsService";
-import IPiService from "../../services/IPiService";
 import { IoTrashBinOutline } from "react-icons/io5";
-import { IModalService, useModalService } from "../../services/impl/ModalService";
-import { ModalType } from "../../types/ModalTypes";
 
 type Row = {
     title: string;
@@ -51,10 +48,11 @@ export default function PulseBoard() {
 
     let commsService = useMemo<CommsService>(() => new CommsService(), []);
     let piService = useMemo<PiService>(() => new PiService(commsService), []);
+    let pulseService = useMemo<PulseService>(() => new PulseService(commsService), []);
 
     const DeleteConfirmation = <>Are you sure you want to delete the PI?</>
 
-    const { pulses, piTitle, activeSprint, deletePi, savePulse }: usePulse = usePulse(new PulseService(), piService, DeleteConfirmation);
+    const { pulses, piTitle, activeSprint, deletePi, savePulse }: usePulse = usePulse(pulseService, piService, DeleteConfirmation);
 
     return (
         <div className={`${piTitle ? "m-5" : "flex items-center justify-center w-full h-full"}`}>
@@ -91,7 +89,7 @@ function Header({ piTitle, activeSprint }: Header) {
 
 function Body({ pulses, piTitle, deletePi, savePulse }: Body) {
     const pulseForm = usePulseForm(savePulse);
-    const { handleSubmit } = pulseForm;
+    const { handleSubmit, formError } = pulseForm;
 
 
     return (
@@ -102,7 +100,7 @@ function Body({ pulses, piTitle, deletePi, savePulse }: Body) {
             }
             {!piTitle &&
                 <div>
-                    <Form error={false} formProps={pulseForm} Content={PulseFormContent} handleSubmit={handleSubmit}
+                    <Form error={formError} formProps={pulseForm} Content={PulseFormContent} handleSubmit={handleSubmit}
                         submitOnEnter={true} />
                 </div>
             }

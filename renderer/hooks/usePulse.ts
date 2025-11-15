@@ -55,6 +55,7 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
 
     const savePulse = (formData: PulseFormData) => {
         piService.setCurrent(formData.piTitle.value as PiTitle, new Date(formData.piDate.value).getTime());
+        pulseService.saveFeature(formData)
         trigger();
     }
 
@@ -63,18 +64,18 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
             piService.getCurrent().then(pi => {
                 if (pi === null) {
                     setPiTitle("");
-                    return "Inactive";
+                    return ["Inactive"];
                 }
                 setPiTitle(pi.title);
-                const activeSprint = PulseUtils.getActiveSprint(pi);
+                const activeSprint: Sprint = PulseUtils.getActiveSprint(pi);
                 setActiveSprint(activeSprint);
-                return activeSprint;
+                return [activeSprint, pi.title];
             })
-                .then((activeSprint) => {
+                .then(([activeSprint, piTitle]: [Sprint | "Inactive", PiTitle]) => {
                     if (activeSprint === "Inactive") {
                         return [];
                     }
-                    return pulseService.getAll(activeSprint)
+                    return pulseService.getAll(activeSprint, piTitle)
                 })
                 .then(response => setPulses(response))
         }

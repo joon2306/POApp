@@ -1,7 +1,7 @@
 import Database from "better-sqlite3";
 import IJiraDbService from "../IJiraDbService";
 import GenericResponse from "../../model/GenericResponse";
-import { JiraItem, PiRef } from "../../model/JiraItem";
+import { JiraItem, JiraKey, PiRef } from "../../model/JiraItem";
 import { TABLE_JIRA_ITEMS } from "../../database/database";
 
 let instance: JiraDbService = null;
@@ -23,10 +23,22 @@ export default class JiraDbService implements IJiraDbService {
         }
         return instance;
     }
-    getByTypeAndPiRef(type: string, piRef: PiRef): GenericResponse<JiraItem[]> {
+    getByPiRef(piRef: PiRef): GenericResponse<JiraItem[]> {
         try {
-            const stmt = this.#db.prepare(`SELECT * FROM ${TABLE_JIRA_ITEMS} where type = ? and piRef = ?`);
-            const rows = stmt.all(type, piRef);
+            const stmt = this.#db.prepare(`SELECT * FROM ${TABLE_JIRA_ITEMS} where piRef = ?`);
+            const rows = stmt.all(piRef);
+            return { data: rows, error: false };
+
+        } catch (err) {
+            console.error("failure to get jira item by type: ", err);
+            return this.#emptyList;
+        }
+    }
+
+    getByTypeAndFeatureRef(type: number, featureRef: JiraKey): GenericResponse<JiraItem[]> {
+        try {
+            const stmt = this.#db.prepare(`SELECT * FROM ${TABLE_JIRA_ITEMS} where type = ? and featureRef = ?`);
+            const rows = stmt.all(type, featureRef);
             return { data: rows, error: false };
 
         } catch (err) {
@@ -49,8 +61,8 @@ export default class JiraDbService implements IJiraDbService {
 
     create(arg: JiraItem): GenericResponse<string> {
         try {
-            const stmt = this.#db.prepare(`INSERT INTO ${TABLE_JIRA_ITEMS} (jiraKey, title, target, status, type, piRef) VALUES (? , ?, ?, ?, ?, ?)`);
-            stmt.run(arg.jiraKey, arg.title, arg.target, arg.status, arg.type, arg.piRef);
+            const stmt = this.#db.prepare(`INSERT INTO ${TABLE_JIRA_ITEMS} (jiraKey, title, target, status, type, piRef, featureRef) VALUES (? , ?, ?, ?, ?, ?, ?)`);
+            stmt.run(arg.jiraKey, arg.title, arg.target, arg.status, arg.type, arg.piRef, arg.featureRef);
             console.log(JiraDbService.SUCCESSFUL_MESSAGES.create);
             return { data: JiraDbService.SUCCESSFUL_MESSAGES.create, error: false };
 

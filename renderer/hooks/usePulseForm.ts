@@ -16,6 +16,7 @@ export type usePulseForm = {
     formData: PulseFormData;
     handleChange(e: ChangeEvent<HTMLInputElement> | string | ChangeEvent<HTMLSelectElement>, id: string): void;
     handleSubmit: FormEventHandler;
+    formError: boolean;
 
 }
 
@@ -51,6 +52,7 @@ const defaultFormData: PulseFormData = {
 export default function usePulseForm(savePulse: (formData: PulseFormData) => void): usePulseForm {
 
     const [formData, setFormData] = useState<PulseFormData>(structuredClone(defaultFormData));
+    const [formError, setFormError] = useState<boolean>(false);
 
     const setValue = (e: ChangeEvent<HTMLInputElement> | string | ChangeEvent<HTMLSelectElement>, id: string) => {
         setFormData((prev) => {
@@ -93,6 +95,7 @@ export default function usePulseForm(savePulse: (formData: PulseFormData) => voi
                 }
             }
         });
+        setFormError(hasError);
         return hasError;
 
     }
@@ -100,13 +103,10 @@ export default function usePulseForm(savePulse: (formData: PulseFormData) => voi
 
 
     const handleSubmit = (e) => {
-        if (!e) {
+        if (!e || validateFormData()) {
             return;
         }
-        if (validateFormData()) {
-            return;
-        }
-
+        
         savePulse(formData);
         reset();
     }
@@ -116,6 +116,6 @@ export default function usePulseForm(savePulse: (formData: PulseFormData) => voi
     }
 
 
-    return { formData, handleChange, handleSubmit }
+    return { formData, handleChange, handleSubmit, formError }
 
 }

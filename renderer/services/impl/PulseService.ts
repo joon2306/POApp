@@ -1,67 +1,73 @@
-import { Feature, JiraTicket } from "../../types/Feature/Feature";
-import { Pulse } from "../../types/Pulse/Pulse";
+import { PulseFormData } from "../../hooks/usePulseForm";
+import CommunicationEvents from "../../types/CommunicationEvent";
+import { Feature, JiraKey, JiraTicket } from "../../types/Feature/Feature";
+import { PiTitle } from "../../types/Feature/Pi";
+import { GenericResponse } from "../../types/Generic";
+import { JIRA_STATUS, JIRA_TYPE, JiraDao, Pulse } from "../../types/Pulse/Pulse";
 import { PulseUtils, Sprint } from "../../utils/PulseUtils";
 import IPulseService from "../IPulseService";
+import CommsService from "./CommsService";
 
 let instance: PulseService = null;
 export default class PulseService implements IPulseService {
 
-    #features: Array<Feature>;
+    #commsService: CommsService;
 
-    constructor() {
+    constructor(commsService: CommsService) {
         if (instance === null) {
-            this.initFeatures();
+            this.#commsService = commsService;
             instance = this;
         }
         return instance;
     }
 
-    initFeatures() {
-        const userStories1: Array<JiraTicket> = [{
-            title: "ADTCUST-11",
-            state: 1
-        }, {
-            title: "ADTCUST-12",
-            state: 2
-        }];
-
-        const userStories2: Array<JiraTicket> = [{
-            title: "ADTCUST-21",
-            state: 3
-        }, {
-            title: "ADTCUST-22",
-            state: 3
-        }];
-
-        const dependencies2: Array<JiraTicket> = [{
-            title: "ADTCUST-23",
-            state: 2
+    #pulseToFeature(pulse: PulseFormData): JiraDao {
+        return {
+            jiraKey: pulse.featureKey.value as JiraKey,
+            status: 1,
+            piRef: pulse.piTitle.value as PiTitle,
+            target: pulse.featureTarget.value as typeof JIRA_STATUS[keyof typeof JIRA_STATUS],
+            title: pulse.piTitle.value as string,
+            type: JIRA_TYPE.FEATURE
         }
-        ]
-
-        const getTickt = (title, state) => {
-            return [
-                { title, state }
-            ]
-        }
-
-        this.#features = [
-            {
-                featureKey: "ADTCUST-1", title: "SDV_UI", target: 3, userStories: userStories1, dependencies: [], completedStories: ["ADTCUST-111", "ADTCUST-222"]
-            },
-            { featureKey: "ADTCUST-2", title: "SDV MAC Secoc Impl", target: 4, userStories: userStories2, dependencies: dependencies2, completedStories: [] },
-            { featureKey: "ADTCUST-3", title: "remove status 500", target: 1, userStories: [], dependencies: [], completedStories: ["ADTCUST-333"] },
-            { featureKey: "ADTDEVI-1", title: "Java 17 migration", target: 6, userStories: getTickt("ADTDEVI-31", 1), dependencies: getTickt("GXDD-123", 1), completedStories: ["ADTDEVI-111", "ADTDEVI-222", "ADTDEVI-333", "ADTDEVI-444"] },
-            { featureKey: "ADTCUST-5", title: "ADT Converter DTC masking", target: 4, userStories: [], dependencies: [], completedStories: [] }
-        ]
-
-
     }
 
-    getAll(activeSprint: Sprint ): Promise<Pulse[]> {
-        const pulses = this.#features.map(feature => {
-            return { ...feature, state: PulseUtils.getState(feature, activeSprint), tags: PulseUtils.getTags(feature, activeSprint) }
-        })
+    saveFeature(pulse: PulseFormData): void {
+        this.#commsService.sendRequest(CommunicationEvents.createJira, this.#pulseToFeature(pulse))
+    }
+
+    async getAll(activeSprint: Sprint, piTitle: PiTitle): Promise<Pulse[]> {
+
+        const { data, error } = await this.#commsService.sendRequest<GenericResponse<JiraDao[]>>(CommunicationEvents.getJiraByPi, piTitle);
+
+        if (error || data.length === 0) {
+            return [];
+        }
+
+        const features = data.filter(item => item.type === JIRA_TYPE.FEATURE);
+        const userStories = data.filter(item => item.type === JIRA_TYPE.USER_STORY);
+        const dependencies = data.filter(item => item.type === JIRA_TYPE.DEPENDENCY);
+
+
+
+        const pulses = features
+            .map(feature => {
+                return {
+                    title: feature.title,
+                    target: feature.target,
+                    featureKey: feature.jiraKey,
+                    userStories: userStories.filter(story => story.status !== JIRA_STATUS.COMPLETED && story.featureRef === feature.jiraKey).map(story => {
+                        return { title: story.jiraKey, state: story.status } as JiraTicket;
+                    }),
+                    dependencies: dependencies.filter(dependency => dependency.featureRef === feature.jiraKey).map(dependency => {
+                        return { title: dependency.jiraKey, state: dependency.status } as JiraTicket;
+                    }),
+                    completedStories: userStories.filter(story => story.status === JIRA_STATUS.COMPLETED && story.featureRef === feature.jiraKey).map(story => story.jiraKey)
+                } as Feature;
+            })
+            .map(feature => {
+                return { ...feature, state: PulseUtils.getState(feature, activeSprint), tags: PulseUtils.getTags(feature, activeSprint) }
+            })
         const sortedPulses = pulses.sort((a, b) => {
             const aCompleted = a.state === "COMPLETED";
             const bCompleted = b.state === "COMPLETED";

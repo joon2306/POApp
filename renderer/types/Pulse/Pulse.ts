@@ -1,4 +1,5 @@
-import { Feature } from "../Feature/Feature";
+import { Feature, JiraKey } from "../Feature/Feature";
+import { PiTitle } from "../Feature/Pi";
 
 
 export type State = "NORMAL" | "COMPLETED" | "BLOCKED" | "HAS_DEPENDENCIES" | "INCONSISTENT";
@@ -54,4 +55,27 @@ export const StateColors: Record<State, PulseColor> = {
 export type Pulse = Feature & {
     state: State;
     tags: Array<State>;
+}
+
+export const JIRA_STATUS = {
+    PENDING: 1,
+    IN_PROGRESS: 2,
+    ON_HOLD: 3,
+    COMPLETED: 4 
+} as const;
+
+export const JIRA_TYPE = {
+    FEATURE: 1,
+    DEPENDENCY: 2,
+    USER_STORY: 3
+} as const;
+
+export type JiraDao = {
+    jiraKey: JiraKey;
+    title: string;
+    target: 1 | 2 | 3 | 4 | 5 | 6;
+    status: typeof JIRA_STATUS [keyof typeof JIRA_STATUS];
+    type: typeof JIRA_TYPE[keyof typeof JIRA_TYPE];
+    piRef: PiTitle;
+    featureRef?: JiraKey;
 }
