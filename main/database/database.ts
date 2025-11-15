@@ -28,14 +28,14 @@ export default function getDatabase() {
         const createProductivityTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_PRODUCTIVITY_ITEMS} (id INTEGER PRIMARY KEY, title text, priority INTEGER, status INTEGER, time INTEGER, deleted INTEGER, duration INTEGER, start INTEGER)`);
         createProductivityTbl.run();
 
-        const createVaultTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_VAULT_ITEMS} (title TEXT PRIMARY KEY, text1 NOT NULL TEXT, text2 TEXT, text3 TEXT)`);
+        const createVaultTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_VAULT_ITEMS} (title TEXT PRIMARY KEY, text1 TEXT NOT NULL, text2 TEXT, text3 TEXT)`);
         createVaultTbl.run();
 
-        const createPiTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_PI_ITEMS} (title TEXT PRIMARY KEY, s1 NOT NULL INTEGER, s2 NOT NULL INTEGER, s3 NOT NULL INTEGER, s4 NOT NULL INTEGER,
-            s5 NOT NULL INTEGER, ip NOT NULL INTEGER )`);
+        const createPiTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_PI_ITEMS} (title TEXT PRIMARY KEY, s1 INTEGER NOT NULL, s2 INTEGER NOT NULL, s3 INTEGER NOT NULL, s4 INTEGER NOT NULL,
+            s5 INTEGER NOT NULL, ip INTEGER NOT NULL)`);
         createPiTbl.run();
 
-        const createJiraTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_JIRA_ITEMS} (jiraKey TEXT PRIMARY KEY, title NOT NULL TEXT, target NOT NULL INTEGER, status NOT NULL INTEGER, type NOT NULL INTEGER, piRef NOT NULL TEXT)`);
+        const createJiraTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_JIRA_ITEMS} (jiraKey TEXT PRIMARY KEY, title TEXT NOT NULL, target INTEGER NOT NULL, status INTEGER NOT NULL, type INTEGER NOT NULL, piRef TEXT NOT NULL)`);
         createJiraTbl.run();
     }   
 

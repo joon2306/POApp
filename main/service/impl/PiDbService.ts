@@ -34,11 +34,12 @@ export default class PiDbService implements IPiDbService {
         return { data: null, error: true };
     }
     getAll(): GenericResponse<PiItem[]> {
+        console.log("doing select");
         let data: PiItem[] = [];
         let error = false;
         try {
             const stmt = this.#database.prepare(`SELECT * FROM ${TABLE_PI_ITEMS}`);
-            data = stmt.all as PiItem[];
+            data = stmt.all() as PiItem[];
         } catch (error) {
             console.error("failure to get PI items: ", error);
             error = true;

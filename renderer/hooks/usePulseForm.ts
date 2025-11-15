@@ -16,41 +16,41 @@ export type usePulseForm = {
     formData: PulseFormData;
     handleChange(e: ChangeEvent<HTMLInputElement> | string | ChangeEvent<HTMLSelectElement>, id: string): void;
     handleSubmit: FormEventHandler;
-    
+
 }
 
-export default function usePulseForm(): usePulseForm {
+const defaultFormData: PulseFormData = {
+    featureKey: {
+        value: "",
+        error: false,
+        errorMessage: "Invalid Feature Key"
+    },
+    featureTarget: {
+        value: 1,
+        error: false,
+        errorMessage: ""
+    },
+    featureTitle: {
+        value: "",
+        error: false,
+        errorMessage: "Invalid Feature Title"
+    },
+    piDate: {
+        value: "",
+        error: false,
+        errorMessage: "Invalid date"
 
-    const [formData, setFormData] = useState<PulseFormData>(
-        {
-            featureKey: {
-                value: "",
-                error: false,
-                errorMessage: "Invalid Feature Key"
-            },
-            featureTarget: {
-                value: 1,
-                error: false,
-                errorMessage: ""
-            },
-            featureTitle: {
-                value: "",
-                error: false,
-                errorMessage: "Invalid Feature Title"
-            },
-            piDate: {
-                value: "",
-                error: false,
-                errorMessage: "Invalid date"
+    },
+    piTitle: {
+        value: "",
+        error: false,
+        errorMessage: "Invalid PI title"
+    }
+}
 
-            },
-            piTitle: {
-                value: "",
-                error: false,
-                errorMessage: "Invalid PI title"
-            }
-        }
-    );
+export default function usePulseForm(savePulse: (formData: PulseFormData) => void): usePulseForm {
+
+    const [formData, setFormData] = useState<PulseFormData>(structuredClone(defaultFormData));
 
     const setValue = (e: ChangeEvent<HTMLInputElement> | string | ChangeEvent<HTMLSelectElement>, id: string) => {
         setFormData((prev) => {
@@ -79,9 +79,9 @@ export default function usePulseForm(): usePulseForm {
         const stringFields = ["piTitle", "featureKey", "featureTitle", "piDate"];
         const formDataClone = structuredClone<PulseFormData>(formData);
         stringFields.forEach(stringId => setError(Validator.string(formDataClone[stringId].value.toString()).isBlank().validate(), stringId, formDataClone));
-        if (!formDataClone.piDate.error && (formDataClone.piDate.value as string) !== "") {
-            setError(Validator.date(formData.piDate.value as string).isBefore(new Date()).validate(), "piDate", formDataClone);
-        }
+        // if (!formDataClone.piDate.error && (formDataClone.piDate.value as string) !== "") {
+        //     setError(Validator.date(formData.piDate.value as string).isBefore(new Date()).validate(), "piDate", formDataClone);
+        // }
         setFormData(formDataClone);
 
         let hasError = false;
@@ -97,13 +97,22 @@ export default function usePulseForm(): usePulseForm {
 
     }
 
+
+
     const handleSubmit = (e) => {
         if (!e) {
             return;
         }
-        if (!validateFormData()) {
-            console.log("form submitted succesfully");
+        if (validateFormData()) {
+            return;
         }
+
+        savePulse(formData);
+        reset();
+    }
+
+    const reset = () => {
+        setFormData(structuredClone(defaultFormData));
     }
 
 

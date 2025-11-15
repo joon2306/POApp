@@ -1,7 +1,9 @@
-import { Pi } from "../types/Feature/Pi";
+import { Pi, PiTitle } from "../types/Feature/Pi";
 
 export default interface IPiService {
     getCurrent(): Promise<Pi>;
 
-    setCurrent(pi: Pi): void; 
+    setCurrent(title: PiTitle, timestamp: number): void; 
+    
+    removeCurrent(): void;
 }

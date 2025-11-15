@@ -7,3 +7,17 @@ export type PiItem = {
     s5: number;
     ip: number;
 }
+
+type PiTitle = `SL${number}.${number}`;
+
+export type PiResponse = {
+    title: PiTitle;
+    sprintTimestamp: {
+        first: number;
+        second: number;
+        third: number;
+        fourth: number;
+        fifth: number;
+        ip: number;
+    }
+}

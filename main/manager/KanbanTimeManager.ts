@@ -1,4 +1,4 @@
-import { KanbanDbItem, KanbanType } from "../model/KanbanItem";
+import { KanbanDbItem } from "../model/KanbanItem";
 import getTimeUtils from "../utils/TimeUtils";
 
 export interface IKanbanTimeManager {
@@ -27,20 +27,14 @@ export default class KanbanTimeManager implements IKanbanTimeManager {
     }
 
     getExpiredToDoKanbans(kanbanCards: KanbanDbItem[]) {
-        const inProgress = kanbanCards.filter(item => item.type === KanbanType.TODO && item.status === IN_PROGRESS && item.start && item.start < this.#startOfDay)
-        .map(expiredKanbanItem => {
-            expiredKanbanItem.duration = 0;
-            expiredKanbanItem.status = PENDING; // move back to pending
-            return expiredKanbanItem;
-        })
-
-        const pendingOrBlocked =  kanbanCards.filter(item => item.type === KanbanType.TODO && item.status !== IN_PROGRESS && item.duration && item.duration !== 0)
-        .map(item => {
+        return kanbanCards.map(item =>  {
+            if(item.status === IN_PROGRESS && item.start && item.start < this.#startOfDay) {
+                item.start = 0;
+                item.status = PENDING;
+            }
             item.duration = 0;
             return item;
-        })
-;
-        return [...inProgress, ...pendingOrBlocked];
+        });
     }
 
     updateInProgress(kanbanCards: KanbanDbItem[]) {

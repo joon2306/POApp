@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useMemo, useState } from "react";
 import { usePulse } from "../../hooks/usePulse";
 import PulseService from "../../services/impl/PulseService";
 import { Pulse, State, StateColors } from "../../types/Pulse/Pulse";
@@ -14,7 +14,12 @@ import Input from "../Form/Input";
 import DatePicker from "../Form/DatePicker";
 import { IoAddOutline } from "react-icons/io5";
 import Select from "../Form/Select";
-import usePulseForm, { usePulseForm as usePulseFormType } from "../../hooks/usePulseForm";
+import usePulseForm, { PulseFormData, usePulseForm as usePulseFormType } from "../../hooks/usePulseForm";
+import CommsService from "../../services/impl/CommsService";
+import IPiService from "../../services/IPiService";
+import { IoTrashBinOutline } from "react-icons/io5";
+import { IModalService, useModalService } from "../../services/impl/ModalService";
+import { ModalType } from "../../types/ModalTypes";
 
 type Row = {
     title: string;
@@ -23,6 +28,9 @@ type Row = {
 
 type Body = {
     pulses: Pulse[];
+    piTitle: string;
+    deletePi: () => void;
+    savePulse: (formData: PulseFormData) => void;
 }
 
 type Header = {
@@ -41,13 +49,18 @@ const SPRINT_OPTIONS = [
 
 export default function PulseBoard() {
 
-    let { pulses, piTitle, activeSprint }: usePulse = usePulse(new PulseService(), new PiService());
+    let commsService = useMemo<CommsService>(() => new CommsService(), []);
+    let piService = useMemo<PiService>(() => new PiService(commsService), []);
+
+    const DeleteConfirmation = <>Are you sure you want to delete the PI?</>
+
+    const { pulses, piTitle, activeSprint, deletePi, savePulse }: usePulse = usePulse(new PulseService(), piService, DeleteConfirmation);
 
     return (
-        <div className="m-5">
+        <div className={`${piTitle ? "m-5" : "flex items-center justify-center w-full h-full"}`}>
             <Header piTitle={piTitle} activeSprint={activeSprint} />
-            <div className="border my-5"></div>
-            <Body pulses={pulses} />
+            {piTitle && <div className="border my-5"></div>}
+            <Body pulses={pulses} savePulse={savePulse} piTitle={piTitle} deletePi={deletePi}/>
         </div>
     )
 }
@@ -76,17 +89,24 @@ function Header({ piTitle, activeSprint }: Header) {
     )
 }
 
-function Body({ pulses }: Body) {
-    const pulseForm = usePulseForm();
+function Body({ pulses, piTitle, deletePi, savePulse }: Body) {
+    const pulseForm = usePulseForm(savePulse);
     const { handleSubmit } = pulseForm;
 
 
     return (
         <div>
-            <div>
-                <Form error={false} formProps={pulseForm} Content={PulseFormContent} handleSubmit={handleSubmit}
-                    submitOnEnter={true} />
-            </div>
+            {
+                piTitle &&
+                <Button label="Delete PI" onClick={deletePi} variant="danger" icon={{ Icon: IoTrashBinOutline }} />
+            }
+            {!piTitle &&
+                <div>
+                    <Form error={false} formProps={pulseForm} Content={PulseFormContent} handleSubmit={handleSubmit}
+                        submitOnEnter={true} />
+                </div>
+            }
+
 
             <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-10 mt-10">
                 {
@@ -196,11 +216,11 @@ function PulseFormCardContent({ formData, handleChange }: usePulseFormType) {
             <div className="my-3 grid grid-cols-3 gap-5">
                 <Input error={formData.featureKey.error} errorMessage={formData.featureKey.errorMessage} onChange={(e) => handleChange(e, "featureKey")} title="Jira Key" value={formData.featureKey.value} />
                 <Input error={formData.featureTitle.error} errorMessage={formData.featureTitle.errorMessage} onChange={(e) => handleChange(e, "featureTitle")} title="Title" value={formData.featureTitle.value} />
-                    <Select name="Sprint Target" options={SPRINT_OPTIONS} onChange={(e) => handleChange(e, "featureTarget")} defaultValue={+formData.featureTarget.value} customStyles={{maxHeight: "42px"}}/>
+                <Select name="Sprint Target" options={SPRINT_OPTIONS} onChange={(e) => handleChange(e, "featureTarget")} defaultValue={+formData.featureTarget.value} customStyles={{ maxHeight: "42px" }} />
             </div>
 
             <div className="mt-5">
-                <Button label="Add"  variant="success" icon={{ Icon: IoAddOutline }} type="submit"/>
+                <Button label="Add" variant="success" icon={{ Icon: IoAddOutline }} type="submit" />
             </div>
 
         </>
