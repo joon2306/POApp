@@ -16,6 +16,10 @@ import TokenGeneratorService from "../service/impl/TokenGeneratorServie";
 import ITokenGeneratorService from "../service/ITokenGeneratorService";
 import IVaultDbService from "../service/VaultDbService";
 import VaultDbService from "../service/impl/VaultDbService";
+import PiDbService from "../service/impl/PiDbService";
+import IPiDbService from "../service/IPiDbService";
+import IJiraDbService from "../service/IJiraDbService";
+import JiraDbService from "../service/impl/JiraDbService";
 
 type ServiceManagerProviderType = {
     productivityService: IProductivityService;
@@ -24,6 +28,8 @@ type ServiceManagerProviderType = {
     copyService: ICopyService;
     tokenGeneratorService: ITokenGeneratorService;
     vaultDbService: IVaultDbService;
+    piDbService: IPiDbService;
+    jiraDbService: IJiraDbService;
 
 }
 
@@ -50,6 +56,8 @@ export class ServiceManagerProvider implements IProvider<ServiceManagerProviderT
         const copyService = new CopyService(exeService);
         const tokenGeneratorService = new TokenGeneratorService(exeService, copyService);
         const vaultDbService = new VaultDbService(this.#db);
+        const piDbService = new PiDbService(this.#db);
+        const jiraDbService = new JiraDbService(this.#db);
 
         return {
             productivityService,
@@ -57,7 +65,9 @@ export class ServiceManagerProvider implements IProvider<ServiceManagerProviderT
             commsService,
             copyService,
             tokenGeneratorService, 
-            vaultDbService
+            vaultDbService,
+            piDbService,
+            jiraDbService
         }
     }
 

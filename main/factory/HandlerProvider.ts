@@ -1,5 +1,7 @@
 import CopyHandler from "../Handlers/CopyHandler";
 import Handler from "../Handlers/Handler";
+import JiraHandler from "../Handlers/JiraHandler";
+import PiHandler from "../Handlers/PiHandler";
 import ProductivityHandler from "../Handlers/ProductivityHandler";
 import TodoKanbanHandler from "../Handlers/TodoKanbanHandler";
 import TokenHandler from "../Handlers/TokenHandler";
@@ -65,13 +67,17 @@ export default class HandlerProvider implements IProvider<IHandlerProviderRespon
     }
 
     provide(): IHandlerProviderResponse {
-        const { kanbanDbService, commsService, productivityService, copyService, tokenGeneratorService, vaultDbService } = this.#serviceManagerProvider.provide();
+        const { kanbanDbService, commsService, productivityService, copyService, tokenGeneratorService,
+            vaultDbService, piDbService, jiraDbService } = this.#serviceManagerProvider.provide();
         const kanbanHandler = new TodoKanbanHandler(kanbanDbService, commsService, productivityService);
         const productivityHandler = new ProductivityHandler(productivityService, commsService, kanbanDbService);
         const copyHandler = new CopyHandler(copyService, commsService);
         const tokenHandler = new TokenHandler(tokenGeneratorService, commsService);
         const vaultHandler = new VaultHandler(commsService, vaultDbService);
-        return new HandlerProviderResponse([kanbanHandler, productivityHandler, copyHandler, tokenHandler, vaultHandler]);
+        const piHandler = new PiHandler(commsService, piDbService);
+        const jiraHandler = new JiraHandler(commsService, jiraDbService);
+        return new HandlerProviderResponse([kanbanHandler, productivityHandler, copyHandler, tokenHandler,
+            vaultHandler, piHandler, jiraHandler]);
     }
 
 }

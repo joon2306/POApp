@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, FormEventHandler, useState } from "react";
 import Validator from "../utils/Validator";
 import { InputType } from "../types/FormTypes";
 
@@ -15,7 +15,8 @@ export type PulseFormData = {
 export type usePulseForm = {
     formData: PulseFormData;
     handleChange(e: ChangeEvent<HTMLInputElement> | string | ChangeEvent<HTMLSelectElement>, id: string): void;
-    handleSubmit: () => void;
+    handleSubmit: FormEventHandler;
+    
 }
 
 export default function usePulseForm(): usePulseForm {
@@ -83,11 +84,26 @@ export default function usePulseForm(): usePulseForm {
         }
         setFormData(formDataClone);
 
+        let hasError = false;
+
+        Object.entries(formDataClone).forEach(([k, v]) => {
+            if (stringFields.indexOf(k as unknown as string) !== -1) {
+                if (v.error) {
+                    hasError = true;
+                }
+            }
+        });
+        return hasError;
+
     }
 
-    const handleSubmit = () => {
-        validateFormData();
-        console.log("formData: ", formData);
+    const handleSubmit = (e) => {
+        if (!e) {
+            return;
+        }
+        if (!validateFormData()) {
+            console.log("form submitted succesfully");
+        }
     }
 
 

@@ -1,7 +1,7 @@
 import { IconType } from "react-icons";
 
 export interface ButtonProps {
-    onClick: () => void;
+    onClick?: () => void;
     variant: variant;
     label: string;
     icon?: {
@@ -10,6 +10,7 @@ export interface ButtonProps {
     },
     customStyles?: string;
     isLoading?: boolean;
+    type?: "button" | "submit" | "reset";
 }
 
 export interface SubmitButtonProps {

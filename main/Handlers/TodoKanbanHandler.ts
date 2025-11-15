@@ -1,5 +1,5 @@
 import CommunicationEvents from "../../renderer/types/CommunicationEvent";
-import { KanbanDbItem, KanbanType } from "../model/KanbanItem";
+import { KanbanDbItem } from "../model/KanbanItem";
 import ICommunicationService from "../service/ICommunicationService";
 import IKanbanDbService from "../service/IKanbanDbService";
 import IProductivityService from "../service/IProductivityService";
@@ -11,8 +11,6 @@ export default class TodoKanbanHandler implements Handler {
     #kanbanDbService: IKanbanDbService;
     #commsService: ICommunicationService;
     #productivityService: IProductivityService;
-
-    private static KANBAN_TYPE = KanbanType.TODO;
 
     constructor(kanbanDbService: IKanbanDbService, commsService: ICommunicationService, productivityService: IProductivityService) {
         if (instance === null) {
@@ -26,13 +24,13 @@ export default class TodoKanbanHandler implements Handler {
     }
 
     #getKanbanCards() {
-        const getKanbanCards = () => this.#kanbanDbService.getAllByType(TodoKanbanHandler.KANBAN_TYPE);
+        const getKanbanCards = () => this.#kanbanDbService.getAll();
         this.#commsService.getRequest(CommunicationEvents.getTodoKanbanCards, () => getKanbanCards());
     }
 
     #saveKanbanCard() {
         const save = ([{ id, title, description, priority, status, time }]: KanbanDbItem[]) => {
-            return this.#kanbanDbService.create({ id, title, description, priority, status, time, type: TodoKanbanHandler.KANBAN_TYPE });
+            return this.#kanbanDbService.create({ id, title, description, priority, status, time });
         }
         this.#commsService.getRequest(CommunicationEvents.saveTodoKanbanCard, (kanbanCard: KanbanDbItem[]) => save(kanbanCard));
     }
@@ -51,7 +49,7 @@ export default class TodoKanbanHandler implements Handler {
 
     #modifyCard() {
         const modifyCard = ([{ id, title, description, priority, status, time }]: KanbanDbItem[]) => {
-            this.#kanbanDbService.modify({ id, title, description, priority, status, time, type: TodoKanbanHandler.KANBAN_TYPE });
+            this.#kanbanDbService.modify({ id, title, description, priority, status, time });
         }
         this.#commsService.getRequest(CommunicationEvents.modifyTodoKanbanCard, (kanbanCard: KanbanDbItem[]) => modifyCard(kanbanCard));
     }

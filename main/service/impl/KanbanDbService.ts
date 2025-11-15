@@ -18,10 +18,10 @@ export default class KanbanDbService implements IKanbanDbService {
         }
         return instance;
     }
-    getAllByType(type: number): GenericResponse<KanbanDbItem[]> {
-        const stmt = this.#db.prepare(`SELECT * FROM ${TABLE_KANBAN_ITEMS} WHERE type = ?`);
+    getAll(): GenericResponse<KanbanDbItem[]> {
+        const stmt = this.#db.prepare(`SELECT * FROM ${TABLE_KANBAN_ITEMS}`);
         try {
-            const rows = stmt.all(type) as KanbanDbItem[];
+            const rows = stmt.all() as KanbanDbItem[];
             return { error: false, data: rows }
         } catch (err) {
             console.error("Error fetching kanban cards by type: ", err);
@@ -43,22 +43,10 @@ export default class KanbanDbService implements IKanbanDbService {
         return !error ? this.#kanbanTimeManager.updateInProgress(kanbanCards) : [];
     }
 
-
-    getAll(): GenericResponse<KanbanDbItem[]> {
-        try {
-            const stmt = this.#db.prepare(`SELECT * FROM ${TABLE_KANBAN_ITEMS}`);
-            const rows = stmt.all() as KanbanDbItem[];
-            return { error: false, data: rows }
-        } catch (err) {
-            console.error("Error fetching kanban cards: ", err);
-            return { error: true, data: [] };
-        }
-    }
-
     create(kanbanItem: KanbanDbItem): GenericResponse<string> {
         try {
-            const stmt = this.#db.prepare(`INSERT INTO ${TABLE_KANBAN_ITEMS} (title, description, priority, status, time, type, feature_id) VALUES (?, ?, ?, ?, ?, ?, ?)`);
-            stmt.run(kanbanItem.title, kanbanItem.description, kanbanItem.priority, kanbanItem.status, kanbanItem.time, kanbanItem.type, kanbanItem.feature_id);
+            const stmt = this.#db.prepare(`INSERT INTO ${TABLE_KANBAN_ITEMS} (title, description, priority, status, time) VALUES (?, ?, ?, ?, ?)`);
+            stmt.run(kanbanItem.title, kanbanItem.description, kanbanItem.priority, kanbanItem.status, kanbanItem.time);
             return { error: false, data: "Kanban card saved successfully" };
         } catch (err) {
             console.error("Error saving kanban card: ", err);
@@ -87,9 +75,9 @@ export default class KanbanDbService implements IKanbanDbService {
                 return { error: true, data: "Kanban card not found. Cannot modify" };
             }
             kanbanItem = this.#kanbanTimeManager.handleChangeOfState(kanbanCard.data, kanbanItem);
-            const stmt = this.#db.prepare(`UPDATE ${TABLE_KANBAN_ITEMS} SET title = ?, description = ?, priority = ?, status = ?, time = ?, start = ?, duration = ?, type = ?, feature_id = ? WHERE id = ?`);
+            const stmt = this.#db.prepare(`UPDATE ${TABLE_KANBAN_ITEMS} SET title = ?, description = ?, priority = ?, status = ?, time = ?, start = ?, duration = ? WHERE id = ?`);
             stmt.run(kanbanItem.title, kanbanItem.description, kanbanItem.priority, kanbanItem.status ?? kanbanCard.data.status, kanbanItem.time,
-                kanbanItem.start ?? kanbanCard.data.start, kanbanItem.duration ?? kanbanCard.data.duration, kanbanCard.data.type, kanbanCard.data.feature_id, kanbanCard.data.id);
+                kanbanItem.start ?? kanbanCard.data.start, kanbanItem.duration ?? kanbanCard.data.duration, kanbanCard.data.id);
 
             return { error: false, data: "Kanban card modified successfully" };
         } catch (err) {

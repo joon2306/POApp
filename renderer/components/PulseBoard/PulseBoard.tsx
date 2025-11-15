@@ -182,7 +182,7 @@ function PulseFormContent({ formProps }: { formProps: usePulseFormType }) {
     )
 }
 
-function PulseFormCardContent({ formData, handleChange, handleSubmit }: usePulseFormType) {
+function PulseFormCardContent({ formData, handleChange }: usePulseFormType) {
 
     return (
         <>
@@ -200,7 +200,7 @@ function PulseFormCardContent({ formData, handleChange, handleSubmit }: usePulse
             </div>
 
             <div className="mt-5">
-                <Button label="Add" onClick={handleSubmit} variant="success" icon={{ Icon: IoAddOutline }} />
+                <Button label="Add"  variant="success" icon={{ Icon: IoAddOutline }} type="submit"/>
             </div>
 
         </>

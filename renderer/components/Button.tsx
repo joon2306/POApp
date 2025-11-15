@@ -34,12 +34,15 @@ export const buttonColors: ButtonColors = {
 
 } as const;
 
-const Button = ({ onClick, variant, label, icon, customStyles, isLoading }: ButtonProps) => {
+const Button = ({ onClick, variant, label, icon, customStyles, isLoading, type }: ButtonProps) => {
     const Icon = icon?.Icon;
     isLoading = !!isLoading;
 
     const handleClick = () => {
-        if(isLoading) {
+        if (type === "submit" || !onClick) {
+            return;
+        }
+        if (isLoading) {
             return;
         }
         onClick();
@@ -54,9 +57,10 @@ const Button = ({ onClick, variant, label, icon, customStyles, isLoading }: Butt
             onClick={handleClick}
             onMouseOver={(e) => e.currentTarget.style.backgroundColor = buttonColors[variant].hover}
             onMouseOut={(e) => e.currentTarget.style.backgroundColor = buttonColors[variant].color}
+            type={type ? type : "button"}
         >
             <div className="flex flex-wrap gap-2 items-center justify-center">
-                {!isLoading && icon && <Icon color={icon.color} />} {!isLoading ? label: <LoadingText/>}
+                {!isLoading && icon && <Icon color={icon.color} />} {!isLoading ? label : <LoadingText />}
             </div>
         </button>
 

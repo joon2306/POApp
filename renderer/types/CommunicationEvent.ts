@@ -18,7 +18,14 @@ const CommunicationEvents = Object.freeze({
     getVaultItems: "getVaultItems",
     saveVaultItem: "saveVaultItem",
     deleteVaultItem: "deleteVaultItem",
-    modifyVaultItem: "modifyVaultItem"
+    modifyVaultItem: "modifyVaultItem",
+    createPi: "createPi",
+    deletePi: "deletePi",
+    getPi: "getPi",
+    createJira: "createJira",
+    modifyJira: "modifyJira",
+    deleteJira: "deleteJira",
+    getJiraByType: "getJiraByType"
 });
 
 export default CommunicationEvents;
