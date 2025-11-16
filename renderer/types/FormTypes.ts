@@ -4,7 +4,8 @@ export type InputType = {
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
     error: boolean,
     errorMessage: string,
-    type?: string
+    type?: string,
+    disabled? : boolean
 }
 
 export type SelectType = {

@@ -50,7 +50,7 @@ export default class PulseService implements IPulseService {
 
 
 
-        const pulses = features
+        return features
             .map(feature => {
                 return {
                     title: feature.title,
@@ -67,17 +67,14 @@ export default class PulseService implements IPulseService {
             })
             .map(feature => {
                 return { ...feature, state: PulseUtils.getState(feature, activeSprint), tags: PulseUtils.getTags(feature, activeSprint) }
-            })
-        const sortedPulses = pulses.sort((a, b) => {
-            const aCompleted = a.state === "COMPLETED";
-            const bCompleted = b.state === "COMPLETED";
+            }).sort((a, b) => {
+                const aCompleted = a.state === "COMPLETED";
+                const bCompleted = b.state === "COMPLETED";
 
-            if (aCompleted && !bCompleted) { return -1 };
-            if (bCompleted && !aCompleted) { return 1 };
-            return a.target - b.target;
-        });
-
-        return Promise.resolve(sortedPulses);
+                if (aCompleted && !bCompleted) { return -1 };
+                if (bCompleted && !aCompleted) { return 1 };
+                return a.target - b.target;
+            });
     }
 
 

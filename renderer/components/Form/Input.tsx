@@ -1,6 +1,7 @@
 import styles from "../../styles/Form/Input/style.module.css";
 import { InputType } from "../../types/FormTypes";
-const Input = ({ title, value, onChange, error, errorMessage, type }: InputType) => {
+const Input = ({ title, value, onChange, error, errorMessage, type, disabled }: InputType) => {
+    disabled = !!disabled;
 
     return (
         <div>
@@ -11,6 +12,7 @@ const Input = ({ title, value, onChange, error, errorMessage, type }: InputType)
                 placeholder={title}
                 onChange={onChange}
                 className={styles.input}
+                disabled= {disabled}
                 style={{
                     border: `1px solid ${error ? '#ef4444' : '#ccc'}`
                 }}

@@ -13,6 +13,7 @@ export type usePulse = {
     pulses: Array<Pulse>;
     activeSprint: Sprint;
     piTitle: string;
+    piDate: Date;
     deletePi: () => void;
     savePulse: (formData: PulseFormData) => void;
 }
@@ -22,6 +23,7 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
     const [pulses, setPulses] = useState<Array<Pulse>>([]);
     const [activeSprint, setActiveSprint] = useState<Sprint | "Inactive">("Inactive");
     const [piTitle, setPiTitle] = useState<string>("");
+    const [piDate, setPiDate] = useState<Date>(null);
     const [count, setCount] = useState<number>(0);
 
     let cancelled = false;
@@ -54,7 +56,9 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
     }
 
     const savePulse = (formData: PulseFormData) => {
-        piService.setCurrent(formData.piTitle.value as PiTitle, new Date(formData.piDate.value).getTime());
+        if(!piTitle) {
+            piService.setCurrent(formData.piTitle.value as PiTitle, new Date(formData.piDate.value).getTime());
+        }
         pulseService.saveFeature(formData)
         trigger();
     }
@@ -67,6 +71,7 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
                     return ["Inactive"];
                 }
                 setPiTitle(pi.title);
+                setPiDate(new Date(pi.sprintTimestamp.first))
                 const activeSprint: Sprint = PulseUtils.getActiveSprint(pi);
                 setActiveSprint(activeSprint);
                 return [activeSprint, pi.title];
@@ -88,6 +93,6 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
 
 
 
-    return { pulses, activeSprint, piTitle, deletePi, savePulse };
+    return { pulses, activeSprint, piTitle, piDate, deletePi, savePulse };
 
 }

@@ -1,6 +1,7 @@
 import { ChangeEvent, FormEventHandler, useState } from "react";
 import Validator from "../utils/Validator";
 import { InputType } from "../types/FormTypes";
+import { Pulse } from "../types/Pulse/Pulse";
 
 
 type Input = Pick<InputType, "value" | "error" | "errorMessage">;
@@ -17,6 +18,8 @@ export type usePulseForm = {
     handleChange(e: ChangeEvent<HTMLInputElement> | string | ChangeEvent<HTMLSelectElement>, id: string): void;
     handleSubmit: FormEventHandler;
     formError: boolean;
+    piTitle: string;
+    piDate: Date;
 
 }
 
@@ -49,9 +52,17 @@ const defaultFormData: PulseFormData = {
     }
 }
 
-export default function usePulseForm(savePulse: (formData: PulseFormData) => void): usePulseForm {
+export default function usePulseForm(savePulse: (formData: PulseFormData) => void, piTitle: string, piDate: Date): usePulseForm {
 
-    const [formData, setFormData] = useState<PulseFormData>(structuredClone(defaultFormData));
+    const cloneFormData = structuredClone(defaultFormData);
+
+    const defaultData = !!piTitle ? {
+        ...cloneFormData,
+        piTitle: { ...cloneFormData["piTitle"], value: piTitle },
+        piDate: { ...cloneFormData["piDate"], value: piDate, }
+    } : structuredClone(cloneFormData);
+
+    const [formData, setFormData] = useState<PulseFormData>(structuredClone(defaultData) as PulseFormData);
     const [formError, setFormError] = useState<boolean>(false);
 
     const setValue = (e: ChangeEvent<HTMLInputElement> | string | ChangeEvent<HTMLSelectElement>, id: string) => {
@@ -106,7 +117,7 @@ export default function usePulseForm(savePulse: (formData: PulseFormData) => voi
         if (!e || validateFormData()) {
             return;
         }
-        
+
         savePulse(formData);
         reset();
     }
@@ -116,6 +127,6 @@ export default function usePulseForm(savePulse: (formData: PulseFormData) => voi
     }
 
 
-    return { formData, handleChange, handleSubmit, formError }
+    return { formData, handleChange, handleSubmit, formError, piTitle, piDate }
 
 }

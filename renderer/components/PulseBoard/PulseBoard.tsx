@@ -26,6 +26,7 @@ type Row = {
 type Body = {
     pulses: Pulse[];
     piTitle: string;
+    piDate: Date;
     deletePi: () => void;
     savePulse: (formData: PulseFormData) => void;
 }
@@ -33,6 +34,13 @@ type Body = {
 type Header = {
     piTitle: string;
     activeSprint: Sprint;
+}
+
+type PulseForm = {
+    show: boolean;
+    savePulse: (formData: PulseFormData) => void;
+    piTitle: string;
+    piDate: Date;
 }
 
 const SPRINT_OPTIONS = [
@@ -52,13 +60,13 @@ export default function PulseBoard() {
 
     const DeleteConfirmation = <>Are you sure you want to delete the PI?</>
 
-    const { pulses, piTitle, activeSprint, deletePi, savePulse }: usePulse = usePulse(pulseService, piService, DeleteConfirmation);
+    const { pulses, piTitle, activeSprint, deletePi, savePulse, piDate }: usePulse = usePulse(pulseService, piService, DeleteConfirmation);
 
     return (
         <div className={`${piTitle ? "m-5" : "flex items-center justify-center w-full h-full"}`}>
             <Header piTitle={piTitle} activeSprint={activeSprint} />
             {piTitle && <div className="border my-5"></div>}
-            <Body pulses={pulses} savePulse={savePulse} piTitle={piTitle} deletePi={deletePi}/>
+            <Body pulses={pulses} savePulse={savePulse} piTitle={piTitle} deletePi={deletePi} piDate={piDate} />
         </div>
     )
 }
@@ -87,22 +95,29 @@ function Header({ piTitle, activeSprint }: Header) {
     )
 }
 
-function Body({ pulses, piTitle, deletePi, savePulse }: Body) {
-    const pulseForm = usePulseForm(savePulse);
-    const { handleSubmit, formError } = pulseForm;
+function Body({ pulses, piTitle, deletePi, savePulse, piDate }: Body) {
+
+    const [show, setShow] = useState<boolean>(false);
+
+    const addFeature = () => {
+        setShow(!show);
+    }
 
 
     return (
         <div>
             {
                 piTitle &&
-                <Button label="Delete PI" onClick={deletePi} variant="danger" icon={{ Icon: IoTrashBinOutline }} />
+                (
+                    <div className="flex gap-5">
+
+                        <Button label="Add Feature" onClick={addFeature} variant="success" icon={{ Icon: IoAddOutline }} />
+                        <Button label="Delete PI" onClick={deletePi} variant="danger" icon={{ Icon: IoTrashBinOutline }} />
+                    </div>
+                )
             }
-            {!piTitle &&
-                <div>
-                    <Form error={formError} formProps={pulseForm} Content={PulseFormContent} handleSubmit={handleSubmit}
-                        submitOnEnter={true} />
-                </div>
+            {(!piTitle || show) &&
+                <PulseForm show={show} savePulse={savePulse} piTitle={piTitle} piDate={piDate} />
             }
 
 
@@ -189,6 +204,18 @@ function Footer({ tags }: { tags: Array<State> }) {
     )
 }
 
+function PulseForm({ show, savePulse, piTitle, piDate }: PulseForm) {
+    const pulseForm = usePulseForm(savePulse, piTitle, piDate);
+    const { handleSubmit, formError } = pulseForm;
+
+    return (
+        <div className={`${show ? 'mt-3' : ''}`}>
+            <Form error={formError} formProps={pulseForm} Content={PulseFormContent} handleSubmit={handleSubmit}
+            submitOnEnter={true} />
+        </div>
+    )
+}
+
 
 function PulseFormContent({ formProps }: { formProps: usePulseFormType }) {
     return (
@@ -200,14 +227,14 @@ function PulseFormContent({ formProps }: { formProps: usePulseFormType }) {
     )
 }
 
-function PulseFormCardContent({ formData, handleChange }: usePulseFormType) {
+function PulseFormCardContent({ formData, handleChange, piTitle }: usePulseFormType) {
 
     return (
         <>
-            <h1 className="text-2xl font-bold mb-5">Add Your PI Details</h1>
-            <Input error={formData.piTitle.error} errorMessage={formData.piTitle.errorMessage} onChange={(e) => handleChange(e, "piTitle")} title="Program Increment" value={formData.piTitle.value} />
+            <h1 className="text-2xl font-bold mb-5">{!piTitle ? "Add ": ""}Your PI Details</h1>
+            <Input error={formData.piTitle.error} errorMessage={formData.piTitle.errorMessage} onChange={(e) => handleChange(e, "piTitle")} title="Program Increment" value={formData.piTitle.value} disabled={!!piTitle} />
             <div className="my-3">
-                <DatePicker error={formData.piDate.error} errorMessage={formData.piDate.errorMessage} label="Select PI Start Date" onChange={(e) => handleChange(e, "piDate")} value={formData.piDate.value.toString()} />
+                <DatePicker error={formData.piDate.error} errorMessage={formData.piDate.errorMessage} label="Select PI Start Date" onChange={(e) => handleChange(e, "piDate")} value={formData.piDate.value.toString()} disabled={!!piTitle} />
             </div>
 
             <h1 className="text-2xl font-bold my-5">Add Your First Feature</h1>

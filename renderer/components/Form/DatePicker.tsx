@@ -6,10 +6,12 @@ export type DatePicker = {
   error: boolean;
   errorMessage: string;
   label: string;
+  disabled?: boolean;
 
 }
 
-const DatePicker = ({ value, onChange, error, errorMessage, label }: DatePicker) => {
+const DatePicker = ({ value, onChange, error, errorMessage, label, disabled }: DatePicker) => {
+  disabled = !!disabled;
   const [isOpen, setIsOpen] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const pickerRef = useRef(null);
@@ -94,7 +96,12 @@ const DatePicker = ({ value, onChange, error, errorMessage, label }: DatePicker)
       days.push(
         <button
           key={day}
-          onClick={() => handleDateClick(day)}
+          onClick={() => {
+            if (disabled) {
+              return;
+            }
+            handleDateClick(day)
+          }}
           className={`
             p-2.5 text-sm font-medium rounded-lg transition-all
             ${selected
@@ -120,7 +127,12 @@ const DatePicker = ({ value, onChange, error, errorMessage, label }: DatePicker)
     <div ref={pickerRef} className="relative w-full">
       <button
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          if(disabled) {
+            return;
+          }
+          setIsOpen(!isOpen)
+        }}
         className={`
           w-full p-2 text-[15px] rounded-lg bg-white cursor-pointer
           flex justify-between items-center transition-all outline-none
@@ -129,9 +141,10 @@ const DatePicker = ({ value, onChange, error, errorMessage, label }: DatePicker)
             ? 'border-[#E8A03A] border-2'
             : ''
           }
+          ${disabled ? 'bg-[#FAFAFA]': ''}
         `}
       >
-        <span className={value ? 'text-gray-800' : 'text-gray-400'}>
+        <span className={value && !disabled ? 'text-gray-800' : 'text-gray-600'}>
           {value ? formatDate(selectedDate) : label}
         </span>
         <svg
