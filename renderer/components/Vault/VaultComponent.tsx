@@ -176,7 +176,7 @@ function StoredBtn({ vault, index, copy, deleteVault, setActiveVault, doToggle, 
     }
 
     useDelete({ isHovered, callback: handleDelete, arg: null });
-    useInsert({ isHovered, callback: handleInsert, arg: null });
+    useInsert({ isHovered, callback: handleInsert, args: [] });
 
     return (
 

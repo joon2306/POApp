@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 
-export default function useInsert<T, R>({ isHovered, callback, arg }: { isHovered: boolean, callback: (arg: T) => R, arg: T }) {
+export default function useInsert<T, R>({ isHovered, callback, args }: { isHovered: boolean, callback: (...args: T[]) => R, args: T[] }) {
     useEffect(() => {
-        const handleKeyDown = (event) => {
+        const handleKeyDown = (event: KeyboardEvent) => {
             if (isHovered && event.key === 'Insert') {
-                callback(arg);
+                callback(...args);
             }
         };
 

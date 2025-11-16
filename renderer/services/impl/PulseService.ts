@@ -27,7 +27,7 @@ export default class PulseService implements IPulseService {
             status: 1,
             piRef: pulse.piTitle.value as PiTitle,
             target: pulse.featureTarget.value as typeof JIRA_STATUS[keyof typeof JIRA_STATUS],
-            title: pulse.piTitle.value as string,
+            title: pulse.featureTitle.value as string,
             type: JIRA_TYPE.FEATURE
         }
     }
@@ -75,6 +75,16 @@ export default class PulseService implements IPulseService {
                 if (bCompleted && !aCompleted) { return 1 };
                 return a.target - b.target;
             });
+    }
+
+
+    deleteJira(jiraKey: JiraKey) {
+        this.#commsService.sendRequest(CommunicationEvents.deleteJira, jiraKey);
+    }
+
+
+    modifyFeature(pulse: PulseFormData): void {
+        this.#commsService.sendRequest(CommunicationEvents.modifyJira, this.#pulseToFeature(pulse))
     }
 
 

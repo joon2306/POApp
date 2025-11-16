@@ -7,6 +7,7 @@ import { useModalService } from "../services/impl/ModalService";
 import { ModalType } from "../types/ModalTypes";
 import { PulseFormData } from "./usePulseForm";
 import { PiTitle } from "../types/Feature/Pi";
+import { Feature, JiraKey } from "../types/Feature/Feature";
 
 
 export type usePulse = {
@@ -59,8 +60,12 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
         if(!piTitle) {
             piService.setCurrent(formData.piTitle.value as PiTitle, new Date(formData.piDate.value).getTime());
         }
-        pulseService.saveFeature(formData)
+        piTitle ? modifyPulse(formData) : pulseService.saveFeature(formData)
         trigger();
+    }
+
+    const modifyPulse = (formData: PulseFormData) => {
+        pulseService.modifyFeature(formData);
     }
 
     useEffect(() => {

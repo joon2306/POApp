@@ -36,7 +36,8 @@ export default class JiraHandler implements Handler {
     }
 
     #modifyJira() {
-        this.#commsService.getRequest(CommunicationEvents.modifyJira, ([jiraItem]: JiraItem[]) => this.#jiraDbService.modify(jiraItem))
+        this.#commsService.getRequest(CommunicationEvents.modifyJira,
+            ([jiraItem]: JiraItem[]) => this.#jiraDbService.modify(jiraItem))
     }
     
     

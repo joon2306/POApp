@@ -50,8 +50,8 @@ export default class JiraDbService implements IJiraDbService {
     getByJirakey(jiraKey: string): GenericResponse<JiraItem> {
         try {
             const stmt = this.#db.prepare(`SELECT * FROM ${TABLE_JIRA_ITEMS} where jiraKey = ?`);
-            const rows = stmt.all(jiraKey);
-            return { data: rows, error: false };
+            const row = stmt.get(jiraKey);
+            return { data: row, error: false };
 
         } catch (err) {
             console.error("failure to get jira item by jiraKey: ", err);
@@ -93,10 +93,15 @@ export default class JiraDbService implements IJiraDbService {
         }
         return this.#error;
     }
-    modify(arg: JiraItem): GenericResponse<string> {
+    modify(jiraItem : JiraItem): GenericResponse<string> {
         try {
+            const {data: existingJira, error} = this.getByJirakey(jiraItem.jiraKey);
+            console.log("existing jira: ", existingJira);
+            if(!existingJira || error) {
+                return this.create(jiraItem);
+            }
             const stmt = this.#db.prepare(`UPDATE ${TABLE_JIRA_ITEMS} SET title = ?, target = ?, status = ? where jiraKey = ?`);
-            stmt.run(arg.title, arg.target, arg.status, arg.jiraKey);
+            stmt.run(jiraItem.title, jiraItem.target, jiraItem.status, jiraItem.jiraKey);
             console.log(JiraDbService.SUCCESSFUL_MESSAGES.modify);
             return { data: JiraDbService.SUCCESSFUL_MESSAGES.modify, error: false };
 
@@ -105,7 +110,6 @@ export default class JiraDbService implements IJiraDbService {
         }
         return this.#error;
     }
-
 
 
 }

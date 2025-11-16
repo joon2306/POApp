@@ -1,7 +1,6 @@
-import { ChangeEvent, FormEventHandler, useState } from "react";
+import { ChangeEvent, FormEventHandler, useEffect, useState } from "react";
 import Validator from "../utils/Validator";
 import { InputType } from "../types/FormTypes";
-import { Pulse } from "../types/Pulse/Pulse";
 
 
 type Input = Pick<InputType, "value" | "error" | "errorMessage">;
@@ -54,15 +53,7 @@ const defaultFormData: PulseFormData = {
 
 export default function usePulseForm(savePulse: (formData: PulseFormData) => void, piTitle: string, piDate: Date): usePulseForm {
 
-    const cloneFormData = structuredClone(defaultFormData);
-
-    const defaultData = !!piTitle ? {
-        ...cloneFormData,
-        piTitle: { ...cloneFormData["piTitle"], value: piTitle },
-        piDate: { ...cloneFormData["piDate"], value: piDate, }
-    } : structuredClone(cloneFormData);
-
-    const [formData, setFormData] = useState<PulseFormData>(structuredClone(defaultData) as PulseFormData);
+    const [formData, setFormData] = useState<PulseFormData>(structuredClone(defaultFormData));
     const [formError, setFormError] = useState<boolean>(false);
 
     const setValue = (e: ChangeEvent<HTMLInputElement> | string | ChangeEvent<HTMLSelectElement>, id: string) => {
@@ -83,7 +74,6 @@ export default function usePulseForm(savePulse: (formData: PulseFormData) => voi
             console.error("invalid input for change");
             return;
         }
-
         setValue(e, id);
 
     }
@@ -125,6 +115,16 @@ export default function usePulseForm(savePulse: (formData: PulseFormData) => voi
     const reset = () => {
         setFormData(structuredClone(defaultFormData));
     }
+
+    useEffect(() => {
+        if (piTitle) {
+            setFormData(prev => ({
+                ...prev,
+                piTitle: { ...prev.piTitle, value: piTitle as string },
+                piDate: { ...prev.piDate, value: piDate as unknown as string }
+            }));
+        }
+    }, [piTitle, piDate, formData.featureKey]);
 
 
     return { formData, handleChange, handleSubmit, formError, piTitle, piDate }

@@ -17,6 +17,7 @@ import Select from "../Form/Select";
 import usePulseForm, { PulseFormData, usePulseForm as usePulseFormType } from "../../hooks/usePulseForm";
 import CommsService from "../../services/impl/CommsService";
 import { IoTrashBinOutline } from "react-icons/io5";
+import useInsert from "../../hooks/useInsert";
 
 type Row = {
     title: string;
@@ -36,12 +37,12 @@ type Header = {
     activeSprint: Sprint;
 }
 
-type PulseForm = {
-    show: boolean;
-    savePulse: (formData: PulseFormData) => void;
+type PulseCardType = Pulse & {
+    handleChange: usePulseFormType["handleChange"];
     piTitle: string;
-    piDate: Date;
+    setShow: (show: boolean) => void
 }
+
 
 const SPRINT_OPTIONS = [
     { value: 1, label: "Sprint 1" },
@@ -95,13 +96,17 @@ function Header({ piTitle, activeSprint }: Header) {
     )
 }
 
-function Body({ pulses, piTitle, deletePi, savePulse, piDate }: Body) {
+function Body(props: Body) {
+
+    const { pulses, piTitle, deletePi, savePulse, piDate } = props;
 
     const [show, setShow] = useState<boolean>(false);
 
     const addFeature = () => {
         setShow(!show);
     }
+
+    const pulseForm = usePulseForm(savePulse, piTitle, piDate);
 
 
     return (
@@ -117,14 +122,16 @@ function Body({ pulses, piTitle, deletePi, savePulse, piDate }: Body) {
                 )
             }
             {(!piTitle || show) &&
-                <PulseForm show={show} savePulse={savePulse} piTitle={piTitle} piDate={piDate} />
+                <div className={`${show ? 'mt-3' : ''}`}>
+                    <PulseForm {...pulseForm} />
+                </div>
             }
 
 
             <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-10 mt-10">
                 {
                     pulses && pulses.map((pulse, i) => {
-                        return <PulseCard  {...pulse} key={i} />
+                        return <PulseCard  {...{ ...pulse, handleChange: pulseForm.handleChange, piTitle, setShow }} key={i} />
                     })
                 }
             </div>
@@ -132,9 +139,21 @@ function Body({ pulses, piTitle, deletePi, savePulse, piDate }: Body) {
     )
 }
 
-function PulseCard(pulse: Pulse) {
+function PulseCard({ handleChange,piTitle, setShow,  ...pulse }: PulseCardType) {
 
     const [isHovered, setIsHovered] = useState<boolean>(false);
+    const insertCallback = () => {
+        if(!piTitle) {
+            console.error("cannot modify when there is no active PI");
+            return;
+        }
+        handleChange(pulse.featureKey, "featureKey");
+        handleChange(pulse.title, "featureTitle");
+        handleChange(pulse.target.toString(), "featureTarget");
+        setShow(true);
+    }
+
+   useInsert({ isHovered, callback: insertCallback, args: [] });
 
     const state = StateColors[pulse.state];
 
@@ -204,15 +223,14 @@ function Footer({ tags }: { tags: Array<State> }) {
     )
 }
 
-function PulseForm({ show, savePulse, piTitle, piDate }: PulseForm) {
-    const pulseForm = usePulseForm(savePulse, piTitle, piDate);
+function PulseForm(pulseForm: usePulseFormType) {
+
     const { handleSubmit, formError } = pulseForm;
 
     return (
-        <div className={`${show ? 'mt-3' : ''}`}>
-            <Form error={formError} formProps={pulseForm} Content={PulseFormContent} handleSubmit={handleSubmit}
+
+        <Form error={formError} formProps={pulseForm} Content={PulseFormContent} handleSubmit={handleSubmit}
             submitOnEnter={true} />
-        </div>
     )
 }
 
@@ -229,17 +247,19 @@ function PulseFormContent({ formProps }: { formProps: usePulseFormType }) {
 
 function PulseFormCardContent({ formData, handleChange, piTitle }: usePulseFormType) {
 
+    const isDisabled = !!piTitle;
+
     return (
         <>
-            <h1 className="text-2xl font-bold mb-5">{!piTitle ? "Add ": ""}Your PI Details</h1>
-            <Input error={formData.piTitle.error} errorMessage={formData.piTitle.errorMessage} onChange={(e) => handleChange(e, "piTitle")} title="Program Increment" value={formData.piTitle.value} disabled={!!piTitle} />
+            <h1 className="text-2xl font-bold mb-5">{!piTitle ? "Add " : ""}Your PI Details</h1>
+            <Input error={formData.piTitle.error} errorMessage={formData.piTitle.errorMessage} onChange={(e) => handleChange(e, "piTitle")} title="Program Increment" value={formData.piTitle.value} disabled={isDisabled} />
             <div className="my-3">
-                <DatePicker error={formData.piDate.error} errorMessage={formData.piDate.errorMessage} label="Select PI Start Date" onChange={(e) => handleChange(e, "piDate")} value={formData.piDate.value.toString()} disabled={!!piTitle} />
+                <DatePicker error={formData.piDate.error} errorMessage={formData.piDate.errorMessage} label="Select PI Start Date" onChange={(e) => handleChange(e, "piDate")} value={formData.piDate.value.toString()} disabled={isDisabled} />
             </div>
 
             <h1 className="text-2xl font-bold my-5">Add Your First Feature</h1>
             <div className="my-3 grid grid-cols-3 gap-5">
-                <Input error={formData.featureKey.error} errorMessage={formData.featureKey.errorMessage} onChange={(e) => handleChange(e, "featureKey")} title="Jira Key" value={formData.featureKey.value} />
+                <Input error={formData.featureKey.error} errorMessage={formData.featureKey.errorMessage} onChange={(e) => handleChange(e, "featureKey")} title="Jira Key" value={formData.featureKey.value} disabled={isDisabled} />
                 <Input error={formData.featureTitle.error} errorMessage={formData.featureTitle.errorMessage} onChange={(e) => handleChange(e, "featureTitle")} title="Title" value={formData.featureTitle.value} />
                 <Select name="Sprint Target" options={SPRINT_OPTIONS} onChange={(e) => handleChange(e, "featureTarget")} defaultValue={+formData.featureTarget.value} customStyles={{ maxHeight: "42px" }} />
             </div>
