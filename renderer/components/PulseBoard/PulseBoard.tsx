@@ -102,11 +102,12 @@ function Body(props: Body) {
 
     const [show, setShow] = useState<boolean>(false);
 
+    const pulseForm = usePulseForm(savePulse, piTitle, piDate);
+
     const addFeature = () => {
+        pulseForm.reset();
         setShow(!show);
     }
-
-    const pulseForm = usePulseForm(savePulse, piTitle, piDate);
 
 
     return (

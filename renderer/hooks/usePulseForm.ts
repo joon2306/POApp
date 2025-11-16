@@ -19,6 +19,7 @@ export type usePulseForm = {
     formError: boolean;
     piTitle: string;
     piDate: Date;
+    reset: () => void;
 
 }
 
@@ -127,6 +128,6 @@ export default function usePulseForm(savePulse: (formData: PulseFormData) => voi
     }, [piTitle, piDate, formData.featureKey]);
 
 
-    return { formData, handleChange, handleSubmit, formError, piTitle, piDate }
+    return { formData, handleChange, handleSubmit, formError, piTitle, piDate, reset }
 
 }
