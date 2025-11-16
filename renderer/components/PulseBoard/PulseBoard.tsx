@@ -18,6 +18,7 @@ import usePulseForm, { PulseFormData, usePulseForm as usePulseFormType } from ".
 import CommsService from "../../services/impl/CommsService";
 import { IoTrashBinOutline } from "react-icons/io5";
 import useInsert from "../../hooks/useInsert";
+import useDelete from "../../hooks/useDelete";
 
 type Row = {
     title: string;
@@ -30,6 +31,7 @@ type Body = {
     piDate: Date;
     deletePi: () => void;
     savePulse: (formData: PulseFormData) => void;
+    deletePulse: (pulse: Pulse) => void;
 }
 
 type Header = {
@@ -40,7 +42,8 @@ type Header = {
 type PulseCardType = Pulse & {
     handleChange: usePulseFormType["handleChange"];
     piTitle: string;
-    setShow: (show: boolean) => void
+    setShow: (show: boolean) => void;
+    deletePulse: (pulse: Pulse) => void;
 }
 
 
@@ -59,15 +62,15 @@ export default function PulseBoard() {
     let piService = useMemo<PiService>(() => new PiService(commsService), []);
     let pulseService = useMemo<PulseService>(() => new PulseService(commsService), []);
 
-    const DeleteConfirmation = <>Are you sure you want to delete the PI?</>
+    const DeleteConfirmation = <>Are you sure you want to delete?</>
 
-    const { pulses, piTitle, activeSprint, deletePi, savePulse, piDate }: usePulse = usePulse(pulseService, piService, DeleteConfirmation);
+    const { pulses, piTitle, activeSprint, deletePi, savePulse, piDate, deletePulse }: usePulse = usePulse(pulseService, piService, DeleteConfirmation);
 
     return (
         <div className={`${piTitle ? "m-5" : "flex items-center justify-center w-full h-full"}`}>
             <Header piTitle={piTitle} activeSprint={activeSprint} />
             {piTitle && <div className="border my-5"></div>}
-            <Body pulses={pulses} savePulse={savePulse} piTitle={piTitle} deletePi={deletePi} piDate={piDate} />
+            <Body pulses={pulses} savePulse={savePulse} piTitle={piTitle} deletePi={deletePi} piDate={piDate} deletePulse={deletePulse} />
         </div>
     )
 }
@@ -98,7 +101,7 @@ function Header({ piTitle, activeSprint }: Header) {
 
 function Body(props: Body) {
 
-    const { pulses, piTitle, deletePi, savePulse, piDate } = props;
+    const { pulses, piTitle, deletePi, savePulse, piDate, deletePulse } = props;
 
     const [show, setShow] = useState<boolean>(false);
 
@@ -132,7 +135,7 @@ function Body(props: Body) {
             <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-10 mt-10">
                 {
                     pulses && pulses.map((pulse, i) => {
-                        return <PulseCard  {...{ ...pulse, handleChange: pulseForm.handleChange, piTitle, setShow }} key={i} />
+                        return <PulseCard  {...{ ...pulse, handleChange: pulseForm.handleChange, piTitle, setShow, deletePulse }} key={i} />
                     })
                 }
             </div>
@@ -140,11 +143,11 @@ function Body(props: Body) {
     )
 }
 
-function PulseCard({ handleChange,piTitle, setShow,  ...pulse }: PulseCardType) {
+function PulseCard({ handleChange, piTitle, setShow, deletePulse, ...pulse }: PulseCardType) {
 
     const [isHovered, setIsHovered] = useState<boolean>(false);
     const insertCallback = () => {
-        if(!piTitle) {
+        if (!piTitle) {
             console.error("cannot modify when there is no active PI");
             return;
         }
@@ -154,7 +157,13 @@ function PulseCard({ handleChange,piTitle, setShow,  ...pulse }: PulseCardType) 
         setShow(true);
     }
 
-   useInsert({ isHovered, callback: insertCallback, args: [] });
+    const deleteCallback = () => {
+
+        deletePulse(pulse);
+    }
+
+    useInsert({ isHovered, callback: insertCallback, args: [] });
+    useDelete({ isHovered, callback: deleteCallback, arg: null })
 
     const state = StateColors[pulse.state];
 

@@ -17,9 +17,10 @@ export type usePulse = {
     piDate: Date;
     deletePi: () => void;
     savePulse: (formData: PulseFormData) => void;
+    deletePulse: (pulse: Pulse) => void;
 }
 
-export function usePulse(pulseService: IPulseService, piService: IPiService, DeletePi: ReactNode): usePulse {
+export function usePulse(pulseService: IPulseService, piService: IPiService, DeleteElement: ReactNode): usePulse {
 
     const [pulses, setPulses] = useState<Array<Pulse>>([]);
     const [activeSprint, setActiveSprint] = useState<Sprint | "Inactive">("Inactive");
@@ -35,29 +36,31 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
         setCount((prev) => ++prev);
     }
 
-    const deleteModal: ModalType = {
-        title: "Confirmation",
-        closeOnBackdrop: true,
-        buttons: [
-            {
-                label: "confirm",
-                variant: "primary",
-                onClick: () => {
-                    piService.removeCurrent();
-                    closeModal();
-                    trigger();
+    const deleteModal: (callback) => ModalType = (callback) => {
+        return {
+            title: "Confirmation",
+            closeOnBackdrop: true,
+            buttons: [
+                {
+                    label: "confirm",
+                    variant: "primary",
+                    onClick: () => {
+                        callback();
+                        closeModal();
+                        trigger();
+                    }
                 }
-            }
-        ],
-        content: DeletePi
-    };
+            ],
+            content: DeleteElement
+        };
+    }
 
     const deletePi = () => {
-        openModal(deleteModal);
+        openModal(deleteModal(piService.removeCurrent));
     }
 
     const savePulse = (formData: PulseFormData) => {
-        if(!piTitle) {
+        if (!piTitle) {
             piService.setCurrent(formData.piTitle.value as PiTitle, new Date(formData.piDate.value).getTime());
         }
         piTitle ? modifyPulse(formData) : pulseService.saveFeature(formData)
@@ -66,6 +69,10 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
 
     const modifyPulse = (formData: PulseFormData) => {
         pulseService.modifyFeature(formData);
+    }
+
+    const deletePulse = (pulse: Pulse) => {
+        openModal(deleteModal(() => pulseService.deleteJira(pulse.featureKey)));
     }
 
     useEffect(() => {
@@ -98,6 +105,6 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
 
 
 
-    return { pulses, activeSprint, piTitle, piDate, deletePi, savePulse };
+    return { pulses, activeSprint, piTitle, piDate, deletePi, savePulse, deletePulse };
 
 }
