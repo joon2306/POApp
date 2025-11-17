@@ -23,7 +23,7 @@ export type usePulse = {
 export function usePulse(pulseService: IPulseService, piService: IPiService, DeleteElement: ReactNode): usePulse {
 
     const [pulses, setPulses] = useState<Array<Pulse>>([]);
-    const [activeSprint, setActiveSprint] = useState<Sprint | "Inactive">("Inactive");
+    const [activeSprint, setActiveSprint] = useState<Sprint>("Inactive");
     const [piTitle, setPiTitle] = useState<string>("");
     const [piDate, setPiDate] = useState<Date>(null);
     const [count, setCount] = useState<number>(0);

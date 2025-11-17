@@ -108,5 +108,6 @@ export type KanbanFormValue = {
 export type KanbanFormType = {
   onValidSubmit: (arg: KanbanFormValue) => void,
   kanbanFormValue?: KanbanFormValue,
-  type: KanbanType
+  type: KanbanType,
+  isModify: boolean
 }

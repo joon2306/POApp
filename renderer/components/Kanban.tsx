@@ -39,7 +39,7 @@ export const COLOR_CONFIG: Record<string, {color: string, textColor: string}> = 
 const getKanbanForm = (isModify, handleSave, kanbanFormValue, modalService, type): ModalType => {
     return {
         title: isModify ? "Modify Kanban" : "Create Kanban",
-        content: <KanbanForm onValidSubmit={handleSave} kanbanFormValue={kanbanFormValue} type={type} />,
+        content: <KanbanForm onValidSubmit={handleSave} kanbanFormValue={kanbanFormValue} type={type} isModify={isModify}/>,
         buttons: [
             {
                 label: "Cancel",

@@ -4,9 +4,9 @@ import { useKanbanForm } from "../../hooks/useKanbanForm";
 import { KanbanFormType } from "../../types/KanbanTypes";
 import { SPRINT_OPTIONS } from "../../types/Feature/Feature";
 
-const KanbanForm = ({ onValidSubmit, kanbanFormValue, type }: KanbanFormType) => {
+const KanbanForm = ({ onValidSubmit, kanbanFormValue, type, isModify }: KanbanFormType) => {
     const { handleSubmit, handleTitleChange, handleDescriptionChange, handlePriorityChange, handleTimeChange, handleTargetChange,
-        title, description, titleError, descriptionError, shouldShake, priority, time, timeError, target } = useKanbanForm({ onValidSubmit, kanbanFormValue }, type);
+        title, description, titleError, descriptionError, shouldShake, priority, time, timeError, target } = useKanbanForm({ onValidSubmit, kanbanFormValue, isModify }, type);
 
     const priorityOptions = [
         { value: 1, label: "Low" },
@@ -24,7 +24,7 @@ const KanbanForm = ({ onValidSubmit, kanbanFormValue, type }: KanbanFormType) =>
             style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
         >
             <Input title={`${isTodo ? "Title": "Jira Key"}`} value={title} error={titleError} errorMessage={`${isTodo ? "Title should not be empty": "Jira Key should not be empty"}`}
-            onChange={handleTitleChange} />
+            onChange={handleTitleChange} disabled={isModify}/>
 
             <Input title={`${isTodo ? "Description": "Jira title"}`} value={description} error={descriptionError} errorMessage={`${isTodo ? "Description should not be empty": "Jira Title should not be empty"}`} 
             onChange={handleDescriptionChange} />
