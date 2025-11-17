@@ -74,7 +74,7 @@ export default class HandlerProvider implements IProvider<IHandlerProviderRespon
         const copyHandler = new CopyHandler(copyService, commsService);
         const tokenHandler = new TokenHandler(tokenGeneratorService, commsService);
         const vaultHandler = new VaultHandler(commsService, vaultDbService);
-        const piHandler = new PiHandler(commsService, piDbService);
+        const piHandler = new PiHandler(commsService, piDbService, jiraDbService);
         const jiraHandler = new JiraHandler(commsService, jiraDbService);
         return new HandlerProviderResponse([kanbanHandler, productivityHandler, copyHandler, tokenHandler,
             vaultHandler, piHandler, jiraHandler]);

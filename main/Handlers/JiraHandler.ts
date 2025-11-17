@@ -53,6 +53,7 @@ export default class JiraHandler implements Handler {
         this.#getByPiRef();
         this.#getByTypeAndFeatureRef();
         this.#modifyJira();
+        this.#completeJira();
     }
 
 }

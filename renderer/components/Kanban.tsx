@@ -226,7 +226,7 @@ function KanbanCard({ title, description, priority, status, setActiveCard, id, d
                     <p className="text-left text-grey-text">Description</p>
                     <p className="text-left">{description}</p>
 
-                    <p className="text-left text-grey-text">Priority</p>
+                    <p className="text-left text-grey-text">{`${isTodo ? "Priority" : "Target"}`}</p>
                     <div className={`text-center ${color} rounded-tl-[5px] rounded-tr-[5px] rounded-bl-[5px] rounded-br-[5px] ${textColor} font-bold p-[3px]`}>
                         {getTagText()}
                     </div>

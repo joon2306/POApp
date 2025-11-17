@@ -93,6 +93,18 @@ export default class JiraDbService implements IJiraDbService {
         }
         return this.#error;
     }
+
+    deleteByPiRef(piRef: string): GenericResponse<string> {
+         try {
+            const stmt = this.#db.prepare(`DELETE FROM ${TABLE_JIRA_ITEMS} WHERE piRef = ?`);
+            stmt.run(piRef);
+            console.log(JiraDbService.SUCCESSFUL_MESSAGES.delete);
+            return { data: JiraDbService.SUCCESSFUL_MESSAGES.delete, error: false };
+        } catch (err) {
+            console.error("failure to delete jira items: ", err);
+        }
+        return this.#error;
+    }
     modify(jiraItem : JiraItem): GenericResponse<string> {
         try {
             const {data: existingJira, error} = this.getByJirakey(jiraItem.jiraKey);
