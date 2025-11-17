@@ -13,6 +13,16 @@ export type JiraTicket = {
     state: typeof JIRA_STATE[keyof typeof JIRA_STATE];
 }
 
+export const SPRINT_OPTIONS = [
+    { value: 1, label: "Sprint 1" },
+    { value: 2, label: "Sprint 2" },
+    { value: 3, label: "Sprint 3" },
+    { value: 4, label: "Sprint 4" },
+    { value: 5, label: "Sprint 5" },
+    { value: 6, label: "Sprint IP" }
+]
+
+
 export type Feature = {
     title: string;
     target: 1 | 2 | 3 | 4 | 5 | 6;

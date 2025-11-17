@@ -70,7 +70,9 @@ export const JIRA_TYPE = {
     USER_STORY: 3
 } as const;
 
-export type JiraDao = {
+export type JiraType = typeof JIRA_TYPE[keyof typeof JIRA_TYPE];
+
+export type JiraServerResponse = {
     jiraKey: JiraKey;
     title: string;
     target: 1 | 2 | 3 | 4 | 5 | 6;

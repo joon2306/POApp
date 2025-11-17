@@ -7,4 +7,5 @@ string, GenericResponse<string>, JiraItem, GenericResponse<string>>{
     getByJirakey(jiraKey: string): GenericResponse<JiraItem>;
     getByPiRef(piRef: PiRef): GenericResponse<JiraItem[]>;
     getByTypeAndFeatureRef(type: number, featureRef: JiraKey): GenericResponse<JiraItem[]>;
+    setIncomplete(jiraKey: string): GenericResponse<string>;
 };

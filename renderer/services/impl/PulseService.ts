@@ -3,7 +3,7 @@ import CommunicationEvents from "../../types/CommunicationEvent";
 import { Feature, JiraKey, JiraTicket } from "../../types/Feature/Feature";
 import { PiTitle } from "../../types/Feature/Pi";
 import { GenericResponse } from "../../types/Generic";
-import { JIRA_STATUS, JIRA_TYPE, JiraDao, Pulse } from "../../types/Pulse/Pulse";
+import { JIRA_STATUS, JIRA_TYPE, JiraServerResponse, Pulse } from "../../types/Pulse/Pulse";
 import { PulseUtils, Sprint } from "../../utils/PulseUtils";
 import IPulseService from "../IPulseService";
 import CommsService from "./CommsService";
@@ -21,7 +21,7 @@ export default class PulseService implements IPulseService {
         return instance;
     }
 
-    #pulseToFeature(pulse: PulseFormData): JiraDao {
+    #pulseToFeature(pulse: PulseFormData): JiraServerResponse {
         return {
             jiraKey: pulse.featureKey.value as JiraKey,
             status: 1,
@@ -38,7 +38,7 @@ export default class PulseService implements IPulseService {
 
     async getAll(activeSprint: Sprint, piTitle: PiTitle): Promise<Pulse[]> {
 
-        const { data, error } = await this.#commsService.sendRequest<GenericResponse<JiraDao[]>>(CommunicationEvents.getJiraByPi, piTitle);
+        const { data, error } = await this.#commsService.sendRequest<GenericResponse<JiraServerResponse[]>>(CommunicationEvents.getJiraByPi, piTitle);
 
         if (error || data.length === 0) {
             return [];

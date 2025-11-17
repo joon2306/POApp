@@ -1,7 +1,7 @@
 import Database from "better-sqlite3";
 import IJiraDbService from "../IJiraDbService";
 import GenericResponse from "../../model/GenericResponse";
-import { JiraItem, JiraKey, PiRef } from "../../model/JiraItem";
+import { JIRA_STATUS, JiraItem, JiraKey, PiRef } from "../../model/JiraItem";
 import { TABLE_JIRA_ITEMS } from "../../database/database";
 
 let instance: JiraDbService = null;
@@ -100,8 +100,39 @@ export default class JiraDbService implements IJiraDbService {
             if(!existingJira || error) {
                 return this.create(jiraItem);
             }
+            if(jiraItem.status === JIRA_STATUS.INVALID) {
+                return this.#partialModify(jiraItem);
+            }
             const stmt = this.#db.prepare(`UPDATE ${TABLE_JIRA_ITEMS} SET title = ?, target = ?, status = ? where jiraKey = ?`);
             stmt.run(jiraItem.title, jiraItem.target, jiraItem.status, jiraItem.jiraKey);
+            console.log(JiraDbService.SUCCESSFUL_MESSAGES.modify);
+            return { data: JiraDbService.SUCCESSFUL_MESSAGES.modify, error: false };
+
+        } catch (err) {
+            console.error("failure to modify jira item: ", err);
+        }
+        return this.#error;
+    }
+
+    setIncomplete(jiraKey: string): GenericResponse<string> {
+        try {
+            const {data: jiraItem, error} = this.getByJirakey(jiraKey);
+            if(error || !jiraItem) {
+                console.error(`Failure tot set ${jiraKey} as incomplete`);
+                return this.#error;
+            }
+            jiraItem.status = JIRA_STATUS.COMPLETED;
+            return this.modify(jiraItem);
+        } catch (err) {
+            console.error("failure to delete jira item: ", err);
+        }
+        return this.#error;
+    }
+
+    #partialModify(jiraItem: JiraItem): GenericResponse<string> {
+        try {
+            const stmt = this.#db.prepare(`UPDATE ${TABLE_JIRA_ITEMS} SET title = ?, target = ? where jiraKey = ?`);
+            stmt.run(jiraItem.title, jiraItem.target, jiraItem.jiraKey);
             console.log(JiraDbService.SUCCESSFUL_MESSAGES.modify);
             return { data: JiraDbService.SUCCESSFUL_MESSAGES.modify, error: false };
 

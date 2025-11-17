@@ -1,7 +1,9 @@
+import { SelectedFeature } from "../components/PulseBoard/PulseRouter";
 import { KanbanType } from "../factory/KanbanFactory";
 import { IModalService } from "../services/impl/ModalService";
+import { Sprint } from "../utils/PulseUtils";
 
-export type KanbanStatus = 1 | 2 | 3;
+export type KanbanStatus = 0 |1 | 2 | 3 | 4;
 export type KanbanHeaderColor = "pending" | "inProgress" | "onHold";
 export type PriorityLevel = 1 | 2 | 3 | 4;
 
@@ -16,9 +18,10 @@ export type HeaderSwimLane = {
   updateHeight: number,
   deleteCard: (id: string) => void,
   saveCard: (arg: KanbanFormValue) => void,
-  modifyCard: (arg: KanbanFormValue) => void
+  modifyCard: (arg: KanbanFormValue) => void,
   modalService: IModalService,
-  type: KanbanType
+  type: KanbanType,
+  selectedFeature: SelectedFeature
 }
 
 export type KanbanCardType = {
@@ -28,6 +31,7 @@ export type KanbanCardType = {
   priority: PriorityLevel;
   status: KanbanStatus;
   time: number;
+  target: number;
 };
 
 export type KanbanResponse<T> = {
@@ -39,7 +43,8 @@ export interface KanbanCardProp extends KanbanCardType {
   deleteCard: (id: string) => void,
   modifyCard: (arg: KanbanFormValue) => void,
   modalService: IModalService,
-  type: KanbanType
+  type: KanbanType,
+  selectedFeature: SelectedFeature
 };
 
 export type SwimLaneConfig = {
@@ -96,7 +101,8 @@ export type KanbanFormValue = {
   title: string, 
   priority: number,
   id: string,
-  time: number
+  time: number,
+  target: number
 }
 
 export type KanbanFormType = {

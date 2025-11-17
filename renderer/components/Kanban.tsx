@@ -7,17 +7,39 @@ import { useDroppable } from "../hooks/useDroppable";
 import { useKanbanCard } from "../hooks/useKanbanCard";
 import KanbanForm from "./Form/KanbanForm";
 import { ModalType } from "../types/ModalTypes";
-import { sortKanbanCards } from "../utils/KanbanUtils";
+import { sortKanbanCards, getTagColors } from "../utils/KanbanUtils";
 import MediatorEvents from "../constants/MediatorEvents";
 import Mediator from "../services/impl/Mediator";
 import { IModalService, useModalService } from "../services/impl/ModalService";
 import { KanbanFactory, KanbanType } from "../factory/KanbanFactory";
+import { SelectedFeature } from "./PulseBoard/PulseRouter";
+import CommsService from "../services/impl/CommsService";
+import { Feature, SPRINT_OPTIONS } from "../types/Feature/Feature";
+
+export const COLOR_CONFIG: Record<string, {color: string, textColor: string}> = {
+    low: {
+        color: styles.bgLowPriority,
+        textColor: styles.lowPriorityColor
+    },
+    medium: {
+        color: styles.bgMediumPriority,
+        textColor: styles.mediumPriorityColor
+    },
+    high: {
+        color: styles.bgHighPriority,
+        textColor: styles.highPriorityColor
+    },
+    critical: {
+        color: styles.bgCriticalPriority,
+        textColor: styles.criticalPriorityColor
+    }
+} as const;
 
 
 const getKanbanForm = (isModify, handleSave, kanbanFormValue, modalService, type): ModalType => {
     return {
         title: isModify ? "Modify Kanban" : "Create Kanban",
-        content: <KanbanForm onValidSubmit={handleSave} kanbanFormValue = {kanbanFormValue} type={type} />,
+        content: <KanbanForm onValidSubmit={handleSave} kanbanFormValue={kanbanFormValue} type={type} />,
         buttons: [
             {
                 label: "Cancel",
@@ -56,10 +78,13 @@ const showErrorModal = (errorMessage: string, modalService: IModalService): Moda
 }
 
 
-export default function Kanban({ calculateHeight, type}: { calculateHeight: () => number; type: KanbanType }) {
-    const kanbanService = KanbanFactory.of(type).build();
+export default function Kanban({ calculateHeight, type, selectedFeature }: {
+    calculateHeight: () => number; type: KanbanType,
+    selectedFeature?: SelectedFeature
+}) {
+    const kanbanService = KanbanFactory.of(type).setComms(new CommsService()).setSelectedFeature(selectedFeature).build();
 
-    const { handleDragStart, handleDrop, kanbanCards, updateHeight, deleteCard, saveCard, modifyCard, loadData } = useKanban(kanbanService);
+    const { handleDragStart, handleDrop, kanbanCards, updateHeight, deleteCard, saveCard, modifyCard, loadData } = useKanban(kanbanService, type);
     const modalService = useModalService();
     const mediator = useMemo(() => new Mediator(), []);
 
@@ -73,10 +98,10 @@ export default function Kanban({ calculateHeight, type}: { calculateHeight: () =
             await loadData();
         });
         return () => {
-            if(unsubscribe instanceof Object) {
+            if (unsubscribe instanceof Object) {
                 unsubscribe.unsubscribe();
             }
-            if(updateCardsUnsubscribe instanceof Object) {
+            if (updateCardsUnsubscribe instanceof Object) {
                 updateCardsUnsubscribe.unsubscribe();
             }
         }
@@ -101,6 +126,7 @@ export default function Kanban({ calculateHeight, type}: { calculateHeight: () =
                         modifyCard={modifyCard}
                         modalService={modalService}
                         type={type}
+                        selectedFeature={selectedFeature}
                     />
                 ))
             }
@@ -109,7 +135,10 @@ export default function Kanban({ calculateHeight, type}: { calculateHeight: () =
 }
 
 
-function KanbanHeader({ title, status, saveCard, modalService, type}: { title: string, status: KanbanStatus, saveCard: (arg: KanbanFormValue) => void, modalService:IModalService, type: KanbanType }) {
+function
+
+
+    KanbanHeader({ title, status, saveCard, modalService, type }: { title: string, status: KanbanStatus, saveCard: (arg: KanbanFormValue) => void, modalService: IModalService, type: KanbanType }) {
     status = +status as unknown as KanbanStatus;
     const color =
         status === 1
@@ -118,8 +147,8 @@ function KanbanHeader({ title, status, saveCard, modalService, type}: { title: s
                 ? styles.bgInProgressKanban
                 : styles.bgOnHoldKanban;
 
-    const handleSubmit = ({title, description, priority, id, time}: KanbanFormValue) => {
-        saveCard({title, description, priority, id, time});
+    const handleSubmit = ({ title, description, priority, id, time, target }: KanbanFormValue) => {
+        saveCard({ title, description, priority, id, time, target });
         modalService.closeModal();
     }
 
@@ -142,82 +171,76 @@ function KanbanHeader({ title, status, saveCard, modalService, type}: { title: s
 }
 
 
-function KanbanCard({ title, description, priority, status, setActiveCard, id, deleteCard, modifyCard, modalService, time, type }: KanbanCardProp) {
+function KanbanCard({ title, description, priority, status, setActiveCard, id, deleteCard, modifyCard, modalService, time, type, target, selectedFeature }: KanbanCardProp) {
     status = +status as unknown as KanbanStatus;
     priority = +priority as unknown as PriorityLevel;
+    
+    const isTodo = type === "TODO";
 
-    let priorityColor = "", priorityTextColor = "";
+    const getTagText = () => {
+        if (isTodo) {
+            return PRIORITY_CONFIG[priority].text || "Low";
+        }
 
-    const priorityText = PRIORITY_CONFIG[priority].text || "Low";
+        return SPRINT_OPTIONS[target - 1].label;
+    }
+
+    const tagColor = getTagColors(type, priority, target as Feature["target"], selectedFeature?.activeSprint);
+
     const borderColor = status === 1 ? "border-pending-kanban" : status === 2 ? "border-inprogress-kanban" : "border-onhold-kanban";
 
-    switch (priority) {
-        case 1:
-            priorityColor = styles.bgLowPriority;
-            priorityTextColor = styles.lowPriorityColor;
-            break;
-        case 2:
-            priorityColor = styles.bgMediumPriority;
-            priorityTextColor = styles.mediumPriorityColor;
-            break;
-        case 3:
-            priorityColor = styles.bgHighPriority;
-            priorityTextColor = styles.highPriorityColor;
-            break;
-        default:
-            priorityColor = styles.bgCriticalPriority;
-            priorityTextColor = styles.criticalPriorityColor;
-            break;
-    }
+    const {color, textColor} = COLOR_CONFIG[tagColor];
+
 
 
     const { setIsHovered } = useKanbanCard(deleteCard, id);
 
-    const handleSave = ({description, title, priority, time}: KanbanFormValue) => {
-        modifyCard({description, title, priority, id, time});
+    const handleSave = ({ description, title, priority, time, target }: KanbanFormValue) => {
+        modifyCard({ description, title, priority, id, time, target });
         modalService.closeModal();
     }
 
-    const kanbanFormValue: KanbanFormValue ={
+    const kanbanFormValue: KanbanFormValue = {
         description,
         title,
         priority,
         id,
-        time
+        time,
+        target
     }
 
     const modal = getKanbanForm(true, handleSave, kanbanFormValue, modalService, type);
 
 
-return (
-    <div className="w-[175px] lg:w-[200px] mb-3 text-[10px] cursor-pointer" onDoubleClick={() => modalService.openModal(modal)} draggable="true"
-        onDragStart={() => setActiveCard(`${status}-${id}`)} onDragEnd={() => setActiveCard(null)} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-        <div className={`border ${borderColor} rounded-lg p-6 max-w-sm  
+    return (
+        <div className="w-[175px] lg:w-[200px] mb-3 text-[10px] cursor-pointer" onDoubleClick={() => modalService.openModal(modal)} draggable="true"
+            onDragStart={() => setActiveCard(`${status}-${id}`)} onDragEnd={() => setActiveCard(null)} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+            <div className={`border ${borderColor} rounded-lg p-6 max-w-sm  
                   hover:border-blue-500 hover:ring-4 hover:ring-blue-500/50 
                   transition duration-300 ease-in-out`}>
-            <div className="grid grid-cols-2 gap-y-2">
-                <p className="text-left text-grey-text">Title</p>
-                <p className="text-left text-title-text font-bold">
-                    {title}
-                </p>
-                <p className="text-left text-grey-text">Description</p>
-                <p className="text-left">{description}</p>
+                <div className="grid grid-cols-2 gap-y-2">
+                    <p className="text-left text-grey-text">Title</p>
+                    <p className="text-left text-title-text font-bold">
+                        {title}
+                    </p>
+                    <p className="text-left text-grey-text">Description</p>
+                    <p className="text-left">{description}</p>
 
-                <p className="text-left text-grey-text">Priority</p>
-                <div className={`text-center ${priorityColor} rounded-tl-[5px] rounded-tr-[5px] rounded-bl-[5px] rounded-br-[5px] ${priorityTextColor} font-bold p-[3px]`}>
-                    {priorityText}
+                    <p className="text-left text-grey-text">Priority</p>
+                    <div className={`text-center ${color} rounded-tl-[5px] rounded-tr-[5px] rounded-bl-[5px] rounded-br-[5px] ${textColor} font-bold p-[3px]`}>
+                        {getTagText()}
+                    </div>
                 </div>
+
+
             </div>
 
-
         </div>
-
-    </div>
-)
+    )
 }
 
 
-function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, updateHeight, calculateHeight, deleteCard, saveCard, modifyCard, modalService, type }: HeaderSwimLane) {
+function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, updateHeight, calculateHeight, deleteCard, saveCard, modifyCard, modalService, type, selectedFeature }: HeaderSwimLane) {
 
     const applicableCards = sortKanbanCards(cards.filter(card => +card.status === +status));
     const divRef = useRef();
@@ -233,7 +256,7 @@ function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, upd
                     applicableCards.map((card, index) => (
                         <div key={card.id}>
                             <KanbanCard description={card.description} priority={card.priority} title={card.title} status={status} setActiveCard={setActiveCard} id={card.id}
-                                deleteCard={deleteCard} modifyCard={modifyCard} modalService={modalService} time={card.time} type={type} />
+                                deleteCard={deleteCard} modifyCard={modifyCard} modalService={modalService} time={card.time} type={type} target={card.target} selectedFeature={selectedFeature} />
                         </div>
                     ))
                 }

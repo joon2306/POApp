@@ -1,4 +1,4 @@
-import { ChangeEvent, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { usePulse } from "../../hooks/usePulse";
 import PulseService from "../../services/impl/PulseService";
 import { Pulse, State, StateColors } from "../../types/Pulse/Pulse";
@@ -19,6 +19,8 @@ import CommsService from "../../services/impl/CommsService";
 import { IoTrashBinOutline } from "react-icons/io5";
 import useInsert from "../../hooks/useInsert";
 import useDelete from "../../hooks/useDelete";
+import { ROUTES, SelectedFeature } from "./PulseRouter";
+import { SPRINT_OPTIONS } from "../../types/Feature/Feature";
 
 type Row = {
     title: string;
@@ -32,6 +34,9 @@ type Body = {
     deletePi: () => void;
     savePulse: (formData: PulseFormData) => void;
     deletePulse: (pulse: Pulse) => void;
+    setRoute: (route: number) => void;
+    setSelectedFeature: (selectedFeature: SelectedFeature) => void;
+    activeSprint: Sprint
 }
 
 type Header = {
@@ -44,19 +49,15 @@ type PulseCardType = Pulse & {
     piTitle: string;
     setShow: (show: boolean) => void;
     deletePulse: (pulse: Pulse) => void;
+    setRoute: (route: number) => void;
+    setSelectedFeature: (selectedFeature: SelectedFeature) => void;
+    activeSprint: Sprint;
 }
 
-
-const SPRINT_OPTIONS = [
-    { value: 1, label: "Sprint 1" },
-    { value: 2, label: "Sprint 2" },
-    { value: 3, label: "Sprint 3" },
-    { value: 4, label: "Sprint 4" },
-    { value: 5, label: "Sprint 5" },
-    { value: 6, label: "Sprint IP" }
-]
-
-export default function PulseBoard() {
+export default function PulseBoard({ setRoute, setSelectedFeature }: {
+    setRoute: (route: number) => void,
+    setSelectedFeature: (selectedFeature: SelectedFeature) => void
+}) {
 
     let commsService = useMemo<CommsService>(() => new CommsService(), []);
     let piService = useMemo<PiService>(() => new PiService(commsService), []);
@@ -70,7 +71,8 @@ export default function PulseBoard() {
         <div className={`${piTitle ? "m-5" : "flex items-center justify-center w-full h-full"}`}>
             <Header piTitle={piTitle} activeSprint={activeSprint} />
             {piTitle && <div className="border my-5"></div>}
-            <Body pulses={pulses} savePulse={savePulse} piTitle={piTitle} deletePi={deletePi} piDate={piDate} deletePulse={deletePulse} />
+            <Body pulses={pulses} savePulse={savePulse} piTitle={piTitle} deletePi={deletePi}
+                piDate={piDate} deletePulse={deletePulse} setRoute={setRoute} setSelectedFeature={setSelectedFeature} activeSprint={activeSprint} />
         </div>
     )
 }
@@ -101,7 +103,7 @@ function Header({ piTitle, activeSprint }: Header) {
 
 function Body(props: Body) {
 
-    const { pulses, piTitle, deletePi, savePulse, piDate, deletePulse } = props;
+    const { pulses, piTitle, deletePi, savePulse, piDate, deletePulse, setRoute, setSelectedFeature, activeSprint } = props;
 
     const [show, setShow] = useState<boolean>(false);
 
@@ -135,7 +137,8 @@ function Body(props: Body) {
             <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-10 mt-10">
                 {
                     pulses && pulses.map((pulse, i) => {
-                        return <PulseCard  {...{ ...pulse, handleChange: pulseForm.handleChange, piTitle, setShow, deletePulse }} key={i} />
+                        return <PulseCard  {...{ ...pulse, handleChange: pulseForm.handleChange, piTitle, setShow, deletePulse,
+                            setRoute, activeSprint, setSelectedFeature }} key={i} />
                     })
                 }
             </div>
@@ -143,7 +146,7 @@ function Body(props: Body) {
     )
 }
 
-function PulseCard({ handleChange, piTitle, setShow, deletePulse, ...pulse }: PulseCardType) {
+function PulseCard({ handleChange, piTitle, setShow, deletePulse, setRoute, setSelectedFeature, activeSprint, ...pulse }: PulseCardType) {
 
     const [isHovered, setIsHovered] = useState<boolean>(false);
     const insertCallback = () => {
@@ -179,9 +182,13 @@ function PulseCard({ handleChange, piTitle, setShow, deletePulse, ...pulse }: Pu
         backgroundImage: state.bgImage ?? "none"
     }
 
+    const handleClick = () => {
+        setSelectedFeature({ featureRef: pulse.featureKey, piRef: piTitle, activeSprint: activeSprint });
+        setRoute(ROUTES.USER_STORY);
+    }
 
     return (
-        <div onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+        <div onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={handleClick}>
             <Card height={{ large: "150px", medium: "150px" }}
                 width={{ large: "auto", medium: "auto" }} Content={Content} contentProps={pulse} bgColor={state.bgColor} customStyles={customStyles} />
         </div>

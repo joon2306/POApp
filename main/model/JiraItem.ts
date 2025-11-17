@@ -1,4 +1,5 @@
 export const JIRA_STATUS = {
+    INVALID: 0,
     PENDING: 1,
     IN_PROGRESS: 2,
     ON_HOLD: 3,

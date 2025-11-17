@@ -11,6 +11,7 @@ import { LuListTodo } from "react-icons/lu";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { FaHeartPulse } from "react-icons/fa6";
 import PulseBoard from '../components/PulseBoard/PulseBoard';
+import PulseRouter from '../components/PulseBoard/PulseRouter';
 
 export default function HomePage() {
 
@@ -27,7 +28,7 @@ export default function HomePage() {
     },
     PulseBoard: {
       title: "Pulse Board",
-      content: PulseBoard,
+      content: PulseRouter,
       icon: FaHeartPulse
     },
     Vault: {

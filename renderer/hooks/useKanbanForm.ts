@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { KanbanFormType } from "../types/KanbanTypes";
+import { KanbanType } from "../factory/KanbanFactory";
 
-export const useKanbanForm = ({ onValidSubmit, kanbanFormValue }: Omit<KanbanFormType, "type">) => {
+export const useKanbanForm = ({ onValidSubmit, kanbanFormValue }: Omit<KanbanFormType, "type">, type: KanbanType) => {
     let defaultTitle = kanbanFormValue ? kanbanFormValue.title : "";
     let defaultDescription = kanbanFormValue ? kanbanFormValue.description : "";
     let defaultPriority = kanbanFormValue ? kanbanFormValue.priority : 1;
+    let defaultTarget = kanbanFormValue ? kanbanFormValue.target ?? 1 : 1;
     let defaultTime = kanbanFormValue ? kanbanFormValue.time : 30;
     const id: string = kanbanFormValue ? kanbanFormValue.id: "";
 
@@ -16,6 +18,10 @@ export const useKanbanForm = ({ onValidSubmit, kanbanFormValue }: Omit<KanbanFor
     const [timeError, setTimeError] = useState(false);
     const [shouldShake, setShouldShake] = useState(false);
     const [priority, setPriority] = useState(defaultPriority);
+    const [target, setTarget] = useState(defaultTarget);
+
+    const isTodo = type === "TODO";
+    
 
     const validateForm = () => {
         let isValid = true;
@@ -32,7 +38,7 @@ export const useKanbanForm = ({ onValidSubmit, kanbanFormValue }: Omit<KanbanFor
             isValid = false;
         }
 
-        if(time <= 0  || isNaN(time) || !Number.isInteger(time)) {
+        if(isTodo && (time <= 0  || isNaN(time) || !Number.isInteger(time))) {
             setTimeError(true);
             isValid = false;
         }
@@ -48,7 +54,7 @@ export const useKanbanForm = ({ onValidSubmit, kanbanFormValue }: Omit<KanbanFor
     const handleSubmit = (e) => {
         e.preventDefault();
         if (validateForm()) {
-            return onValidSubmit({title, description, priority, id, time});
+            return onValidSubmit({title, description, priority, id, time, target});
         }
         return null;
     };
@@ -72,9 +78,13 @@ export const useKanbanForm = ({ onValidSubmit, kanbanFormValue }: Omit<KanbanFor
         setTimeError(false);
     }
 
+     const handleTargetChange = (e) => {
+        setTarget(parseInt(e.target.value));
+    }
+
 
     return {
-        handleSubmit, handleTitleChange, handleDescriptionChange, handlePriorityChange, handleTimeChange,
-        title, description, titleError, descriptionError, shouldShake, priority, time, timeError
+        handleSubmit, handleTitleChange, handleDescriptionChange, handlePriorityChange, handleTimeChange, handleTargetChange,
+        title, description, titleError, descriptionError, shouldShake, priority, time, timeError, target
     }
 }
