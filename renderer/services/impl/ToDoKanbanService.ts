@@ -51,7 +51,8 @@ export class ToDoKanbanService implements IKanbanService {
             description,
             priority: priority as unknown as PriorityLevel,
             status,
-            time
+            time,
+            target: 0
         }
 
         const { error } = await this.commsService.sendRequest<KanbanResponse<string>>(CommunicationEvents.saveTodoKanbanCard, kanbanCard);

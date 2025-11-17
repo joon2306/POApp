@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { usePulse } from "../../hooks/usePulse";
 import PulseService from "../../services/impl/PulseService";
 import { Pulse, State, StateColors } from "../../types/Pulse/Pulse";
@@ -22,6 +22,7 @@ import useDelete from "../../hooks/useDelete";
 import { ROUTES, SelectedFeature } from "./PulseRouter";
 import { SPRINT_OPTIONS } from "../../types/Feature/Feature";
 import useKeyboard from "../../hooks/useKeyboard";
+import Validator from "../../utils/Validator";
 
 type Row = {
     title: string;
@@ -269,6 +270,12 @@ function PulseFormContent({ formProps }: { formProps: usePulseFormType }) {
 function PulseFormCardContent({ formData, handleChange, piTitle }: usePulseFormType) {
 
     const isDisabled = !!piTitle;
+    const featureKey = formData.featureKey.value;
+    const [hasFeatureKey, setHasFeatureKey] = useState<boolean>(false);
+
+    useEffect(() => {
+        setHasFeatureKey(!Validator.string(featureKey as string).isBlank().validate());
+    }, [])
 
     return (
         <>
@@ -280,7 +287,7 @@ function PulseFormCardContent({ formData, handleChange, piTitle }: usePulseFormT
 
             <h1 className="text-2xl font-bold my-5">Add Your First Feature</h1>
             <div className="my-3 grid grid-cols-3 gap-5">
-                <Input error={formData.featureKey.error} errorMessage={formData.featureKey.errorMessage} onChange={(e) => handleChange(e, "featureKey")} title="Jira Key" value={formData.featureKey.value} disabled={isDisabled} />
+                <Input error={formData.featureKey.error} errorMessage={formData.featureKey.errorMessage} onChange={(e) => handleChange(e, "featureKey")} title="Jira Key" value={formData.featureKey.value} disabled={isDisabled && hasFeatureKey} />
                 <Input error={formData.featureTitle.error} errorMessage={formData.featureTitle.errorMessage} onChange={(e) => handleChange(e, "featureTitle")} title="Title" value={formData.featureTitle.value} />
                 <Select name="Sprint Target" options={SPRINT_OPTIONS} onChange={(e) => handleChange(e, "featureTarget")} defaultValue={+formData.featureTarget.value} customStyles={{ maxHeight: "42px" }} />
             </div>
