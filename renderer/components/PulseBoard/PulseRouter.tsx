@@ -28,6 +28,8 @@ export default function PulseRouter({ calculateHeight }: { calculateHeight: () =
         <>
         {route === ROUTES.DEFAULT && <PulseBoard setRoute={setRoute} setSelectedFeature={setSelectedFeature}/> }
         {route === ROUTES.USER_STORY && <Kanban calculateHeight={calculateHeight} type="USER_STORY" selectedFeature={selectedFeature} />}
+        {route === ROUTES.DEPENDENCY && <Kanban calculateHeight={calculateHeight} type="DEPENDENCY" selectedFeature={selectedFeature} />}
+        
         
         </>
     )

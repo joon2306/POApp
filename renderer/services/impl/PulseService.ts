@@ -59,7 +59,7 @@ export default class PulseService implements IPulseService {
                     userStories: userStories.filter(story => story.status !== JIRA_STATUS.COMPLETED && story.featureRef === feature.jiraKey).map(story => {
                         return { title: story.jiraKey, state: story.status } as JiraTicket;
                     }),
-                    dependencies: dependencies.filter(dependency => dependency.featureRef === feature.jiraKey).map(dependency => {
+                    dependencies: dependencies.filter(dependency => dependency.featureRef === feature.jiraKey && dependency.status !== JIRA_STATUS.COMPLETED).map(dependency => {
                         return { title: dependency.jiraKey, state: dependency.status } as JiraTicket;
                     }),
                     completedStories: userStories.filter(story => story.status === JIRA_STATUS.COMPLETED && story.featureRef === feature.jiraKey).map(story => story.jiraKey)

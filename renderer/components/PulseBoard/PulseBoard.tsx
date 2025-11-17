@@ -21,6 +21,7 @@ import useInsert from "../../hooks/useInsert";
 import useDelete from "../../hooks/useDelete";
 import { ROUTES, SelectedFeature } from "./PulseRouter";
 import { SPRINT_OPTIONS } from "../../types/Feature/Feature";
+import useKeyboard from "../../hooks/useKeyboard";
 
 type Row = {
     title: string;
@@ -137,8 +138,10 @@ function Body(props: Body) {
             <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-10 mt-10">
                 {
                     pulses && pulses.map((pulse, i) => {
-                        return <PulseCard  {...{ ...pulse, handleChange: pulseForm.handleChange, piTitle, setShow, deletePulse,
-                            setRoute, activeSprint, setSelectedFeature }} key={i} />
+                        return <PulseCard  {...{
+                            ...pulse, handleChange: pulseForm.handleChange, piTitle, setShow, deletePulse,
+                            setRoute, activeSprint, setSelectedFeature
+                        }} key={i} />
                     })
                 }
             </div>
@@ -166,7 +169,8 @@ function PulseCard({ handleChange, piTitle, setShow, deletePulse, setRoute, setS
     }
 
     useInsert({ isHovered, callback: insertCallback, args: [] });
-    useDelete({ isHovered, callback: deleteCallback, arg: null })
+    useDelete({ isHovered, callback: deleteCallback, arg: null });
+    useKeyboard({ isHovered, callback: () => changeRoute(ROUTES.DEPENDENCY), keyInput: "d" });
 
     const state = StateColors[pulse.state];
 
@@ -182,13 +186,13 @@ function PulseCard({ handleChange, piTitle, setShow, deletePulse, setRoute, setS
         backgroundImage: state.bgImage ?? "none"
     }
 
-    const handleClick = () => {
+    const changeRoute = (route: typeof ROUTES[keyof typeof ROUTES]) => {
         setSelectedFeature({ featureRef: pulse.featureKey, piRef: piTitle, activeSprint: activeSprint });
-        setRoute(ROUTES.USER_STORY);
+        setRoute(route);
     }
 
     return (
-        <div onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={handleClick}>
+        <div onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={() => changeRoute(ROUTES.USER_STORY)}>
             <Card height={{ large: "150px", medium: "150px" }}
                 width={{ large: "auto", medium: "auto" }} Content={Content} contentProps={pulse} bgColor={state.bgColor} customStyles={customStyles} />
         </div>
