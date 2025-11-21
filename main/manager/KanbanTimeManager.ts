@@ -30,12 +30,11 @@ export default class KanbanTimeManager implements IKanbanTimeManager {
         return kanbanCards.map(item => {
             if (item.start && item.start < this.#startOfDay) {
                 item.start = 0;
+                item.duration = 0;
                 if (item.status === IN_PROGRESS) {
                     item.status = PENDING;
                 }
-            }
-
-            item.duration = 0;
+            } 
             return item;
         });
     }
