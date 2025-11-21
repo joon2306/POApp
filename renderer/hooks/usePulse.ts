@@ -77,8 +77,13 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
         openModal(deleteModal(() => pulseService.deleteJira(pulse.featureKey)));
     }
 
+    const compareStr = (str1: string, str2: string) => {
+        return str1.toLowerCase().indexOf(str2.toLowerCase()) !== -1;
+    }
+
     const filterPulses = (pulses: Pulse[], filterValue: string) => {
-        return pulses.filter(pulse => (pulse.featureKey as string).indexOf(filterValue) !== -1);
+        return pulses.filter(pulse => compareStr(pulse.featureKey, filterValue)
+            || compareStr(pulse.title, filterValue) || compareStr(PulseUtils.getSprintTarget(pulse.target), filterValue));
     }
 
     const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
