@@ -1,10 +1,12 @@
 import styles from "../../styles/Form/Input/style.module.css";
 import { InputType } from "../../types/FormTypes";
-const Input = ({ title, value, onChange, error, errorMessage, type, disabled }: InputType) => {
+const Input = ({ title, value, onChange, error, errorMessage, type, disabled, icon }: InputType) => {
     disabled = !!disabled;
 
+    const Icon = icon?.Icon;
+
     return (
-        <div>
+        <div className="relative">
             <input
                 type={type || "text"}
                 name={value as string}
@@ -12,11 +14,18 @@ const Input = ({ title, value, onChange, error, errorMessage, type, disabled }: 
                 placeholder={title}
                 onChange={onChange}
                 className={styles.input}
-                disabled= {disabled}
+                disabled={disabled}
                 style={{
                     border: `1px solid ${error ? '#ef4444' : '#ccc'}`
                 }}
-            />
+            >
+
+            </input>
+            {icon && Icon &&
+                <div className="absolute top-[35%] right-[4%]">
+                    <Icon />
+                </div>
+            }
             {error && (
                 <p className={styles.error}>
                     {errorMessage}

@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ChangeEvent, ReactNode, useEffect, useState } from "react";
 import IPulseService from "../services/IPulseService";
 import { Pulse } from "../types/Pulse/Pulse";
 import IPiService from "../services/IPiService";
@@ -7,7 +7,6 @@ import { useModalService } from "../services/impl/ModalService";
 import { ModalType } from "../types/ModalTypes";
 import { PulseFormData } from "./usePulseForm";
 import { PiTitle } from "../types/Feature/Pi";
-import { Feature, JiraKey } from "../types/Feature/Feature";
 
 
 export type usePulse = {
@@ -18,6 +17,8 @@ export type usePulse = {
     deletePi: () => void;
     savePulse: (formData: PulseFormData) => void;
     deletePulse: (pulse: Pulse) => void;
+    search: string;
+    handleSearch: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export function usePulse(pulseService: IPulseService, piService: IPiService, DeleteElement: ReactNode): usePulse {
@@ -27,6 +28,7 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
     const [piTitle, setPiTitle] = useState<string>("");
     const [piDate, setPiDate] = useState<Date>(null);
     const [count, setCount] = useState<number>(0);
+    const [search, setSearch] = useState<string>("");
 
     let cancelled = false;
 
@@ -75,6 +77,22 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
         openModal(deleteModal(() => pulseService.deleteJira(pulse.featureKey)));
     }
 
+    const filterPulses = (pulses: Pulse[], filterValue: string) => {
+        return pulses.filter(pulse => (pulse.featureKey as string).indexOf(filterValue) !== -1);
+    }
+
+    const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        setSearch(val);
+        if (val.trim() !== "") {
+            pulseService.getAll(activeSprint, piTitle as PiTitle)
+                .then(pulses => {
+                    pulses = filterPulses(pulses, val);
+                    setPulses(pulses);
+                });
+        }
+    }
+
     useEffect(() => {
         if (!cancelled) {
             piService.getCurrent().then(pi => {
@@ -94,7 +112,12 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
                     }
                     return pulseService.getAll(activeSprint, piTitle)
                 })
-                .then(response => setPulses(response))
+                .then(response => {
+                    if (search !== "") {
+                        response = filterPulses(response, search);
+                    }
+                    setPulses(response);
+                })
         }
 
         return () => {
@@ -105,6 +128,6 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
 
 
 
-    return { pulses, activeSprint, piTitle, piDate, deletePi, savePulse, deletePulse };
+    return { pulses, activeSprint, piTitle, piDate, deletePi, savePulse, deletePulse, search, handleSearch };
 
 }

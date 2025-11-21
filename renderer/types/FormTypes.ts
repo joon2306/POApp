@@ -1,3 +1,5 @@
+import { IconType } from "react-icons"
+
 export type InputType = {
     value: string | number,
     title: string,
@@ -6,6 +8,9 @@ export type InputType = {
     errorMessage: string,
     type?: string,
     disabled? : boolean
+    icon?: {
+        Icon: IconType
+    }
 }
 
 export type SelectType = {

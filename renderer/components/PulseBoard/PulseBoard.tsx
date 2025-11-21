@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { usePulse } from "../../hooks/usePulse";
 import PulseService from "../../services/impl/PulseService";
 import { Pulse, State, StateColors } from "../../types/Pulse/Pulse";
@@ -23,6 +23,7 @@ import { ROUTES, SelectedFeature } from "./PulseRouter";
 import { SPRINT_OPTIONS } from "../../types/Feature/Feature";
 import useKeyboard from "../../hooks/useKeyboard";
 import Validator from "../../utils/Validator";
+import { IoSearch } from "react-icons/io5";
 
 type Row = {
     title: string;
@@ -38,7 +39,9 @@ type Body = {
     deletePulse: (pulse: Pulse) => void;
     setRoute: (route: number) => void;
     setSelectedFeature: (selectedFeature: SelectedFeature) => void;
-    activeSprint: Sprint
+    activeSprint: Sprint;
+    search: string;
+    handleSearch: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 type Header = {
@@ -67,14 +70,16 @@ export default function PulseBoard({ setRoute, setSelectedFeature }: {
 
     const DeleteConfirmation = <>Are you sure you want to delete?</>
 
-    const { pulses, piTitle, activeSprint, deletePi, savePulse, piDate, deletePulse }: usePulse = usePulse(pulseService, piService, DeleteConfirmation);
+    const { pulses, piTitle, activeSprint, deletePi, savePulse, piDate,
+        deletePulse, search, handleSearch }: usePulse = usePulse(pulseService, piService, DeleteConfirmation);
 
     return (
         <div className={`${piTitle ? "m-5" : "flex items-center justify-center w-full h-full"}`}>
             <Header piTitle={piTitle} activeSprint={activeSprint} />
             {piTitle && <div className="border my-5"></div>}
             <Body pulses={pulses} savePulse={savePulse} piTitle={piTitle} deletePi={deletePi}
-                piDate={piDate} deletePulse={deletePulse} setRoute={setRoute} setSelectedFeature={setSelectedFeature} activeSprint={activeSprint} />
+                piDate={piDate} deletePulse={deletePulse} setRoute={setRoute} setSelectedFeature={setSelectedFeature}
+                activeSprint={activeSprint} search={search} handleSearch={handleSearch} />
         </div>
     )
 }
@@ -105,27 +110,35 @@ function Header({ piTitle, activeSprint }: Header) {
 
 function Body(props: Body) {
 
-    const { pulses, piTitle, deletePi, savePulse, piDate, deletePulse, setRoute, setSelectedFeature, activeSprint } = props;
+    const { pulses, piTitle, deletePi, savePulse, piDate, deletePulse, setRoute, setSelectedFeature,
+        activeSprint, search, handleSearch } = props;
 
     const [show, setShow] = useState<boolean>(false);
 
     const pulseForm = usePulseForm(savePulse, piTitle, piDate);
+
+    
 
     const addFeature = () => {
         pulseForm.reset();
         setShow(!show);
     }
 
-
     return (
         <div>
             {
                 piTitle &&
                 (
+                    <div className="flex flex-wrap justify-between">
                     <div className="flex gap-5">
 
                         <Button label="Add Feature" onClick={addFeature} variant="success" icon={{ Icon: IoAddOutline }} />
                         <Button label="Delete PI" onClick={deletePi} variant="danger" icon={{ Icon: IoTrashBinOutline }} />
+                    </div>
+
+                    <div>
+                        <Input title="search" error={false} errorMessage="NA" value={search} onChange={handleSearch} icon={{Icon: IoSearch}}></Input>
+                    </div>
                     </div>
                 )
             }
