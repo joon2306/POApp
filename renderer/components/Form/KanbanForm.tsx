@@ -24,7 +24,7 @@ const KanbanForm = ({ onValidSubmit, kanbanFormValue, type, isModify }: KanbanFo
             style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
         >
             <Input title={`${isTodo ? "Title": "Jira Key"}`} value={title} error={titleError} errorMessage={`${isTodo ? "Title should not be empty": "Jira Key should not be empty"}`}
-            onChange={handleTitleChange} disabled={isModify}/>
+            onChange={handleTitleChange} disabled={!isTodo && isModify}/>
 
             <Input title={`${isTodo ? "Description": "Jira title"}`} value={description} error={descriptionError} errorMessage={`${isTodo ? "Description should not be empty": "Jira Title should not be empty"}`} 
             onChange={handleDescriptionChange} />

@@ -27,11 +27,14 @@ export default class KanbanTimeManager implements IKanbanTimeManager {
     }
 
     getExpiredToDoKanbans(kanbanCards: KanbanDbItem[]) {
-        return kanbanCards.map(item =>  {
-            if(item.status === IN_PROGRESS && item.start && item.start < this.#startOfDay) {
+        return kanbanCards.map(item => {
+            if (item.start && item.start < this.#startOfDay) {
                 item.start = 0;
-                item.status = PENDING;
+                if (item.status === IN_PROGRESS) {
+                    item.status = PENDING;
+                }
             }
+
             item.duration = 0;
             return item;
         });
@@ -39,10 +42,10 @@ export default class KanbanTimeManager implements IKanbanTimeManager {
 
     updateInProgress(kanbanCards: KanbanDbItem[]) {
         return kanbanCards.filter(item => item.status === IN_PROGRESS)
-        .map(inprogress => {
-            inprogress.duration = this.#getUpdatedDuration(inprogress);
-            return inprogress;
-        })
+            .map(inprogress => {
+                inprogress.duration = this.#getUpdatedDuration(inprogress);
+                return inprogress;
+            })
     }
 
     #getDifferenceInMinutes = (startTimestamp: number, endTimestamp: number) => {
@@ -54,7 +57,7 @@ export default class KanbanTimeManager implements IKanbanTimeManager {
         const originalDuration = kanbanItem.duration ?? 0;
         console.log("original duration: ", originalDuration);
         console.log("difference in min: ", this.#getDifferenceInMinutes(kanbanItem.start, Date.now()))
-        return this.#getDifferenceInMinutes(kanbanItem.start, Date.now()) + originalDuration;
+        return (kanbanItem.start !== 0 ? this.#getDifferenceInMinutes(kanbanItem.start, Date.now()): 0) + originalDuration;
     }
 
     handleChangeOfState = (prevItem: KanbanDbItem, currentItem: KanbanDbItem) => {
@@ -90,7 +93,7 @@ export default class KanbanTimeManager implements IKanbanTimeManager {
         console.log("updated duration during delete: ", duration);
         kanbanItem.duration = duration;
         return kanbanItem;
-        
+
     }
 
 }
