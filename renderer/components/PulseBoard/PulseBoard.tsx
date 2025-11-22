@@ -220,7 +220,8 @@ function Content(pulse: Pulse) {
             </div>
 
             <Row title="TITLE" value={pulse.title} />
-           { pulse.target !== 0 &&  <Row title="TARGET" value={PulseUtils.getSprintTarget(pulse.target)} /> }
+
+            <Row title="TARGET" value={pulse.target !== 0 ? PulseUtils.getSprintTarget(pulse.target): "UNPLANNED"} /> 
 
             <div className="mt-5">
                 <ProgressBar color={StateColors[pulse.state].progressColor}

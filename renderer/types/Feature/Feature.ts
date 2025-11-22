@@ -8,9 +8,12 @@ export const JIRA_STATE: Record<JiraState, 1 | 2 | 3> = {
     "ON_HOLD": 3
 } as const;
 
+export type target = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
 export type JiraTicket = {
     title: JiraKey;
     state: typeof JIRA_STATE[keyof typeof JIRA_STATE];
+    target: target;
 }
 
 export const SPRINT_OPTIONS = [
@@ -25,7 +28,7 @@ export const SPRINT_OPTIONS = [
 
 export type Feature = {
     title: string;
-    target: 0| 1 | 2 | 3 | 4 | 5 | 6;
+    target: target;
     featureKey: JiraKey;
     userStories: Array<JiraTicket>;
     dependencies: Array<JiraTicket>;

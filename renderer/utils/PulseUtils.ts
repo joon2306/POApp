@@ -31,11 +31,15 @@ class StateMapper {
     constructor(private readonly feature: Feature,
         private readonly activeSprint: Sprint) { }
 
+    #isInconsistentDependency() {
+        return this.feature.dependencies.some(dependency => dependency.target > this.feature.target);
+    }
+
     computeState(): State {
-        if(this.feature.target === 0) {
+        if (this.feature.target === 0) {
             return "NORMAL";
         }
-        
+
         if (this.feature.userStories.length === 0 && this.feature.completedStories.length > 0) {
             return "COMPLETED";
         }
@@ -46,6 +50,10 @@ class StateMapper {
             if (activeSprint > this.feature.target) {
                 return "INCONSISTENT";
             }
+        }
+
+        if (this.#isInconsistentDependency()) {
+            return "INCONSISTENT";
         }
 
         if (this.feature.userStories.length > 0 && this.feature.userStories.every(userStory => userStory.state === JIRA_STATE.ON_HOLD)) {
@@ -73,6 +81,11 @@ class StateMapper {
 
         if (this.feature.dependencies.length !== 0) {
             set.add("HAS_DEPENDENCIES");
+        }
+
+        if(state === "INCONSISTENT" && this.#isInconsistentDependency()) {
+            set.delete("INCONSISTENT");
+            set.add("INCONSISTENT DEPENDENCIES")
         }
 
         return [...set];
