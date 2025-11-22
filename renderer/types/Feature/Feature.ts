@@ -25,7 +25,7 @@ export const SPRINT_OPTIONS = [
 
 export type Feature = {
     title: string;
-    target: 1 | 2 | 3 | 4 | 5 | 6;
+    target: 0| 1 | 2 | 3 | 4 | 5 | 6;
     featureKey: JiraKey;
     userStories: Array<JiraTicket>;
     dependencies: Array<JiraTicket>;

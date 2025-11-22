@@ -182,7 +182,7 @@ function KanbanCard({ title, description, priority, status, setActiveCard, id, d
             return PRIORITY_CONFIG[priority].text || "Low";
         }
 
-        return SPRINT_OPTIONS[target - 1].label;
+        return target > 0 ? SPRINT_OPTIONS[target - 1].label: "Invalid";
     }
 
     const tagColor = getTagColors(type, priority, target as Feature["target"], selectedFeature?.activeSprint);

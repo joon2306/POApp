@@ -32,6 +32,10 @@ class StateMapper {
         private readonly activeSprint: Sprint) { }
 
     computeState(): State {
+        if(this.feature.target === 0) {
+            return "NORMAL";
+        }
+        
         if (this.feature.userStories.length === 0 && this.feature.completedStories.length > 0) {
             return "COMPLETED";
         }

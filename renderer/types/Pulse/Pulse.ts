@@ -75,7 +75,7 @@ export type JiraType = typeof JIRA_TYPE[keyof typeof JIRA_TYPE];
 export type JiraServerResponse = {
     jiraKey: JiraKey;
     title: string;
-    target: 1 | 2 | 3 | 4 | 5 | 6;
+    target: 0 | 1 | 2 | 3 | 4 | 5 | 6;
     status: typeof JIRA_STATUS [keyof typeof JIRA_STATUS];
     type: typeof JIRA_TYPE[keyof typeof JIRA_TYPE];
     piRef: PiTitle;

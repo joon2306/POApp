@@ -26,7 +26,7 @@ export default class PulseService implements IPulseService {
             jiraKey: pulse.featureKey.value as JiraKey,
             status: 1,
             piRef: pulse.piTitle.value as PiTitle,
-            target: pulse.featureTarget.value as typeof JIRA_STATUS[keyof typeof JIRA_STATUS],
+            target: 0,
             title: pulse.featureTitle.value as string,
             type: JIRA_TYPE.FEATURE
         }
@@ -54,7 +54,7 @@ export default class PulseService implements IPulseService {
             .map(feature => {
                 return {
                     title: feature.title,
-                    target: feature.target,
+                    target: userStories.filter(u => u.featureRef === feature.jiraKey).reduce((max, u) => Math.max(max, u.target), 0),
                     featureKey: feature.jiraKey,
                     userStories: userStories.filter(story => story.status !== JIRA_STATUS.COMPLETED && story.featureRef === feature.jiraKey).map(story => {
                         return { title: story.jiraKey, state: story.status } as JiraTicket;

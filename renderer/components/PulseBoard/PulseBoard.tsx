@@ -20,7 +20,6 @@ import { IoTrashBinOutline } from "react-icons/io5";
 import useInsert from "../../hooks/useInsert";
 import useDelete from "../../hooks/useDelete";
 import { ROUTES, SelectedFeature } from "./PulseRouter";
-import { SPRINT_OPTIONS } from "../../types/Feature/Feature";
 import useKeyboard from "../../hooks/useKeyboard";
 import Validator from "../../utils/Validator";
 import { IoSearch } from "react-icons/io5";
@@ -213,7 +212,7 @@ function PulseCard({ handleChange, piTitle, setShow, deletePulse, setRoute, setS
     )
 }
 
-function Content(pulse: Pulse) {
+function Content(pulse: Pulse) { 
     return (
         <>
             <div>
@@ -221,7 +220,7 @@ function Content(pulse: Pulse) {
             </div>
 
             <Row title="TITLE" value={pulse.title} />
-            <Row title="TARGET" value={PulseUtils.getSprintTarget(pulse.target)} />
+           { pulse.target !== 0 &&  <Row title="TARGET" value={PulseUtils.getSprintTarget(pulse.target)} /> }
 
             <div className="mt-5">
                 <ProgressBar color={StateColors[pulse.state].progressColor}
@@ -299,10 +298,9 @@ function PulseFormCardContent({ formData, handleChange, piTitle }: usePulseFormT
             </div>
 
             <h1 className="text-2xl font-bold my-5">Add Your First Feature</h1>
-            <div className="my-3 grid grid-cols-3 gap-5">
+            <div className="my-3 grid grid-cols-2 gap-5">
                 <Input error={formData.featureKey.error} errorMessage={formData.featureKey.errorMessage} onChange={(e) => handleChange(e, "featureKey")} title="Jira Key" value={formData.featureKey.value} disabled={isDisabled && hasFeatureKey} />
                 <Input error={formData.featureTitle.error} errorMessage={formData.featureTitle.errorMessage} onChange={(e) => handleChange(e, "featureTitle")} title="Title" value={formData.featureTitle.value} />
-                <Select name="Sprint Target" options={SPRINT_OPTIONS} onChange={(e) => handleChange(e, "featureTarget")} defaultValue={+formData.featureTarget.value} customStyles={{ maxHeight: "42px" }} />
             </div>
 
             <div className="mt-5">

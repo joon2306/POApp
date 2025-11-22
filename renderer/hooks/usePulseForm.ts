@@ -9,7 +9,6 @@ export type PulseFormData = {
     piDate: Input;
     featureKey: Input;
     featureTitle: Input;
-    featureTarget: Input;
 }
 
 export type usePulseForm = {
@@ -28,11 +27,6 @@ const defaultFormData: PulseFormData = {
         value: "",
         error: false,
         errorMessage: "Invalid Feature Key"
-    },
-    featureTarget: {
-        value: 1,
-        error: false,
-        errorMessage: ""
     },
     featureTitle: {
         value: "",
