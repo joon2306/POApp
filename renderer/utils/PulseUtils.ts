@@ -35,6 +35,11 @@ class StateMapper {
         return this.feature.dependencies.some(dependency => dependency.target > this.feature.target);
     }
 
+    #isInconsistentUserStory() {
+        const activeSprint = parseInt(Object.entries(SprintMapper.SPRINT_MAP).find(([_, value]) => value === this.activeSprint)?.[0]);
+        return this.feature.userStories.some(u => activeSprint > u.target);
+    }
+
     computeState(): State {
         if (this.feature.target === 0) {
             return "NORMAL";
@@ -47,7 +52,7 @@ class StateMapper {
         const activeSprint = parseInt(Object.entries(SprintMapper.SPRINT_MAP).find(([_, value]) => value === this.activeSprint)?.[0]);
 
         if (activeSprint) {
-            if (activeSprint > this.feature.target) {
+            if (activeSprint > this.feature.target || this.#isInconsistentUserStory()) {
                 return "INCONSISTENT";
             }
         }
@@ -83,9 +88,22 @@ class StateMapper {
             set.add("HAS_DEPENDENCIES");
         }
 
-        if(state === "INCONSISTENT" && this.#isInconsistentDependency()) {
-            set.delete("INCONSISTENT");
-            set.add("INCONSISTENT DEPENDENCIES")
+        if (state === "INCONSISTENT") {
+            const hasInconsisentDependency = this.#isInconsistentDependency();
+            const hasInconsistentUserStory = this.#isInconsistentUserStory();
+            if (hasInconsisentDependency) {
+                set.add("INCONSISTENT DEPENDENCIES")
+            }
+
+            if (hasInconsistentUserStory) {
+                set.add("INCONSISTENT US");
+            }
+
+            if (hasInconsisentDependency || hasInconsistentUserStory) {
+                set.delete("INCONSISTENT");
+            }
+
+
         }
 
         return [...set];
