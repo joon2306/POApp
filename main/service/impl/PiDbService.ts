@@ -24,6 +24,10 @@ export default class PiDbService implements IPiDbService {
 
     create(arg: PiItem): GenericResponse<string> {
         try {
+            if(!arg.title || !arg.title.toLowerCase().startsWith("sl")) {
+                console.error("invalid PI title as doesnt start with SL");
+                return {data: null, error: true};
+            }
             const stmt = this.#database.prepare(`INSERT INTO ${TABLE_PI_ITEMS} (title, s1, s2, s3, s4, s5 , ip) VALUES (?, ?, ?, ?, ?, ?, ?)`);
             stmt.run(arg.title, arg.s1, arg.s2, arg.s3, arg.s4, arg.s5, arg.ip);
             console.log(PiDbService.SUCCESSFUL_MESSAGES.create);

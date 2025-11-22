@@ -22,8 +22,19 @@ class StringValidator implements IStringValidator {
 
 
     isBlank() {
+        if (this.#error) {
+            return this;
+        }
         const validString = !!(this.#str && this.#str.trim())
         this.#error = !validString;
+        return this;
+    }
+
+    custom(cb: (str: string) => boolean) {
+        if (this.#error) {
+            return this;
+        }
+        this.#error = cb(this.#str);
         return this;
     }
 
@@ -40,7 +51,7 @@ class DateValidator implements IDateValidator {
     constructor(date: Date) {
         this.#dateTimestamp = date.getTime();
         this.#error = false;
-        if(isNaN(this.#dateTimestamp)) {
+        if (isNaN(this.#dateTimestamp)) {
             this.#error = true;
         }
     }

@@ -76,10 +76,22 @@ export default function usePulseForm(savePulse: (formData: PulseFormData) => voi
     const validateFormData = () => {
         const stringFields = ["piTitle", "featureKey", "featureTitle", "piDate"];
         const formDataClone = structuredClone<PulseFormData>(formData);
-        stringFields.forEach(stringId => setError(Validator.string(formDataClone[stringId].value.toString()).isBlank().validate(), stringId, formDataClone));
-        // if (!formDataClone.piDate.error && (formDataClone.piDate.value as string) !== "") {
-        //     setError(Validator.date(formData.piDate.value as string).isBefore(new Date()).validate(), "piDate", formDataClone);
-        // }
+        stringFields.forEach(stringId => setError(
+            Validator.string(formDataClone[stringId].value.toString()).isBlank().validate()
+            , stringId, formDataClone));
+
+        if (!formDataClone.piTitle.error) {
+            const hasError = Validator.string(formDataClone.piTitle.value.toString()).custom(str => !str.toLowerCase().startsWith("sl")).validate();
+            if (hasError) {
+                setError(
+                    hasError,
+                    "piTitle",
+                    formDataClone
+                );
+                formDataClone.piTitle.errorMessage = "Pi Title needs to start with SL";
+            }
+        }
+
         setFormData(formDataClone);
 
         let hasError = false;
