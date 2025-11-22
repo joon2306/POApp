@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import PulseBoard from "./PulseBoard";
 import Kanban from "../Kanban";
 import { Sprint } from "../../utils/PulseUtils";
+import IPiService from "../../services/IPiService";
 
 export const ROUTES = {
     DEFAULT: 0,
@@ -15,7 +16,7 @@ export type SelectedFeature = {
     activeSprint: Sprint
 }
 
-export default function PulseRouter({ calculateHeight }: { calculateHeight: () => number }) {
+export default function PulseRouter({ calculateHeight, piService }: { calculateHeight: () => number, piService: IPiService }) {
 
     const [route, setRoute] = useState<number>(ROUTES.DEFAULT);
     const [selectedFeature, setSelectedFeature] = useState<SelectedFeature>(null);
@@ -26,7 +27,7 @@ export default function PulseRouter({ calculateHeight }: { calculateHeight: () =
 
     return (
         <>
-        {route === ROUTES.DEFAULT && <PulseBoard setRoute={setRoute} setSelectedFeature={setSelectedFeature}/> }
+        {route === ROUTES.DEFAULT && <PulseBoard setRoute={setRoute} setSelectedFeature={setSelectedFeature} piService={piService}/> }
         {route === ROUTES.USER_STORY && <Kanban calculateHeight={calculateHeight} type="USER_STORY" selectedFeature={selectedFeature} />}
         {route === ROUTES.DEPENDENCY && <Kanban calculateHeight={calculateHeight} type="DEPENDENCY" selectedFeature={selectedFeature} />}
         

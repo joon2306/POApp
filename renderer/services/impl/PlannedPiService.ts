@@ -4,8 +4,8 @@ import IPiService from "../IPiService";
 import CommsService from "./CommsService";
 import PiHelper from "../../helpers/PiHelper";
 
-let instance: PiService = null;
-export default class PiService implements IPiService {
+let instance: PlannedPiService = null;
+export default class PlannedPiService implements IPiService {
 
     #currentPiTitle: PiTitle;
     #piHelper: PiHelper;
@@ -20,10 +20,10 @@ export default class PiService implements IPiService {
 
     async getCurrent(): Promise<Pi> {
         const { data, error } = await this.#piHelper.getAll();
-        if (error || data.length === 0) {
+        if (error || data.length === 0 || data.length === 1) {
             return null;
         }
-        const currentPi: PiResponse | null = this.#piHelper.getPi(data, true);
+        const currentPi: PiResponse | null = this.#piHelper.getPi(data, false);
 
         if (!currentPi) {
             return null;

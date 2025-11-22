@@ -12,6 +12,8 @@ import { RiLockPasswordLine } from "react-icons/ri";
 import { FaHeartPulse } from "react-icons/fa6";
 import PulseBoard from '../components/PulseBoard/PulseBoard';
 import PulseRouter from '../components/PulseBoard/PulseRouter';
+import PiService from '../services/impl/PiService';
+import CommsService from '../services/impl/CommsService';
 
 export default function HomePage() {
 
@@ -29,10 +31,11 @@ export default function HomePage() {
     PulseBoard: {
       title: "Pulse Board",
       content: PulseRouter,
-      icon: FaHeartPulse
+      icon: FaHeartPulse,
+      props: { piService: new PiService(new CommsService()) }
     },
     Vault: {
-      title: "Vault", 
+      title: "Vault",
       content: VaultComponent,
       icon: RiLockPasswordLine
     }
@@ -47,24 +50,24 @@ export default function HomePage() {
 
 function FeatureGeneratorMenu() {
   return <>
-    <div className='flex justify-center items-center'><FeatureGenerator/></div>
+    <div className='flex justify-center items-center'><FeatureGenerator /></div>
   </>
 }
 
 function EmailGeneratorMenu() {
   return <>
-    <div className='flex justify-center items-center'><EmailGenerator/></div>
+    <div className='flex justify-center items-center'><EmailGenerator /></div>
   </>
 }
 
 function JiraGeneratorMenu() {
   return <>
-    <div className='flex justify-center items-center'><JiraGenerator/></div>
+    <div className='flex justify-center items-center'><JiraGenerator /></div>
   </>
 }
 
 function EnglishMenu() {
   return <>
-    <div className='flex justify-center items-center'><English/></div>
+    <div className='flex justify-center items-center'><English /></div>
   </>
 }

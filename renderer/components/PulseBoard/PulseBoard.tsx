@@ -22,6 +22,7 @@ import { ROUTES, SelectedFeature } from "./PulseRouter";
 import useKeyboard from "../../hooks/useKeyboard";
 import Validator from "../../utils/Validator";
 import { IoSearch } from "react-icons/io5";
+import IPiService from "../../services/IPiService";
 
 type Row = {
     title: string;
@@ -57,13 +58,13 @@ type PulseCardType = Pulse & {
     activeSprint: Sprint;
 }
 
-export default function PulseBoard({ setRoute, setSelectedFeature }: {
+export default function PulseBoard({ setRoute, setSelectedFeature, piService }: {
     setRoute: (route: number) => void,
-    setSelectedFeature: (selectedFeature: SelectedFeature) => void
+    setSelectedFeature: (selectedFeature: SelectedFeature) => void,
+    piService: IPiService
 }) {
 
     let commsService = useMemo<CommsService>(() => new CommsService(), []);
-    let piService = useMemo<PiService>(() => new PiService(commsService), []);
     let pulseService = useMemo<PulseService>(() => new PulseService(commsService), []);
 
     const DeleteConfirmation = <>Are you sure you want to delete?</>
