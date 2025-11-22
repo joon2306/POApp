@@ -2,7 +2,7 @@ import { Feature, JiraKey } from "../Feature/Feature";
 import { PiTitle } from "../Feature/Pi";
 
 
-export type State = "NORMAL" | "COMPLETED" | "BLOCKED" | "HAS_DEPENDENCIES" | "INCONSISTENT" | "INCONSISTENT DEPENDENCIES";
+export type State = "NORMAL" | "COMPLETED" | "BLOCKED" | "HAS_DEPENDENCIES" | "INCONSISTENT" | "INCONSISTENT DEPENDENCIES" | "INCONSISTENT US";
 
 type PulseColor = {
     bgColor: string;
@@ -51,6 +51,14 @@ export const StateColors: Record<State, PulseColor> = {
         bgImage: "repeating-linear-gradient(45deg, rgb(255, 255, 255), rgb(255, 255, 255) 15px, rgb(254, 226, 226) 15px, rgb(254, 226, 226) 30px)"
     },
     "INCONSISTENT DEPENDENCIES" : {
+        bgColor: "#FFFFFF",
+        hoverColor: "#FEF2F2",
+        borderHoverColor: "#DC2626",
+        progressColor: "#DC2626",
+        boxShadow: "0 2px 6px rgba(220, 38, 38, 0.3)",
+        bgImage: "repeating-linear-gradient(45deg, rgb(255, 255, 255), rgb(255, 255, 255) 15px, rgb(254, 226, 226) 15px, rgb(254, 226, 226) 30px)"
+    },
+    "INCONSISTENT US" : {
         bgColor: "#FFFFFF",
         hoverColor: "#FEF2F2",
         borderHoverColor: "#DC2626",
