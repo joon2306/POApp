@@ -53,7 +53,7 @@ export default class PlannedFeatureDbService implements IPlannedFeatureDbService
 
     create(arg: PlannedFeatureItem): GenericResponse<string> {
         try {
-            const stmt = this.#db.prepare(`INSERT INTO ${this.#dbTable} VALUES (title, description, piRef, size, notes) VALUES (?, ?, ?, ?, ?)`);
+            const stmt = this.#db.prepare(`INSERT INTO ${this.#dbTable} (title, description, piRef, size, notes) VALUES (?, ?, ?, ?, ?)`);
             stmt.run(arg.title, arg.description, arg.piRef, arg.size, arg.notes);
             console.log(PlannedFeatureDbService.SUCCESSFUL_MESSAGES.create);
             return { data: PlannedFeatureDbService.SUCCESSFUL_MESSAGES.create, error: false };
@@ -124,8 +124,8 @@ export default class PlannedFeatureDbService implements IPlannedFeatureDbService
             const { data: existingItem, error } = this.getByTitle(arg.title);
 
             if (error || !existingItem) {
-                console.error(PlannedFeatureDbService.FAILURE_MESSAGES.modify);
-                return { data: null, error: true };
+                console.log("item does not exist, cannot modify. create it instead");
+                return this.create(arg);
             }
 
             const stmt = this.#db.prepare(`UPDATE ${this.#dbTable} description = ?, size = ?, notes = ? WHERE title = ?`);

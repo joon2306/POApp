@@ -5,6 +5,7 @@ import { Sprint } from "../../utils/PulseUtils";
 import IPiService from "../../services/IPiService";
 import PiService from "../../services/impl/PiService";
 import CommsService from "../../services/impl/CommsService";
+import PulseService from "../../services/impl/PulseService";
 
 export const ROUTES = {
     DEFAULT: 0,
@@ -23,7 +24,11 @@ export default function PulseRouter({ calculateHeight }: { calculateHeight: () =
     const [route, setRoute] = useState<number>(ROUTES.DEFAULT);
     const [selectedFeature, setSelectedFeature] = useState<SelectedFeature>(null);
 
-    const piService = new PiService(new CommsService());
+    const commsService = new CommsService();
+
+    const piService = new PiService(commsService);
+    const pulseServie = new PulseService(commsService);
+
 
     useEffect(() => {
         setRoute(ROUTES.DEFAULT);
@@ -31,7 +36,7 @@ export default function PulseRouter({ calculateHeight }: { calculateHeight: () =
 
     return (
         <>
-        {route === ROUTES.DEFAULT && <PulseBoard setRoute={setRoute} setSelectedFeature={setSelectedFeature} piService={piService}/> }
+        {route === ROUTES.DEFAULT && <PulseBoard setRoute={setRoute} setSelectedFeature={setSelectedFeature} piService={piService} pulseService={pulseServie}/> }
         {route === ROUTES.USER_STORY && <Kanban calculateHeight={calculateHeight} type="USER_STORY" selectedFeature={selectedFeature} />}
         {route === ROUTES.DEPENDENCY && <Kanban calculateHeight={calculateHeight} type="DEPENDENCY" selectedFeature={selectedFeature} />}
         

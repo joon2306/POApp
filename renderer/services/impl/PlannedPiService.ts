@@ -25,7 +25,7 @@ export default class PlannedPiService implements IPiService {
 
     async getCurrent(): Promise<Pi> {
         const { data, error } = await this.#piHelper.getAll();
-        if (error || data.length === 0 || data.length === 1) {
+        if (error || data.length === 0) {
             return null;
         }
         const currentPi: PiResponse | null = this.#piHelper.getPi(data, false);

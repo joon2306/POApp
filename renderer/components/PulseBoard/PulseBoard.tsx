@@ -1,20 +1,16 @@
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { usePulse } from "../../hooks/usePulse";
-import PulseService from "../../services/impl/PulseService";
-import { Pulse, State, StateColors } from "../../types/Pulse/Pulse";
-import { PulseUtils, Sprint } from "../../utils/PulseUtils";
+import { PlannedPulse, Pulse, State, StateColors } from "../../types/Pulse/Pulse";
+import { Sprint } from "../../utils/PulseUtils";
 import Card from "../Card";
 import ProgressBar from "../ProgressBar/ProgressBar";
 import Tag from "../Tag/Tag";
-import ProgressUtils from "../../utils/ProgressUtils";
-import PiService from "../../services/impl/PiService";
 import Button from "../Button";
 import Form from "../Form";
 import Input from "../Form/Input";
 import DatePicker from "../Form/DatePicker";
 import { IoAddOutline } from "react-icons/io5";
 import usePulseForm, { PulseFormData, usePulseForm as usePulseFormType } from "../../hooks/usePulseForm";
-import CommsService from "../../services/impl/CommsService";
 import { IoTrashBinOutline } from "react-icons/io5";
 import useInsert from "../../hooks/useInsert";
 import useDelete from "../../hooks/useDelete";
@@ -23,6 +19,8 @@ import useKeyboard from "../../hooks/useKeyboard";
 import Validator from "../../utils/Validator";
 import { IoSearch } from "react-icons/io5";
 import IPiService from "../../services/IPiService";
+import IPulseService from "../../services/IPulseService";
+import PulseHelper from "../../helpers/PulseHelper";
 
 type Row = {
     title: string;
@@ -30,12 +28,12 @@ type Row = {
 }
 
 type Body = {
-    pulses: Pulse[];
+    pulses: Pulse[] | PlannedPulse[];
     piTitle: string;
     piDate: Date;
     deletePi: () => void;
     savePulse: (formData: PulseFormData) => void;
-    deletePulse: (pulse: Pulse) => void;
+    deletePulse: (pulse: Pulse | PlannedPulse) => void;
     setRoute: (route: number) => void;
     setSelectedFeature: (selectedFeature: SelectedFeature) => void;
     activeSprint: Sprint;
@@ -48,24 +46,24 @@ type Header = {
     activeSprint: Sprint;
 }
 
-type PulseCardType = Pulse & {
+type PulseType = Pulse | PlannedPulse
+
+type PulseCardType = PulseType & {
     handleChange: usePulseFormType["handleChange"];
     piTitle: string;
     setShow: (show: boolean) => void;
-    deletePulse: (pulse: Pulse) => void;
+    deletePulse: (pulse: Pulse | PlannedPulse) => void;
     setRoute: (route: number) => void;
     setSelectedFeature: (selectedFeature: SelectedFeature) => void;
     activeSprint: Sprint;
 }
 
-export default function PulseBoard({ setRoute, setSelectedFeature, piService }: {
+export default function PulseBoard({ setRoute, setSelectedFeature, piService, pulseService }: {
     setRoute: (route: number) => void,
     setSelectedFeature: (selectedFeature: SelectedFeature) => void,
-    piService: IPiService
+    piService: IPiService,
+    pulseService: IPulseService
 }) {
-
-    let commsService = useMemo<CommsService>(() => new CommsService(), []);
-    let pulseService = useMemo<PulseService>(() => new PulseService(commsService), []);
 
     const DeleteConfirmation = <>Are you sure you want to delete?</>
 
@@ -116,7 +114,7 @@ function Body(props: Body) {
 
     const pulseForm = usePulseForm(savePulse, piTitle, piDate);
 
-    
+
 
     const addFeature = () => {
         pulseForm.reset();
@@ -129,15 +127,15 @@ function Body(props: Body) {
                 piTitle &&
                 (
                     <div className="flex flex-wrap justify-between">
-                    <div className="flex gap-5">
+                        <div className="flex gap-5">
 
-                        <Button label="Add Feature" onClick={addFeature} variant="success" icon={{ Icon: IoAddOutline }} />
-                        <Button label="Delete PI" onClick={deletePi} variant="danger" icon={{ Icon: IoTrashBinOutline }} />
-                    </div>
+                            <Button label="Add Feature" onClick={addFeature} variant="success" icon={{ Icon: IoAddOutline }} />
+                            <Button label="Delete PI" onClick={deletePi} variant="danger" icon={{ Icon: IoTrashBinOutline }} />
+                        </div>
 
-                    <div>
-                        <Input title="search" error={false} errorMessage="NA" value={search} onChange={handleSearch} icon={{Icon: IoSearch}}></Input>
-                    </div>
+                        <div>
+                            <Input title="search" error={false} errorMessage="NA" value={search} onChange={handleSearch} icon={{ Icon: IoSearch }}></Input>
+                        </div>
                     </div>
                 )
             }
@@ -165,14 +163,16 @@ function Body(props: Body) {
 function PulseCard({ handleChange, piTitle, setShow, deletePulse, setRoute, setSelectedFeature, activeSprint, ...pulse }: PulseCardType) {
 
     const [isHovered, setIsHovered] = useState<boolean>(false);
+
+    const pulseHelper = new PulseHelper(pulse);
+
     const insertCallback = () => {
         if (!piTitle) {
             console.error("cannot modify when there is no active PI");
             return;
         }
-        handleChange(pulse.featureKey, "featureKey");
-        handleChange(pulse.title, "featureTitle");
-        handleChange(pulse.target.toString(), "featureTarget");
+        handleChange(pulseHelper.getFeatureKey(), "featureKey");
+        handleChange(pulseHelper.getFeatureTitle(), "featureTitle");
         setShow(true);
     }
 
@@ -185,50 +185,42 @@ function PulseCard({ handleChange, piTitle, setShow, deletePulse, setRoute, setS
     useDelete({ isHovered, callback: deleteCallback, arg: null });
     useKeyboard({ isHovered, callback: () => changeRoute(ROUTES.DEPENDENCY), keyInput: "d" });
 
-    const state = StateColors[pulse.state];
-
-    const customStyles = isHovered ? {
-        cursor: "pointer",
-        borderColor: state.borderHoverColor,
-        transitionProperty: "all",
-        transitionDuration: ".2s",
-        borderWidth: "2px",
-        boxShadow: state.boxShadow,
-        backgroundImage: state.bgImage ?? "none"
-    } : {
-        backgroundImage: state.bgImage ?? "none"
-    }
-
     const changeRoute = (route: typeof ROUTES[keyof typeof ROUTES]) => {
-        setSelectedFeature({ featureRef: pulse.featureKey, piRef: piTitle, activeSprint: activeSprint });
+        setSelectedFeature({ featureRef: (pulse as Pulse).featureKey, piRef: piTitle, activeSprint: activeSprint });
         setRoute(route);
     }
 
     return (
         <div onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={() => changeRoute(ROUTES.USER_STORY)}>
             <Card height={{ large: "150px", medium: "150px" }}
-                width={{ large: "auto", medium: "auto" }} Content={Content} contentProps={pulse} bgColor={state.bgColor} customStyles={customStyles} />
+                width={{ large: "auto", medium: "auto" }} Content={Content} contentProps={pulse} bgColor={pulseHelper.getBgColor()} customStyles={pulseHelper.getCustomPulseStyles(isHovered)} />
         </div>
     )
 }
 
-function Content(pulse: Pulse) { 
+function Content(pulse: Pulse | PlannedPulse) {
+    const pulseHelper = new PulseHelper(pulse);
+
     return (
         <>
             <div>
-                <p className="text-sm font-bold text-[#000000]">{pulse.featureKey}</p>
+                <p className="text-sm font-bold text-[#000000]">{pulseHelper.getFeatureKey()}</p>
             </div>
 
-            <Row title="TITLE" value={pulse.title} />
+            <Row title="TITLE" value={pulseHelper.getFeatureTitle()} />
 
-            <Row title="TARGET" value={pulse.target !== 0 ? PulseUtils.getSprintTarget(pulse.target): "UNPLANNED"} /> 
+            {!pulseHelper.isPlanned() &&
+                <>
+                    <Row title="TARGET" value={pulseHelper.getTarget()} />
 
-            <div className="mt-5">
-                <ProgressBar color={StateColors[pulse.state].progressColor}
-                    progress={ProgressUtils.getProgress(pulse.userStories.length + pulse.completedStories.length, pulse.completedStories.length)} />
-            </div>
+                    <div className="mt-5">
+                        <ProgressBar color={pulseHelper.getProgressColor()}
+                            progress={pulseHelper.getProgress()} />
+                    </div>
 
-            <Footer tags={pulse.tags} />
+                    <Footer tags={pulseHelper.getTags()} />
+                </>
+            }
         </>
 
     )

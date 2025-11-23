@@ -1,22 +1,23 @@
 import { ChangeEvent, ReactNode, useEffect, useState } from "react";
 import IPulseService from "../services/IPulseService";
-import { Pulse } from "../types/Pulse/Pulse";
+import { PlannedPulse, Pulse } from "../types/Pulse/Pulse";
 import IPiService from "../services/IPiService";
 import { PulseUtils, Sprint } from "../utils/PulseUtils";
 import { useModalService } from "../services/impl/ModalService";
 import { ModalType } from "../types/ModalTypes";
 import { PulseFormData } from "./usePulseForm";
 import { PiTitle } from "../types/Feature/Pi";
+import { JiraKey } from "../types/Feature/Feature";
 
 
 export type usePulse = {
-    pulses: Array<Pulse>;
+    pulses: Array<Pulse> | Array<PlannedPulse>;
     activeSprint: Sprint;
     piTitle: string;
     piDate: Date;
     deletePi: () => void;
     savePulse: (formData: PulseFormData) => void;
-    deletePulse: (pulse: Pulse) => void;
+    deletePulse: (pulse: Pulse | PlannedPulse) => void;
     search: string;
     handleSearch: (e: ChangeEvent<HTMLInputElement>) => void;
 }
@@ -73,8 +74,8 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
         pulseService.modifyFeature(formData);
     }
 
-    const deletePulse = (pulse: Pulse) => {
-        openModal(deleteModal(() => pulseService.deleteJira(pulse.featureKey)));
+    const deletePulse = (pulse: Pulse | PlannedPulse) => {
+        openModal(deleteModal(() => pulseService.deleteJira((pulse as PlannedPulse).type === "PLANNED" ? pulse.title as JiraKey : (pulse as Pulse).featureKey)));
     }
 
     const compareStr = (str1: string, str2: string) => {
@@ -112,7 +113,7 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
                 return [activeSprint, pi.title];
             })
                 .then(([activeSprint, piTitle]: [Sprint | "Inactive", PiTitle]) => {
-                    if (activeSprint === "Inactive") {
+                    if (activeSprint === "Inactive" && pulseService.constructor.name !== "PlannedPulseService") {
                         return [];
                     }
                     return pulseService.getAll(activeSprint, piTitle)

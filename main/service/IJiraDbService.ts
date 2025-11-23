@@ -9,4 +9,5 @@ string, GenericResponse<string>, JiraItem, GenericResponse<string>>{
     getByTypeAndFeatureRef(type: number, featureRef: JiraKey): GenericResponse<JiraItem[]>;
     setIncomplete(jiraKey: string): GenericResponse<string>;
     deleteByPiRef(piRef: string): GenericResponse<string>;
+    deleteByFeatureRef(featureRef: string): GenericResponse<string>;
 };

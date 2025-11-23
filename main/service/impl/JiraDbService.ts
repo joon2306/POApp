@@ -1,7 +1,7 @@
 import Database from "better-sqlite3";
 import IJiraDbService from "../IJiraDbService";
 import GenericResponse from "../../model/GenericResponse";
-import { JIRA_STATUS, JiraItem, JiraKey, PiRef } from "../../model/JiraItem";
+import { JIRA_STATUS, JIRA_TYPE, JiraItem, JiraKey, PiRef } from "../../model/JiraItem";
 import { TABLE_JIRA_ITEMS } from "../../database/database";
 
 let instance: JiraDbService = null;
@@ -15,7 +15,7 @@ export default class JiraDbService implements IJiraDbService {
 
     #db: Database;
     #error: GenericResponse<null> = { data: null, error: true };
-    #emptyList: GenericResponse<JiraItem[]> = {data: [], error: true};
+    #emptyList: GenericResponse<JiraItem[]> = { data: [], error: true };
     constructor(database: Database) {
         if (instance === null) {
             this.#db = database;
@@ -84,6 +84,10 @@ export default class JiraDbService implements IJiraDbService {
     }
     delete(arg: string): GenericResponse<string> {
         try {
+            const { data, error } = this.getByJirakey(arg);
+            if (data && data.type === JIRA_TYPE.FEATURE) {
+                this.deleteByFeatureRef(arg);
+            }
             const stmt = this.#db.prepare(`DELETE FROM ${TABLE_JIRA_ITEMS} WHERE jiraKey = ?`);
             stmt.run(arg);
             console.log(JiraDbService.SUCCESSFUL_MESSAGES.delete);
@@ -94,8 +98,20 @@ export default class JiraDbService implements IJiraDbService {
         return this.#error;
     }
 
+    deleteByFeatureRef(featureRef: string): GenericResponse<string> {
+        try {
+            const stmt = this.#db.prepare(`DELETE FROM ${TABLE_JIRA_ITEMS} WHERE featureRef = ?`);
+            stmt.run(featureRef);
+            console.log(JiraDbService.SUCCESSFUL_MESSAGES.delete);
+            return { data: JiraDbService.SUCCESSFUL_MESSAGES.delete, error: false };
+        } catch (err) {
+            console.error("failure to delete jira items: ", err);
+        }
+        return this.#error;
+    }
+
     deleteByPiRef(piRef: string): GenericResponse<string> {
-         try {
+        try {
             const stmt = this.#db.prepare(`DELETE FROM ${TABLE_JIRA_ITEMS} WHERE piRef = ?`);
             stmt.run(piRef);
             console.log(JiraDbService.SUCCESSFUL_MESSAGES.delete);
@@ -105,14 +121,14 @@ export default class JiraDbService implements IJiraDbService {
         }
         return this.#error;
     }
-    modify(jiraItem : JiraItem): GenericResponse<string> {
+    modify(jiraItem: JiraItem): GenericResponse<string> {
         try {
-            const {data: existingJira, error} = this.getByJirakey(jiraItem.jiraKey);
+            const { data: existingJira, error } = this.getByJirakey(jiraItem.jiraKey);
             console.log("existing jira: ", existingJira);
-            if(!existingJira || error) {
+            if (!existingJira || error) {
                 return this.create(jiraItem);
             }
-            if(jiraItem.status === JIRA_STATUS.INVALID) {
+            if (jiraItem.status === JIRA_STATUS.INVALID) {
                 return this.#partialModify(jiraItem);
             }
             const stmt = this.#db.prepare(`UPDATE ${TABLE_JIRA_ITEMS} SET title = ?, target = ?, status = ? where jiraKey = ?`);
@@ -128,8 +144,8 @@ export default class JiraDbService implements IJiraDbService {
 
     setIncomplete(jiraKey: string): GenericResponse<string> {
         try {
-            const {data: jiraItem, error} = this.getByJirakey(jiraKey);
-            if(error || !jiraItem) {
+            const { data: jiraItem, error } = this.getByJirakey(jiraKey);
+            if (error || !jiraItem) {
                 console.error(`Failure tot set ${jiraKey} as incomplete`);
                 return this.#error;
             }

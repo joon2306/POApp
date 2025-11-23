@@ -73,6 +73,8 @@ export type Pulse = Feature & {
     tags: Array<State>;
 }
 
+
+
 export const JIRA_STATUS = {
     PENDING: 1,
     IN_PROGRESS: 2,
@@ -96,4 +98,29 @@ export type JiraServerResponse = {
     type: typeof JIRA_TYPE[keyof typeof JIRA_TYPE];
     piRef: PiTitle;
     featureRef?: JiraKey;
+}
+
+export const PlannedFeatureSize = {
+    XS: 1,
+    SM: 2,
+    MD: 3,
+    LG: 4,
+    XL: 5
+} as const;
+
+export type size = typeof PlannedFeatureSize[keyof typeof PlannedFeatureSize];
+
+export type PlannedFeatureServerResponse = {
+    title: string;
+    description: string;
+    notes?: string;
+    size: size;
+    piRef: string;
+}
+
+export type PlannedPulse = {
+    title: string;
+    description: string
+    type: "PLANNED",
+    size: size
 }
