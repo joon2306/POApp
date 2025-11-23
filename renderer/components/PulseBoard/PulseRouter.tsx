@@ -3,6 +3,8 @@ import PulseBoard from "./PulseBoard";
 import Kanban from "../Kanban";
 import { Sprint } from "../../utils/PulseUtils";
 import IPiService from "../../services/IPiService";
+import PiService from "../../services/impl/PiService";
+import CommsService from "../../services/impl/CommsService";
 
 export const ROUTES = {
     DEFAULT: 0,
@@ -16,10 +18,12 @@ export type SelectedFeature = {
     activeSprint: Sprint
 }
 
-export default function PulseRouter({ calculateHeight, piService }: { calculateHeight: () => number, piService: IPiService }) {
+export default function PulseRouter({ calculateHeight }: { calculateHeight: () => number }) {
 
     const [route, setRoute] = useState<number>(ROUTES.DEFAULT);
     const [selectedFeature, setSelectedFeature] = useState<SelectedFeature>(null);
+
+    const piService = new PiService(new CommsService());
 
     useEffect(() => {
         setRoute(ROUTES.DEFAULT);

@@ -27,7 +27,14 @@ const CommunicationEvents = Object.freeze({
     deleteJira: "deleteJira",
     getJiraByPi: "getJiraByPi",
     getJiraByFeature: "getJiraByFeature",
-    completeJira: "completeJira"
+    completeJira: "completeJira",
+    createPlannedPi: "createPlannedPi",
+    deletePlannedPi: "deletePlannedPi",
+    getPlannedPi: "getPlannedPi",
+    createPlannedFeature: "createPlannedFeature",
+    deletePlannedFeature: "deletePlannedFeature",
+    modifyPlannedFeature: "modifyPlannedFeature",
+    getAllPlannedFeature: "getAllPlannedFeature"
 });
 
 export default CommunicationEvents;

@@ -14,6 +14,8 @@ import PulseBoard from '../components/PulseBoard/PulseBoard';
 import PulseRouter from '../components/PulseBoard/PulseRouter';
 import PiService from '../services/impl/PiService';
 import CommsService from '../services/impl/CommsService';
+import PlannedPiService from '../services/impl/PlannedPiService';
+import PlannedPulseWrapper from '../components/PulseBoard/PlannedPulseWrapper';
 
 export default function HomePage() {
 
@@ -31,8 +33,12 @@ export default function HomePage() {
     PulseBoard: {
       title: "Pulse Board",
       content: PulseRouter,
-      icon: FaHeartPulse,
-      props: { piService: new PiService(new CommsService()) }
+      icon: FaHeartPulse
+    },
+    PlannedPulse: {
+      title: "Planned pulse",
+      content: PlannedPulseWrapper,
+      icon: FaHeartPulse
     },
     Vault: {
       title: "Vault",

@@ -8,6 +8,8 @@ const TABLE_PRODUCTIVITY_ITEMS = "productivity_items";
 const TABLE_VAULT_ITEMS = "vault_items";
 const TABLE_PI_ITEMS = "pi_items";
 const TABLE_JIRA_ITEMS = "jira_items";
+const TABLE_PLANNED_PI_ITEMS = "planned_pi_items";
+const TABLE_PLANNED_FEATURE_ITEMS= "planned_feature_items";
 
 let db: Database = null;
 export default function getDatabase() {
@@ -35,8 +37,15 @@ export default function getDatabase() {
             s5 INTEGER NOT NULL, ip INTEGER NOT NULL)`);
         createPiTbl.run();
 
+        const createPlannedPitbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_PLANNED_PI_ITEMS} (title TEXT PRIMARY KEY, s1 INTEGER NOT NULL, s2 INTEGER NOT NULL, s3 INTEGER NOT NULL, s4 INTEGER NOT NULL,
+            s5 INTEGER NOT NULL, ip INTEGER NOT NULL)`);
+        createPlannedPitbl.run();
+
         const createJiraTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_JIRA_ITEMS} (jiraKey TEXT PRIMARY KEY, title TEXT NOT NULL, target INTEGER NOT NULL, status INTEGER NOT NULL, type INTEGER NOT NULL, piRef TEXT NOT NULL, featureRef TEXT)`);
         createJiraTbl.run();
+
+        const createPlannedFeatureTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_PLANNED_FEATURE_ITEMS} (title TEXT PRIMARY KEY, description TEXT NOT NULL, piRef TEXT NOT NULL, size INTEGER NOT NULL, notes TEXT)`);
+        createPlannedFeatureTbl.run();
     }   
 
 
@@ -55,4 +64,5 @@ export default function getDatabase() {
 
 
 
-export { TABLE_KANBAN_ITEMS, TABLE_PRODUCTIVITY_ITEMS, TABLE_VAULT_ITEMS, TABLE_PI_ITEMS, TABLE_JIRA_ITEMS };
+export { TABLE_KANBAN_ITEMS, TABLE_PRODUCTIVITY_ITEMS, TABLE_VAULT_ITEMS, TABLE_PI_ITEMS, TABLE_JIRA_ITEMS,
+    TABLE_PLANNED_PI_ITEMS, TABLE_PLANNED_FEATURE_ITEMS };

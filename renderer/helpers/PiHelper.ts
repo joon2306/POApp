@@ -3,12 +3,21 @@ import CommunicationEvents from "../types/CommunicationEvent";
 import { Pi, PiResponse, PiTitle } from "../types/Feature/Pi";
 import { GenericResponse } from "../types/Generic";
 
+
+export type PiHelperConfig = {
+    create: string;
+    getAll: string;
+    delete: string;
+}
+
 export default class PiHelper {
 
     #commsService: CommsService;
+    #config: PiHelperConfig;
 
-    constructor(commsService: CommsService) {
+    constructor(commsService: CommsService, config: PiHelperConfig) {
         this.#commsService = commsService;
+        this.#config = config;
     }
 
     #addTwoWeeks(timestamp: number): number {
@@ -68,7 +77,7 @@ export default class PiHelper {
     }
 
     getAll(): Promise<GenericResponse<PiResponse[]>>{
-        return this.#commsService.sendRequest<GenericResponse<PiResponse[]>>(CommunicationEvents.getPi, {});
+        return this.#commsService.sendRequest<GenericResponse<PiResponse[]>>(this.#config.getAll, {});
     }
 
     setCurrent(title: PiTitle, timestamp: number): void {
@@ -76,7 +85,7 @@ export default class PiHelper {
             title,
             sprintTimestamp: this.#createSprints(timestamp)
         }
-        this.#commsService.sendRequest<Pi>(CommunicationEvents.createPi, pi);
+        this.#commsService.sendRequest<Pi>(this.#config.create, pi);
     }
 
     removeCurrent(currentPiTitle: PiTitle) {
@@ -84,7 +93,7 @@ export default class PiHelper {
             console.error("no current pi title to remove");
             return;
         }
-        this.#commsService.sendRequest(CommunicationEvents.deletePi, currentPiTitle);
+        this.#commsService.sendRequest(this.#config.delete, currentPiTitle);
     }
 
 

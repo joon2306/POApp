@@ -2,17 +2,22 @@ import CommunicationEvents from "../../types/CommunicationEvent";
 import { Pi, PiResponse, PiTitle } from "../../types/Feature/Pi";
 import IPiService from "../IPiService";
 import CommsService from "./CommsService";
-import PiHelper from "../../helpers/PiHelper";
+import PiHelper, { PiHelperConfig } from "../../helpers/PiHelper";
 
 let instance: PlannedPiService = null;
 export default class PlannedPiService implements IPiService {
 
     #currentPiTitle: PiTitle;
     #piHelper: PiHelper;
+    #piHelperConfig: PiHelperConfig = {
+        create: CommunicationEvents.createPlannedPi,
+        getAll: CommunicationEvents.getPlannedPi,
+        delete: CommunicationEvents.deletePlannedPi
+    }
 
     constructor(commsService: CommsService) {
         if (instance === null) {
-            this.#piHelper = new PiHelper(commsService);
+            this.#piHelper = new PiHelper(commsService, this.#piHelperConfig);
             instance = this;
         }
         return instance;

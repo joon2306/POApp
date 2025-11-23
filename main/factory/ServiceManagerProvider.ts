@@ -1,4 +1,4 @@
-import getDatabase from "../database/database";
+import getDatabase, { TABLE_PI_ITEMS, TABLE_PLANNED_PI_ITEMS } from "../database/database";
 import KanbanTimeManager from "../manager/KanbanTimeManager";
 import ICommunicationService from "../service/ICommunicationService";
 import IKanbanDbService from "../service/IKanbanDbService";
@@ -20,6 +20,8 @@ import PiDbService from "../service/impl/PiDbService";
 import IPiDbService from "../service/IPiDbService";
 import IJiraDbService from "../service/IJiraDbService";
 import JiraDbService from "../service/impl/JiraDbService";
+import IPlannedFeatureDbService from "../service/IPlannedFeatureDbService";
+import PlannedFeatureDbService from "../service/impl/PlannedFeatureDbService";
 
 type ServiceManagerProviderType = {
     productivityService: IProductivityService;
@@ -30,6 +32,8 @@ type ServiceManagerProviderType = {
     vaultDbService: IVaultDbService;
     piDbService: IPiDbService;
     jiraDbService: IJiraDbService;
+    plannedPiDbService: IPiDbService;
+    plannedFeatureDbService: IPlannedFeatureDbService;
 
 }
 
@@ -56,8 +60,10 @@ export class ServiceManagerProvider implements IProvider<ServiceManagerProviderT
         const copyService = new CopyService(exeService);
         const tokenGeneratorService = new TokenGeneratorService(exeService, copyService);
         const vaultDbService = new VaultDbService(this.#db);
-        const piDbService = new PiDbService(this.#db);
+        const piDbService = new PiDbService(this.#db, TABLE_PI_ITEMS);
+        const plannedPiDbService = new PiDbService(this.#db, TABLE_PLANNED_PI_ITEMS)
         const jiraDbService = new JiraDbService(this.#db);
+        const plannedFeatureDbService  = new PlannedFeatureDbService(this.#db);
 
         return {
             productivityService,
@@ -67,7 +73,9 @@ export class ServiceManagerProvider implements IProvider<ServiceManagerProviderT
             tokenGeneratorService, 
             vaultDbService,
             piDbService,
-            jiraDbService
+            jiraDbService,
+            plannedPiDbService,
+            plannedFeatureDbService
         }
     }
 

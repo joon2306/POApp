@@ -1,22 +1,22 @@
 import CommunicationEvents from "../../renderer/types/CommunicationEvent";
 import { PiItem, PiResponse } from "../model/PiItem";
-import IJiraDbService from "../service/IJiraDbService";
 import CommsService from "../service/impl/CommsService";
 import IPiDbService from "../service/IPiDbService";
+import IPlannedFeatureDbService from "../service/IPlannedFeatureDbService";
 import Handler from "./Handler";
 
 
-let instance: PiHandler = null;
-export default class PiHandler implements Handler {
+let instance: PlannedPiHandler = null;
+export default class PlannedPiHandler implements Handler {
 
     #commsService: CommsService;
     #dbService: IPiDbService;
-    #jiraDbService: IJiraDbService;
-    constructor(commsService: CommsService, dbService: IPiDbService, jiraDbService: IJiraDbService) {
+    #plannedFeatureDbService: IPlannedFeatureDbService
+    constructor(commsService: CommsService, dbService: IPiDbService, plannedFeatureDbService: IPlannedFeatureDbService) {
         if (instance === null) {
             this.#commsService = commsService;
             this.#dbService = dbService;
-            this.#jiraDbService = jiraDbService;
+            this.#plannedFeatureDbService = plannedFeatureDbService;
         }
 
         return instance;
@@ -38,17 +38,17 @@ export default class PiHandler implements Handler {
     }
 
     #create() {
-        this.#commsService.getRequest(CommunicationEvents.createPi, ([piResponse]: PiResponse[]) => this.#dbService.create(this.#createPiItem(piResponse)));
+        this.#commsService.getRequest(CommunicationEvents.createPlannedPi, ([piResponse]: PiResponse[]) => this.#dbService.create(this.#createPiItem(piResponse)));
     }
 
     #get() {
-        this.#commsService.getRequest(CommunicationEvents.getPi, () => this.#dbService.getAll());
+        this.#commsService.getRequest(CommunicationEvents.getPlannedPi, () => this.#dbService.getAll());
     }
 
     #delete() {
-        this.#commsService.getRequest(CommunicationEvents.deletePi, ([title]: string[]) => {
+        this.#commsService.getRequest(CommunicationEvents.deletePlannedPi, ([title]: string[]) => {
             this.#dbService.delete(title);
-            this.#jiraDbService.deleteByPiRef(title);
+            this.#plannedFeatureDbService.deleteByPiRef(title);
         });
     }
 
