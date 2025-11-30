@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Dashboard, { DashboardContent } from "../components/Dashboard";
 import Kanban from '../components/Kanban';
 import FeatureGenerator from '../components/FeatureGenerator/FeatureGenerator';
@@ -10,16 +10,22 @@ import VaultComponent from '../components/Vault/VaultComponent';
 import { LuListTodo } from "react-icons/lu";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { FaHeartPulse } from "react-icons/fa6";
-import PulseBoard from '../components/PulseBoard/PulseBoard';
 import PulseRouter from '../components/PulseBoard/PulseRouter';
-import PiService from '../services/impl/PiService';
-import CommsService from '../services/impl/CommsService';
-import PlannedPiService from '../services/impl/PlannedPiService';
 import PlannedPulseWrapper from '../components/PulseBoard/PlannedPulseWrapper';
 import Plan from '../components/Plan/Plan';
-import { MainRoute, RouteContext } from '../context/RouteContext';
+import { MainRouter, useRoute } from '../context/RouteContext';
 
 export default function HomePage() {
+
+  return (
+    <MainRouter>
+      <HomeComponent />
+    </MainRouter>
+  )
+}
+
+
+function HomeComponent() {
 
   const dashboardContent: DashboardContent = {
     Productivity: {
@@ -50,11 +56,10 @@ export default function HomePage() {
   }
 
 
-
-  const [mainRoute, setMainRoute] = useState<MainRoute>("DASHBOARD");
+  const { mainRoute } = useRoute();
 
   return (
-    <RouteContext.Provider value={{ mainRoute, setMainRoute }}>
+    <>
       {mainRoute === "DASHBOARD" &&
         <Dashboard dashboardContent={dashboardContent} activeDashboardBtn={dashboardContent.Productivity.title} />
       }
@@ -62,7 +67,7 @@ export default function HomePage() {
         mainRoute === "PLANNED"
         && <Plan />
       }
-    </RouteContext.Provider>
+    </>
   )
 }
 
