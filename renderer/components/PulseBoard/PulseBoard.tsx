@@ -21,6 +21,7 @@ import { IoSearch } from "react-icons/io5";
 import IPiService from "../../services/IPiService";
 import IPulseService from "../../services/IPulseService";
 import PulseHelper from "../../helpers/PulseHelper";
+import { mainRoute } from "../../pages/home";
 
 type Row = {
     title: string;
@@ -34,7 +35,7 @@ type Body = {
     deletePi: () => void;
     savePulse: (formData: PulseFormData) => void;
     deletePulse: (pulse: Pulse | PlannedPulse) => void;
-    setRoute: (route: number) => void;
+    setRoute: (route: unknown, props: unknown) => void;
     setSelectedFeature: (selectedFeature: SelectedFeature) => void;
     activeSprint: Sprint;
     search: string;
@@ -48,18 +49,18 @@ type Header = {
 
 type PulseType = Pulse | PlannedPulse
 
-type PulseCardType = PulseType & {
+type PulseCardType= PulseType & {
     handleChange: usePulseFormType["handleChange"];
     piTitle: string;
     setShow: (show: boolean) => void;
     deletePulse: (pulse: Pulse | PlannedPulse) => void;
-    setRoute: (route: number) => void;
+    setRoute: (route: unknown, props:unknown) => void;
     setSelectedFeature: (selectedFeature: SelectedFeature) => void;
     activeSprint: Sprint;
 }
 
 export default function PulseBoard({ setRoute, setSelectedFeature, piService, pulseService }: {
-    setRoute: (route: number) => void,
+    setRoute: (route: unknown, props: unknown) => void,
     setSelectedFeature: (selectedFeature: SelectedFeature) => void,
     piService: IPiService,
     pulseService: IPulseService
@@ -186,8 +187,11 @@ function PulseCard({ handleChange, piTitle, setShow, deletePulse, setRoute, setS
     useKeyboard({ isHovered, callback: () => changeRoute(ROUTES.DEPENDENCY), keyInput: "d" });
 
     const changeRoute = (route: typeof ROUTES[keyof typeof ROUTES]) => {
+        if((pulse as PlannedPulse).type === "PLANNED") {
+            return setRoute("PLAN" as unknown as mainRoute, {});
+        }
         setSelectedFeature({ featureRef: (pulse as Pulse).featureKey, piRef: piTitle, activeSprint: activeSprint });
-        setRoute(route);
+        setRoute(route, {});
     }
 
     return (

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Dashboard, { DashboardContent } from "../components/Dashboard";
 import Kanban from '../components/Kanban';
 import FeatureGenerator from '../components/FeatureGenerator/FeatureGenerator';
@@ -16,6 +16,9 @@ import PiService from '../services/impl/PiService';
 import CommsService from '../services/impl/CommsService';
 import PlannedPiService from '../services/impl/PlannedPiService';
 import PlannedPulseWrapper from '../components/PulseBoard/PlannedPulseWrapper';
+import Plan from '../components/Plan/Plan';
+
+export type mainRoute = "DASHBOARD" | "PLAN";
 
 export default function HomePage() {
 
@@ -47,9 +50,28 @@ export default function HomePage() {
     }
   }
 
+
+
+  const [mainRoute, setMainRoute] = useState<mainRoute>("DASHBOARD");
+
+  let props: Record<string, unknown> = {};
+
+  const setRoute = (route: mainRoute, newProps: unknown) => {
+      props = newProps as Record<string, unknown>;
+      setMainRoute(route);
+  }
+
+
   return (
     <>
-      <Dashboard dashboardContent={dashboardContent} activeDashboardBtn={dashboardContent.Productivity.title} />
+    <p>{mainRoute}</p>
+    {mainRoute === "DASHBOARD" &&
+      <Dashboard dashboardContent={dashboardContent} activeDashboardBtn={dashboardContent.Productivity.title} setMainRoute={setMainRoute} />
+    }
+      {
+        mainRoute === "PLAN"
+        && <Plan setMainRoute={setMainRoute} {...props} />
+      }
     </>
   )
 }

@@ -1,9 +1,10 @@
+import { mainRoute } from "../../pages/home";
 import CommsService from "../../services/impl/CommsService";
 import PlannedPiService from "../../services/impl/PlannedPiService";
 import PlannedPulseService from "../../services/impl/PlannedPulseService";
 import PulseBoard from "./PulseBoard";
 
-export default function PlannedPulseWrapper() {
+export default function PlannedPulseWrapper({setMainRoute}: {setMainRoute: (route: mainRoute, props: unknown) => void}) {
 
     const noop = () => {};
 
@@ -12,6 +13,6 @@ export default function PlannedPulseWrapper() {
     const pulseService = new PlannedPulseService(commsService);
 
     return (
-        <PulseBoard setRoute={noop} setSelectedFeature={noop} piService={piService} pulseService={pulseService}/>
+        <PulseBoard setRoute={setMainRoute} setSelectedFeature={noop} piService={piService} pulseService={pulseService}/>
     )
 }
