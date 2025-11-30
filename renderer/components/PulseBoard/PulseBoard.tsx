@@ -21,7 +21,7 @@ import { IoSearch } from "react-icons/io5";
 import IPiService from "../../services/IPiService";
 import IPulseService from "../../services/IPulseService";
 import PulseHelper from "../../helpers/PulseHelper";
-import { mainRoute } from "../../pages/home";
+import { MainRoute } from "../../context/RouteContext";
 
 type Row = {
     title: string;
@@ -188,7 +188,7 @@ function PulseCard({ handleChange, piTitle, setShow, deletePulse, setRoute, setS
 
     const changeRoute = (route: typeof ROUTES[keyof typeof ROUTES]) => {
         if((pulse as PlannedPulse).type === "PLANNED") {
-            return setRoute("PLAN" as unknown as mainRoute, {});
+            return setRoute("PLANNED" as unknown as MainRoute, {});
         }
         setSelectedFeature({ featureRef: (pulse as Pulse).featureKey, piRef: piTitle, activeSprint: activeSprint });
         setRoute(route, {});

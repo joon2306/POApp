@@ -1,10 +1,12 @@
-import { mainRoute } from "../../pages/home";
+import { useContext } from "react"
+import { RouteContext } from "../../context/RouteContext"
 
-export default function Plan({setMainRoute}: {setMainRoute: (route: mainRoute) => void}) {
+export default function Plan() {
+    const { setMainRoute } = useContext(RouteContext);
     return (
         <>
-        Plan component works.
-        <button onClick={() => setMainRoute("DASHBOARD")}>back</button>
+            Plan component works.
+            <button onClick={() => setMainRoute("DASHBOARD")}>back</button>
         </>
     )
 }

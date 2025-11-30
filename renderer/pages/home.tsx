@@ -17,8 +17,7 @@ import CommsService from '../services/impl/CommsService';
 import PlannedPiService from '../services/impl/PlannedPiService';
 import PlannedPulseWrapper from '../components/PulseBoard/PlannedPulseWrapper';
 import Plan from '../components/Plan/Plan';
-
-export type mainRoute = "DASHBOARD" | "PLAN";
+import { MainRoute, RouteContext } from '../context/RouteContext';
 
 export default function HomePage() {
 
@@ -52,27 +51,18 @@ export default function HomePage() {
 
 
 
-  const [mainRoute, setMainRoute] = useState<mainRoute>("DASHBOARD");
-
-  let props: Record<string, unknown> = {};
-
-  const setRoute = (route: mainRoute, newProps: unknown) => {
-      props = newProps as Record<string, unknown>;
-      setMainRoute(route);
-  }
-
+  const [mainRoute, setMainRoute] = useState<MainRoute>("DASHBOARD");
 
   return (
-    <>
-    <p>{mainRoute}</p>
-    {mainRoute === "DASHBOARD" &&
-      <Dashboard dashboardContent={dashboardContent} activeDashboardBtn={dashboardContent.Productivity.title} setMainRoute={setMainRoute} />
-    }
-      {
-        mainRoute === "PLAN"
-        && <Plan setMainRoute={setMainRoute} {...props} />
+    <RouteContext.Provider value={{ mainRoute, setMainRoute }}>
+      {mainRoute === "DASHBOARD" &&
+        <Dashboard dashboardContent={dashboardContent} activeDashboardBtn={dashboardContent.Productivity.title} />
       }
-    </>
+      {
+        mainRoute === "PLANNED"
+        && <Plan />
+      }
+    </RouteContext.Provider>
   )
 }
 

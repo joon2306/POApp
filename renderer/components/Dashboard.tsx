@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { IconType } from 'react-icons';
 import { MdOutlineViewKanban } from "react-icons/md";
-import { mainRoute } from '../pages/home';
 
 interface DashboardItem {
     title: string;
@@ -15,7 +14,7 @@ export interface DashboardContent {
 }
 
 
-export default function Dashboard({ dashboardContent, activeDashboardBtn, setMainRoute }: { dashboardContent: DashboardContent; activeDashboardBtn: string, setMainRoute: (route: mainRoute, props: unknown) => void }) {
+export default function Dashboard({ dashboardContent, activeDashboardBtn }: { dashboardContent: DashboardContent; activeDashboardBtn: string }) {
     const [activeDashboard, setActiveDashboard] = useState(activeDashboardBtn);
     const divRef = useRef(null);
 
@@ -45,7 +44,7 @@ export default function Dashboard({ dashboardContent, activeDashboardBtn, setMai
     
         return (
             <>
-                {<ActiveContent {...{ calculateHeight, setMainRoute, ...props as any }} />}
+                {<ActiveContent {...{ calculateHeight, ...props as any }} />}
             </>
         )
     }
