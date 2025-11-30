@@ -15,6 +15,35 @@ import PlannedPulseWrapper from '../components/PulseBoard/PlannedPulseWrapper';
 import Plan from '../components/Plan/Plan';
 import { MainRouter, useRoute } from '../context/RouteContext';
 
+const dashboardContent: DashboardContent = {
+  Productivity: {
+    title: "Productivity",
+    content: ProductivityComponent
+  },
+  Todo: {
+    title: "Todo",
+    content: Kanban,
+    props: { type: "TODO" },
+    icon: LuListTodo
+  },
+  PulseBoard: {
+    title: "Pulse Board",
+    content: PulseRouter,
+    icon: FaHeartPulse
+  },
+  PlannedPulse: {
+    title: "Planned pulse",
+    content: PlannedPulseWrapper,
+    icon: FaHeartPulse
+  },
+  Vault: {
+    title: "Vault",
+    content: VaultComponent,
+    icon: RiLockPasswordLine
+  }
+}
+
+
 export default function HomePage() {
 
   return (
@@ -27,41 +56,25 @@ export default function HomePage() {
 
 function HomeComponent() {
 
-  const dashboardContent: DashboardContent = {
-    Productivity: {
-      title: "Productivity",
-      content: ProductivityComponent
-    },
-    Todo: {
-      title: "Todo",
-      content: Kanban,
-      props: { type: "TODO" },
-      icon: LuListTodo
-    },
-    PulseBoard: {
-      title: "Pulse Board",
-      content: PulseRouter,
-      icon: FaHeartPulse
-    },
-    PlannedPulse: {
-      title: "Planned pulse",
-      content: PlannedPulseWrapper,
-      icon: FaHeartPulse
-    },
-    Vault: {
-      title: "Vault",
-      content: VaultComponent,
-      icon: RiLockPasswordLine
-    }
-  }
-
-
   const { mainRoute } = useRoute();
+
+  const getActiveDashboard = () => {
+    const defaultActive = dashboardContent.Productivity.title;
+    if (!mainRoute.params || mainRoute.params.length === 0) {
+      return defaultActive;
+    }
+
+    const param = mainRoute.params[0];
+    console.log("param: ", param);
+    const hasContent = Object.keys(dashboardContent).some(title => title === param);
+    console.log("hasContent: ", hasContent);
+    return hasContent ? dashboardContent[param as string].title : defaultActive;
+  }
 
   return (
     <>
       {mainRoute.route === "DASHBOARD" &&
-        <Dashboard dashboardContent={dashboardContent} activeDashboardBtn={dashboardContent.Productivity.title} />
+        <Dashboard dashboardContent={dashboardContent} activeDashboardBtn={getActiveDashboard()} />
       }
       {
         mainRoute.route === "PLANNED"

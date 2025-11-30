@@ -36,7 +36,7 @@ export default function Dashboard({ dashboardContent, activeDashboardBtn }: { da
     function renderDashboardContent() {
         const getActiveContent = () => {
             const content = Object.entries(dashboardContent).find(([k, v]) => v.title === activeDashboard);
-            const activeContent = content ? content[1].content : dashboardContent.kanban.content;
+            const activeContent = content ? content[1].content : dashboardContent.Todo.content;
             return {activeContent, props: content ? content[1].props : {}}
         };
 
@@ -92,8 +92,6 @@ export default function Dashboard({ dashboardContent, activeDashboardBtn }: { da
 
 
 function DashboardButton({ title, icon: Icon, active, handleClick }) {
-
-
 
     return (
         <div className={`flex p-3 mt-5 mb-5 ${active ? 'bg-white' : ''} ${active ? 'rounded-tl-[10px] rounded-bl-[10px] rounded-tr-[10px] rounded-br-[10px]' : ''} cursor-pointer w-[200px] md:2-[225px] lg:w-[250px]`}

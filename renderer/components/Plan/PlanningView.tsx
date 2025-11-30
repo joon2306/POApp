@@ -306,11 +306,6 @@ export const PlanningView: React.FC<PlanningViewProps> = ({ feature, onClose }) 
         {/* Header */}
         <div className="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-white shrink-0">
           <div>
-            <div className="flex items-center space-x-3 text-slate-400 text-sm mb-1 font-medium">
-               <span className="uppercase tracking-wider">{feature.target}</span>
-               <span className="text-slate-300">•</span>
-               <span className="font-mono bg-slate-100 px-2 py-0.5 rounded text-slate-500">{feature.id}</span>
-            </div>
             <h2 className="text-2xl font-bold text-slate-800">{feature.title}</h2>
           </div>
           <button 

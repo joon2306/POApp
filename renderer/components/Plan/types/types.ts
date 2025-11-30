@@ -1,11 +1,6 @@
 
 export interface Feature {
-  id: string;
   title: string;
-  target: string;
-  status: 'COMPLETED' | 'IN_PROGRESS' | 'HAS_DEPENDENCIES' | 'TODO';
-  progress: number;
-  color: string; // Tailwind background color class hint
 }
 
 export interface UserStory {
