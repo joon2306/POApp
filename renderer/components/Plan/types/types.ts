@@ -1,0 +1,50 @@
+
+export interface Feature {
+  id: string;
+  title: string;
+  target: string;
+  status: 'COMPLETED' | 'IN_PROGRESS' | 'HAS_DEPENDENCIES' | 'TODO';
+  progress: number;
+  color: string; // Tailwind background color class hint
+}
+
+export interface UserStory {
+  title: string;
+  acceptanceCriteria: string[];
+  points: number;
+}
+
+export interface Epic {
+  name: string;
+  description: string;
+  stories: UserStory[];
+}
+
+export interface ImplementationStep {
+  id: string;
+  content: string;
+  subSteps: ImplementationStep[];
+  isExpanded?: boolean;
+}
+
+export interface TechnicalAnalysis {
+  implementationSteps: ImplementationStep[];
+  dependencies: string[];
+  edgeCases: string[];
+  effortEstimate: string;
+}
+
+export interface TestCase {
+  id: string;
+  title: string;
+  priority: 'High' | 'Medium' | 'Low';
+  preConditions: string;
+  steps: string;
+  expectedResult: string;
+}
+
+export interface GeneratedPlan {
+  epics: Epic[];
+  technicalAnalysis: TechnicalAnalysis;
+  testCases: TestCase[];
+}

@@ -60,11 +60,11 @@ function HomeComponent() {
 
   return (
     <>
-      {mainRoute === "DASHBOARD" &&
+      {mainRoute.route === "DASHBOARD" &&
         <Dashboard dashboardContent={dashboardContent} activeDashboardBtn={dashboardContent.Productivity.title} />
       }
       {
-        mainRoute === "PLANNED"
+        mainRoute.route === "PLANNED"
         && <Plan />
       }
     </>

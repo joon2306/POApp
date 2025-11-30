@@ -188,7 +188,7 @@ function PulseCard({ handleChange, piTitle, setShow, deletePulse, setRoute, setS
 
     const changeRoute = (route: typeof ROUTES[keyof typeof ROUTES]) => {
         if((pulse as PlannedPulse).type === "PLANNED") {
-            return setRoute("PLANNED" as unknown as MainRoute, {});
+            return setRoute("PLANNED", [(pulse as PlannedPulse).title])
         }
         setSelectedFeature({ featureRef: (pulse as Pulse).featureKey, piRef: piTitle, activeSprint: activeSprint });
         setRoute(route, {});

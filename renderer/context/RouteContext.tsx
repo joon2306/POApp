@@ -1,6 +1,10 @@
 import { createContext, Dispatch, SetStateAction, useContext, useState } from "react";
 
-export type MainRoute = "DASHBOARD" | "PLANNED";
+type Route = "DASHBOARD" | "PLANNED";
+export type MainRoute = {
+    route: "DASHBOARD" | "PLANNED";
+    params: unknown[]
+}
 export type MainRouter = {
     mainRoute: MainRoute
     setMainRoute: Dispatch<SetStateAction<MainRoute>>;
@@ -9,7 +13,7 @@ export type MainRouter = {
 const RouteContext = createContext<MainRouter>(null);
 
 export const MainRouter = ({ children }) => {
-    const [mainRoute, setMainRoute] = useState<MainRoute>("DASHBOARD");
+    const [mainRoute, setMainRoute] = useState<MainRoute>({ route: "DASHBOARD", params: [] });
 
     return (
         <RouteContext.Provider value={{ mainRoute, setMainRoute }}>
@@ -22,13 +26,21 @@ export const useRoute = () => {
 
     const router = useContext(RouteContext);
 
-    const setRoute = (route) => {
-        console.log("route: ", route);
-        router.setMainRoute(route);
-    }
+
 
     if (router === null) {
         throw "There is an error with the router context";
     }
-    return { mainRoute: router.mainRoute, setMainRoute: setRoute };
+
+    const setMainRoute = (value: Route, params?: unknown[]) => {
+        if (!params || params.length === 0) {
+            return router.setMainRoute((prev: MainRoute) => {
+                return { ...prev, route: value };
+            })
+        }
+
+        return router.setMainRoute({route: value, params});
+    }
+
+    return {mainRoute: router.mainRoute, setMainRoute};
 }
