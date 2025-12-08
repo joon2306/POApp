@@ -41,6 +41,7 @@ export default class PulseService implements IPulseService {
         const { data, error } = await this.#commsService.sendRequest<GenericResponse<JiraServerResponse[]>>(CommunicationEvents.getJiraByPi, piTitle);
 
         if (error || data.length === 0) {
+            console.error("error: ", error);
             return [];
         }
 

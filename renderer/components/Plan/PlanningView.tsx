@@ -5,6 +5,8 @@ import {
   ChevronDown, ClipboardCheck, FlaskConical 
 } from 'lucide-react';
 import { Feature, Epic, UserStory, TechnicalAnalysis, ImplementationStep, TestCase } from "./types/types";
+import useNotes from '../../hooks/planning/useNotes';
+import NotesService from '../../services/impl/NotesService';
 
 interface PlanningViewProps {
   feature: Feature;
@@ -144,7 +146,8 @@ const StepNode: React.FC<StepNodeProps> = ({ step, depth, onUpdate, onAddSubStep
 
 export const PlanningView: React.FC<PlanningViewProps> = ({ feature, onClose }) => {
   const [activeTab, setActiveTab] = useState<'stories' | 'analysis' | 'validation'>('stories');
-  const [notes, setNotes] = useState('');
+
+  const {notes, setNotes} = useNotes(feature.title, new NotesService());
   
   // --- State for the Plan ---
   const [epics, setEpics] = useState<Epic[]>([
@@ -333,7 +336,6 @@ export const PlanningView: React.FC<PlanningViewProps> = ({ feature, onClose }) 
   return (
     <div 
       className="fixed inset-0 backdrop-blur-sm z-50 flex items-center justify-center p-4 md:p-6 animate-in fade-in duration-200"
-      style={{ backgroundColor: 'rgba(15, 23, 42, 0.6)' }} // slate-900/60
     >
       <div 
         className="w-full max-w-[95vw] h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border"

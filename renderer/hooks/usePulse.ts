@@ -1,4 +1,4 @@
-import { ChangeEvent, ReactNode, useEffect, useState } from "react";
+import { ChangeEvent, ReactNode, useEffect, useMemo, useState } from "react";
 import IPulseService from "../services/IPulseService";
 import { PlannedPulse, Pulse } from "../types/Pulse/Pulse";
 import IPiService from "../services/IPiService";
@@ -8,6 +8,8 @@ import { ModalType } from "../types/ModalTypes";
 import { PulseFormData } from "./usePulseForm";
 import { PiTitle } from "../types/Feature/Pi";
 import { JiraKey } from "../types/Feature/Feature";
+import Validator from "../utils/Validator";
+import { debounce } from "../helpers/debounce";
 
 
 export type usePulse = {
@@ -30,6 +32,19 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
     const [piDate, setPiDate] = useState<Date>(null);
     const [count, setCount] = useState<number>(0);
     const [search, setSearch] = useState<string>("");
+
+    const getPulses = (val: string) => {
+        pulseService.getAll(activeSprint, piTitle as PiTitle)
+            .then(pulses => {
+                pulses = filterPulses(pulses, val);
+                setPulses(pulses);
+            });
+    }
+
+    const debouncedGetPulses = useMemo(
+        () => debounce(getPulses, 0),
+        [activeSprint, piTitle, pulseService]
+    );
 
     let cancelled = false;
 
@@ -79,24 +94,24 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
     }
 
     const compareStr = (str1: string, str2: string) => {
+        if (Validator.string(str1).isBlank().validate() || Validator.string(str1).isBlank().validate()) {
+            return false;
+        }
         return str1.toLowerCase().indexOf(str2.toLowerCase()) !== -1;
     }
 
     const filterPulses = (pulses: Pulse[], filterValue: string) => {
+        if (Validator.string(filterValue).isBlank().validate()) {
+            return pulses;
+        }
         return pulses.filter(pulse => compareStr(pulse.featureKey, filterValue)
-            || compareStr(pulse.title, filterValue) || compareStr(PulseUtils.getSprintTarget(pulse.target), filterValue));
+            || compareStr(pulse.title, filterValue) || compareStr(PulseUtils.getSprintTarget(pulse.target) ?? "UNPLANNED", filterValue));
     }
 
     const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
         setSearch(val);
-        if (val.trim() !== "") {
-            pulseService.getAll(activeSprint, piTitle as PiTitle)
-                .then(pulses => {
-                    pulses = filterPulses(pulses, val);
-                    setPulses(pulses);
-                });
-        }
+        debouncedGetPulses(val);
     }
 
     useEffect(() => {
