@@ -1,13 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Validator from "../../utils/Validator";
 import { debounce } from "../../helpers/debounce";
 import INotesService from "../../services/INotesService";
 
 export default function useNotes(featureId: string, notesService: INotesService) {
-    const [notes, setNotes] = useState('');
+    const [notes, setNotes] = useState("");
+    const initialNotes = useRef("");
 
-    const load = () => {
-        return notesService.loadNotes(featureId);
+    const load = async () => {
+        const loadedNotes = await notesService.loadNotes(featureId);
+        initialNotes.current = loadedNotes;
+        return loadedNotes;
     }
 
     const save = (notes) => {
@@ -31,7 +34,10 @@ export default function useNotes(featureId: string, notesService: INotesService)
 
 
     useEffect(() => {
-        debouncedSave(notes);
+        if (notes !== initialNotes.current) {
+            debouncedSave(notes);
+        }
+
     }, [notes])
 
     return { notes, setNotes }
