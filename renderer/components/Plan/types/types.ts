@@ -16,6 +16,7 @@ export interface Epic {
   name: string;
   description: string;
   stories: UserStory[];
+  featureRef: string;
 }
 
 export interface ImplementationStep {

@@ -156,7 +156,7 @@ export const PlanningView: React.FC<PlanningViewProps> = ({ feature, onClose }) 
   const userStoryService = new UserStoryService(); 
 
   // --- State for the Plan ---
-  const { epics, addEpic, modifyEpic, removeEpic, addUserStory, modifyUserStory, removeUserStory } = useEpic(new EpicService(userStoryService), userStoryService);
+  const { epics, addEpic, modifyEpic, removeEpic, addUserStory, modifyUserStory, removeUserStory } = useEpic(new EpicService(userStoryService, feature.title), userStoryService);
 
   const [techAnalysis, setTechAnalysis] = useState<TechnicalAnalysis>({
     implementationSteps: [
@@ -180,7 +180,7 @@ export const PlanningView: React.FC<PlanningViewProps> = ({ feature, onClose }) 
 
   // --- Handlers for Epics ---
   const handleAddEpic = () => {
-    addEpic([...epics, { name: '', description: '', stories: [] }]);
+    addEpic([...epics, { name: '', description: '', stories: [], featureRef: feature.title }]);
   };
 
   const updateEpic = (index: number, field: keyof Epic, value: any) => {

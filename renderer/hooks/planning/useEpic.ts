@@ -59,6 +59,7 @@ export default function useEpic(epicService: IEpicService, userStoryService: ISt
         setEpics(epic);
     }
 
+
     const modifyEpic = (epic: Epic[]) => {
         const updatedEpic = retrieveUpdatedEpic(epic);
         epicService.modifyEpic(updatedEpic)
