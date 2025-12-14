@@ -4,6 +4,8 @@ export interface Feature {
 }
 
 export interface UserStory {
+  id?: number;
+  epicRef?: number;
   title: string;
   acceptanceCriteria: string[];
   points: number;

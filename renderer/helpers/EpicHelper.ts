@@ -1,15 +1,17 @@
 import { Epic } from "../components/Plan/types/types";
 import { Err, Ok, Result } from "../types/Result";
+import AbstractEpicHelper from "./AbstractEpicHelper";
 
-export default class EpicHelper {
+export default class EpicHelper extends AbstractEpicHelper<Epic> {
 
     private epics: Epic[] = [];
 
     constructor(epics: Epic[]) {
+        super();
         this.epics = epics;
     }
 
-    private areEpicsEqual(epicA: Epic, epicB: Epic): boolean {
+    protected areEpicsEqual(epicA: Epic, epicB: Epic): boolean {
         if (epicA.name !== epicB.name) {
             return false;
         }
@@ -18,14 +20,10 @@ export default class EpicHelper {
             return false;
         }
 
-        if (epicA.stories.length !== epicB.stories.length) {
-            return false;
-        }
-
         return true;
     }
 
-    public retrieveUpdatedEpic(epics: Epic[]): Result<Epic, Error> {
+    public retrieveUpdated(epics: Epic[]): Result<Epic, Error> {
         if (this.epics.length !== epics.length) {
             return new Err(new Error("Epic lists have different lengths."));
         }

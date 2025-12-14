@@ -4,9 +4,7 @@ export default interface IEpicService {
 
     getEpics(): Promise<Epic[]>;
 
-    addEpic(epic: Epic): Promise<void>;
-
-    modifyEpic(epic: Epic): Promise<void>;
+    modifyEpic(epic: Epic): Promise<number>;
 
     removeEpic(epic: Epic): Promise<void>;
 }

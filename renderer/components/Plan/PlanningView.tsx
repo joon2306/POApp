@@ -2,13 +2,15 @@ import React, { useState, useRef } from 'react';
 import {
   X, Plus, Trash2, Layers, ArrowRight, AlertTriangle,
   CheckCircle2, Box, Clock, GripVertical, CornerDownRight,
-  ChevronDown, ClipboardCheck, FlaskConical
+  ChevronDown, ClipboardCheck, FlaskConical,
+  User
 } from 'lucide-react';
 import { Feature, Epic, UserStory, TechnicalAnalysis, ImplementationStep, TestCase } from "./types/types";
 import useNotes from '../../hooks/planning/useNotes';
 import NotesService from '../../services/impl/NotesService';
 import useEpic from '../../hooks/planning/useEpic';
 import EpicService from '../../services/impl/EpicService';
+import UserStoryService from '../../services/impl/UserStoryService';
 
 interface PlanningViewProps {
   feature: Feature;
@@ -150,9 +152,11 @@ export const PlanningView: React.FC<PlanningViewProps> = ({ feature, onClose }) 
   const [activeTab, setActiveTab] = useState<'stories' | 'analysis' | 'validation'>('stories');
 
   const { notes, setNotes } = useNotes(feature.title, new NotesService());
+  
+  const userStoryService = new UserStoryService(); 
 
   // --- State for the Plan ---
-  const { epics, addEpic, modifyEpic, removeEpic } = useEpic(new EpicService());
+  const { epics, addEpic, modifyEpic, removeEpic, addUserStory, modifyUserStory, removeUserStory } = useEpic(new EpicService(userStoryService), userStoryService);
 
   const [techAnalysis, setTechAnalysis] = useState<TechnicalAnalysis>({
     implementationSteps: [
@@ -199,7 +203,7 @@ export const PlanningView: React.FC<PlanningViewProps> = ({ feature, onClose }) 
       acceptanceCriteria: [],
       points: 1
     });
-    addEpic(newEpics);
+    addUserStory(newEpics);
   };
 
   const updateStory = (epicIndex: number, storyIndex: number, field: keyof UserStory, value: any) => {
@@ -208,13 +212,13 @@ export const PlanningView: React.FC<PlanningViewProps> = ({ feature, onClose }) 
       ...newEpics[epicIndex].stories[storyIndex],
       [field]: value
     };
-    modifyEpic(newEpics);
+    modifyUserStory(newEpics);
   };
 
   const removeStory = (epicIndex: number, storyIndex: number) => {
     const newEpics = [...epics];
     newEpics[epicIndex].stories = newEpics[epicIndex].stories.filter((_, i) => i !== storyIndex);
-    modifyEpic(newEpics);
+    removeUserStory(newEpics);
   };
 
   // --- Handlers for Tech Analysis (Lists) ---
