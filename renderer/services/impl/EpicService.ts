@@ -1,5 +1,4 @@
 import { Epic, UserStory } from "../../components/Plan/types/types";
-import { debounce } from "../../helpers/debounce";
 import IEpicService from "../IEpicService";
 import IStoryService from "../IStoryService";
 
@@ -9,14 +8,11 @@ export default class EpicService implements IEpicService {
     private epics: Epic[] = [];
     private userStoryService: IStoryService;
     private featureRef: string;
-    private debounceModify = null;
-    private modifiedId: number = 0;
 
     constructor(userStoryService: IStoryService, featureRef: string) {
         if (instance === null) {
             this.userStoryService = userStoryService;
             this.featureRef = featureRef;
-            this.debounceModify = debounce(this.handleModifyEpic.bind(this), 500);
             instance = this;
         }
         return instance;
@@ -33,31 +29,28 @@ export default class EpicService implements IEpicService {
     private addEpic(epic: Epic): Promise<number> {
         epic.id = this.epics.length + 1;
         this.epics.push(epic);
-        this.modifiedId = epic.id;
         console.log("adding epic: ", epic);
         return Promise.resolve(epic.id);
     }
 
-    private handleModifyEpic(epic: Epic): void {
-        this.modifiedId = 0;
+    private handleModifyEpic(epic: Epic): Promise<number> {
         const hasId = !!epic.id;
         if (!hasId) {
-            this.addEpic(epic);
-            return;
+            console.log("epic has no id, adding new epic instead of modifying: ", epic);
+            return this.addEpic(epic);
         }
-        console.log("modifying epic: ", epic);
         this.epics = this.epics.map(e => {
             if (e.id === epic.id) {
                 return epic;
             }
             return e;
         });
+        return Promise.resolve(epic.id);
     }
 
     public modifyEpic(epic: Epic): Promise<number> {
-        console.log("initial epic: ", epic);
-        this.debounceModify(epic);
-        return Promise.resolve(this.modifiedId);
+        console.log("modifying epic: ", epic);
+        return this.handleModifyEpic(epic);
     }
 
     public removeEpic(epic: Epic): Promise<void> {
