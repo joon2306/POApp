@@ -28,9 +28,9 @@ export default class EpicHelper extends AbstractEpicHelper<Epic> {
             return new Err(new Error("Epic lists have different lengths."));
         }
 
-        const updatedEpics = this.epics.filter(exitingEpic => epics.some(newEpic => !this.areEpicsEqual(exitingEpic, newEpic)));
+        const updatedEpics = epics.filter(newEpic => !this.epics.some(existingEpic => this.areEpicsEqual(existingEpic, newEpic)));
 
-        if(updatedEpics.length !== 1) {
+        if (updatedEpics.length !== 1) {
             return new Err(new Error("There are multiple or no updated epics."));
         }
 

@@ -34,7 +34,7 @@ export default function useEpic(epicService: IEpicService, userStoryService: ISt
             ok: (epic) => epic,
             err: (error) => {
                 console.error("Error retrieving updated epic: ", error);
-                throw error;
+               return null;
             }
         });
         return updatedEpic as Epic;
@@ -62,6 +62,10 @@ export default function useEpic(epicService: IEpicService, userStoryService: ISt
 
     const modifyEpic = (epic: Epic[]) => {
         const updatedEpic = retrieveUpdatedEpic(epic);
+        if(updatedEpic === null) {
+            setEpics(epic);
+            return;
+        }
         epicService.modifyEpic(updatedEpic)
             .then(id => {
                 if (id !== 0) {
@@ -77,6 +81,10 @@ export default function useEpic(epicService: IEpicService, userStoryService: ISt
 
     const removeEpic = (epic: Epic[]) => {
         const updatedEpic = retrieveUpdatedEpic(epic);
+        if(updatedEpic === null) {
+            setEpics(epic);
+            return;
+        }
         setEpics(epic);
         epicService.removeEpic(updatedEpic);
     }
