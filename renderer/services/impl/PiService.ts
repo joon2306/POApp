@@ -13,6 +13,7 @@ export default class PiService implements IPiService {
     constructor(commsService: CommsService) {
         if (instance === null) {
             this.#commsService = commsService;
+            this.removeCurrent = this.removeCurrent.bind(this);
             instance = this;
         }
         return instance;
