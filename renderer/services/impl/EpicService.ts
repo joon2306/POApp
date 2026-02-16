@@ -1,67 +1,56 @@
-import { Epic, UserStory } from "../../components/Plan/types/types";
+import { Epic } from "../../components/Plan/types/types";
+import CommunicationEvents from "../../types/CommunicationEvent";
 import IEpicService from "../IEpicService";
-import IStoryService from "../IStoryService";
+import ICommsService from "../ICommsService";
+import { UserStory } from "../../components/Plan/types/types";
+import { DbEpic, DbUserStory } from "../../types/DbData";
 
-let instance: EpicService = null;
 export default class EpicService implements IEpicService {
 
-    private epics: Epic[] = [];
-    private userStoryService: IStoryService;
-    private featureRef: string;
+    #commsService: ICommsService;
 
-    constructor(userStoryService: IStoryService, featureRef: string) {
-        if (instance === null) {
-            this.userStoryService = userStoryService;
-            this.featureRef = featureRef;
-            instance = this;
-        }
-        return instance;
+    constructor(commsService: ICommsService) {
+        this.#commsService = commsService;
     }
 
-    public async getEpics(): Promise<Epic[]> {
-        const filteredEpics = this.epics.filter(e => e.featureRef === this.featureRef);
-        for (const epic of filteredEpics) {
-            epic.stories = await this.userStoryService.getStories(epic.id);
-        }
-        return Promise.resolve(filteredEpics);
-    }
+    async getEpics(): Promise<Epic[]> {
+        const [epicsFromDb, storiesFromDb] = await Promise.all([
+            this.#commsService.sendRequest<DbEpic[]>(CommunicationEvents.getEpics),
+            this.#commsService.sendRequest<DbUserStory[]>(CommunicationEvents.getStories)
+        ]);
 
-    private addEpic(epic: Epic): Promise<number> {
-        epic.id = this.epics.length + 1;
-        this.epics.push(epic);
-        console.log("adding epic: ", epic);
-        return Promise.resolve(epic.id);
-    }
-
-    private handleModifyEpic(epic: Epic): Promise<number> {
-        const hasId = !!epic.id;
-        if (!hasId) {
-            console.log("epic has no id, adding new epic instead of modifying: ", epic);
-            return this.addEpic(epic);
-        }
-        this.epics = this.epics.map(e => {
-            if (e.id === epic.id) {
-                return epic;
-            }
-            return e;
+        const epics: Epic[] = epicsFromDb.map(dbEpic => {
+            const storiesForEpic = storiesFromDb
+                .filter(dbStory => dbStory.epicRef === dbEpic.id)
+                .map(dbStory => ({
+                    id: dbStory.id,
+                    title: dbStory.title,
+                    storyPoint: dbStory.storyPoint,
+                    epicRef: dbStory.epicRef,
+                }));
+            
+            return {
+                id: dbEpic.id,
+                name: dbEpic.name,
+                featureRef: dbEpic.featureRef,
+                stories: storiesForEpic,
+                goal: '' // The 'goal' property is not in the DB, default to empty
+            };
         });
-        return Promise.resolve(epic.id);
+
+        return epics;
     }
 
-    public modifyEpic(epic: Epic): Promise<number> {
-        console.log("modifying epic: ", epic);
-        return this.handleModifyEpic(epic);
+    async addEpic(epic: Epic): Promise<Epic> {
+        const newId = await this.#commsService.sendRequest<number>(CommunicationEvents.addEpic, { name: epic.name, featureRef: epic.featureRef });
+        return { ...epic, id: newId };
     }
 
-    public removeEpic(epic: Epic): Promise<void> {
-
-        this.epics = this.epics.filter(e => e.name !== epic.name);
-        // need to remove associated user stories as well
-        epic.stories.forEach(story => {
-            this.userStoryService.removeStory(story);
-        });
-        return Promise.resolve();
+    async modifyEpic(epic: Epic): Promise<void> {
+        await this.#commsService.sendRequest<void>(CommunicationEvents.modifyEpic, { id: epic.id, name: epic.name, featureRef: epic.featureRef });
     }
 
-
+    async removeEpic(epic: Epic): Promise<void> {
+        await this.#commsService.sendRequest<void>(CommunicationEvents.removeEpic, { id: epic.id });
+    }
 }

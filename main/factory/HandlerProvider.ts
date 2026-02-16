@@ -1,4 +1,5 @@
 import CopyHandler from "../Handlers/CopyHandler";
+import EpicHandler from "../Handlers/EpicHandler";
 import Handler from "../Handlers/Handler";
 import JiraHandler from "../Handlers/JiraHandler";
 import PiHandler from "../Handlers/PiHandler";
@@ -7,6 +8,7 @@ import PlannedPiHandler from "../Handlers/PlannedPiHandler";
 import ProductivityHandler from "../Handlers/ProductivityHandler";
 import TodoKanbanHandler from "../Handlers/TodoKanbanHandler";
 import TokenHandler from "../Handlers/TokenHandler";
+import UserStoryHandler from "../Handlers/UserStoryHandler";
 import VaultHandler from "../Handlers/VaultHandler";
 import IProvider from "./Provider";
 import { ServiceManagerProvider } from "./ServiceManagerProvider";
@@ -70,18 +72,22 @@ export default class HandlerProvider implements IProvider<IHandlerProviderRespon
 
     provide(): IHandlerProviderResponse {
         const { kanbanDbService, commsService, productivityService, copyService, tokenGeneratorService,
-            vaultDbService, piDbService, jiraDbService, plannedPiDbService, plannedFeatureDbService } = this.#serviceManagerProvider.provide();
+            vaultDbService, piDbService, jiraDbService, plannedPiDbService, plannedFeatureDbService,
+            epicDbService, userStoryDbService } = this.#serviceManagerProvider.provide();
         const kanbanHandler = new TodoKanbanHandler(kanbanDbService, commsService, productivityService);
         const productivityHandler = new ProductivityHandler(productivityService, commsService, kanbanDbService);
         const copyHandler = new CopyHandler(copyService, commsService);
         const tokenHandler = new TokenHandler(tokenGeneratorService, commsService);
         const vaultHandler = new VaultHandler(commsService, vaultDbService);
         const piHandler = new PiHandler(commsService, piDbService, jiraDbService);
-        const plannedPiHandler = new PlannedPiHandler(commsService, plannedPiDbService);
+        const plannedPiHandler = new PlannedPiHandler(commsService, plannedPiDbService, plannedFeatureDbService);
         const jiraHandler = new JiraHandler(commsService, jiraDbService);
         const plannedFeatureHandler = new PlannedFeatureHandler(commsService, plannedFeatureDbService);
+        const epicHandler = new EpicHandler(epicDbService, commsService);
+        const userStoryHandler = new UserStoryHandler(userStoryDbService, commsService);
+        
         return new HandlerProviderResponse([kanbanHandler, productivityHandler, copyHandler, tokenHandler,
-            vaultHandler, piHandler, jiraHandler, plannedPiHandler, plannedFeatureHandler]);
+            vaultHandler, piHandler, jiraHandler, plannedPiHandler, plannedFeatureHandler, epicHandler, userStoryHandler]);
     }
 
 }

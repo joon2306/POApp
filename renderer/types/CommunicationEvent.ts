@@ -34,7 +34,15 @@ const CommunicationEvents = Object.freeze({
     createPlannedFeature: "createPlannedFeature",
     deletePlannedFeature: "deletePlannedFeature",
     modifyPlannedFeature: "modifyPlannedFeature",
-    getAllPlannedFeature: "getAllPlannedFeature"
+    getAllPlannedFeature: "getAllPlannedFeature",
+    getEpics: "getEpics",
+    addEpic: "addEpic",
+    modifyEpic: "modifyEpic",
+    removeEpic: "removeEpic",
+    getStories: "getStories",
+    addStory: "addStory",
+    modifyStory: "modifyStory",
+    removeStory: "removeStory"
 });
 
 export default CommunicationEvents;

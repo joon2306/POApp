@@ -10,6 +10,8 @@ const TABLE_PI_ITEMS = "pi_items";
 const TABLE_JIRA_ITEMS = "jira_items";
 const TABLE_PLANNED_PI_ITEMS = "planned_pi_items";
 const TABLE_PLANNED_FEATURE_ITEMS= "planned_feature_items";
+const TABLE_EPICS = "epics";
+const TABLE_USER_STORIES = "user_stories";
 
 let db: Database = null;
 export default function getDatabase() {
@@ -46,6 +48,13 @@ export default function getDatabase() {
 
         const createPlannedFeatureTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_PLANNED_FEATURE_ITEMS} (title TEXT PRIMARY KEY, description TEXT NOT NULL, piRef TEXT NOT NULL, size INTEGER NOT NULL, notes TEXT)`);
         createPlannedFeatureTbl.run();
+
+        const createEpicTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_EPICS} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, featureRef INTEGER)`);
+        createEpicTbl.run();
+
+        const createUserStoryTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_USER_STORIES} (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, storyPoint INTEGER, epicRef INTEGER, FOREIGN KEY (epicRef) REFERENCES epics (id) ON DELETE CASCADE)`);
+        createUserStoryTbl.run();
+
     }   
 
 
@@ -65,4 +74,4 @@ export default function getDatabase() {
 
 
 export { TABLE_KANBAN_ITEMS, TABLE_PRODUCTIVITY_ITEMS, TABLE_VAULT_ITEMS, TABLE_PI_ITEMS, TABLE_JIRA_ITEMS,
-    TABLE_PLANNED_PI_ITEMS, TABLE_PLANNED_FEATURE_ITEMS };
+    TABLE_PLANNED_PI_ITEMS, TABLE_PLANNED_FEATURE_ITEMS, TABLE_EPICS, TABLE_USER_STORIES };

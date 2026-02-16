@@ -22,6 +22,10 @@ import IJiraDbService from "../service/IJiraDbService";
 import JiraDbService from "../service/impl/JiraDbService";
 import IPlannedFeatureDbService from "../service/IPlannedFeatureDbService";
 import PlannedFeatureDbService from "../service/impl/PlannedFeatureDbService";
+import IEpicDbService from "../service/IEpicDbService";
+import EpicDbService from "../service/impl/EpicDbService";
+import IUserStoryDbService from "../service/IUserStoryDbService";
+import UserStoryDbService from "../service/impl/UserStoryDbService";
 
 type ServiceManagerProviderType = {
     productivityService: IProductivityService;
@@ -34,7 +38,8 @@ type ServiceManagerProviderType = {
     jiraDbService: IJiraDbService;
     plannedPiDbService: IPiDbService;
     plannedFeatureDbService: IPlannedFeatureDbService;
-
+    epicDbService: IEpicDbService;
+    userStoryDbService: IUserStoryDbService;
 }
 
 
@@ -64,6 +69,8 @@ export class ServiceManagerProvider implements IProvider<ServiceManagerProviderT
         const plannedPiDbService = new PiDbService(this.#db, TABLE_PLANNED_PI_ITEMS)
         const jiraDbService = new JiraDbService(this.#db);
         const plannedFeatureDbService  = new PlannedFeatureDbService(this.#db);
+        const epicDbService = new EpicDbService();
+        const userStoryDbService = new UserStoryDbService();
 
         return {
             productivityService,
@@ -75,7 +82,9 @@ export class ServiceManagerProvider implements IProvider<ServiceManagerProviderT
             piDbService,
             jiraDbService,
             plannedPiDbService,
-            plannedFeatureDbService
+            plannedFeatureDbService,
+            epicDbService,
+            userStoryDbService
         }
     }
 
