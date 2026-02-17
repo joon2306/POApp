@@ -21,7 +21,7 @@ export type TaskCardTypeTask = {
     progress?: {
         color: string;
         progress: number;
-    }, 
+    },
     bgColor?: string;
 }
 
@@ -30,6 +30,7 @@ export type TaskCardType = {
     iconColor: string;
     title: string;
     subTitle: string;
+    subTitle2?: string;
     header: string;
     tasks: TaskCardTypeTask[];
 }
@@ -50,6 +51,7 @@ export default function TaskCard(props: TaskCardType) {
                     <div className="mb-2">
                         <h1 className="text-lg font-bold text-[#000000]">{props.title}</h1>
                         <p className="text-sm">{props.subTitle}</p>
+                        {props.subTitle2 && <p className="text-sm">{props.subTitle2}</p>}
                     </div>
                 </div>
 
@@ -90,22 +92,22 @@ export default function TaskCard(props: TaskCardType) {
             return (
                 <div>
                     <div className="flex justify-between mb-5">
-                    <div className="flex gap-2 items-center">
-                        <h1 className="text-base font-semibold text-[#000000]">{task.title}</h1>
-                        {
-                            Icon && (
-                                <Icon color={task.color?.secondary} />
-                            )
-                        }
-                    </div>
+                        <div className="flex gap-2 items-center">
+                            <h1 className="text-base font-semibold text-[#000000]">{task.title}</h1>
+                            {
+                                Icon && (
+                                    <Icon color={task.color?.secondary} />
+                                )
+                            }
+                        </div>
 
-                    <div>
-                        {status && (
-                            <div className="text-xs text-white font-bold py-1.5 px-3 rounded-full" style={{backgroundColor: statusColor}}>
-                                {status}
-                            </div>
-                        )}
-                    </div>
+                        <div>
+                            {status && (
+                                <div className="text-xs text-white font-bold py-1.5 px-3 rounded-full" style={{ backgroundColor: statusColor }}>
+                                    {status}
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     <div className="flex flex-wrap gap-4 mt-3">
