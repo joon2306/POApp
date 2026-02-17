@@ -20,6 +20,8 @@ import PiDbService from "../service/impl/PiDbService";
 import IPiDbService from "../service/IPiDbService";
 import IJiraDbService from "../service/IJiraDbService";
 import JiraDbService from "../service/impl/JiraDbService";
+import TimeTrackerService from "../service/impl/TimeTrackerService";
+import ITimeTrackerDbService from "../service/ITimeTrackerService";
 
 type ServiceManagerProviderType = {
     productivityService: IProductivityService;
@@ -30,6 +32,7 @@ type ServiceManagerProviderType = {
     vaultDbService: IVaultDbService;
     piDbService: IPiDbService;
     jiraDbService: IJiraDbService;
+    timeTrackerService: ITimeTrackerDbService;
 
 }
 
@@ -52,22 +55,24 @@ export class ServiceManagerProvider implements IProvider<ServiceManagerProviderT
         const kanbanTimeManager = new KanbanTimeManager();
         const kanbanDbService = new KanbanDbService(this.#db, kanbanTimeManager);
         const commsService = new CommsService();
-        const exeService = new ExeService();       
+        const exeService = new ExeService();
         const copyService = new CopyService(exeService);
         const tokenGeneratorService = new TokenGeneratorService(exeService, copyService);
         const vaultDbService = new VaultDbService(this.#db);
         const piDbService = new PiDbService(this.#db);
         const jiraDbService = new JiraDbService(this.#db);
+        const timeTrackerService = new TimeTrackerService(this.#db);
 
         return {
             productivityService,
             kanbanDbService,
             commsService,
             copyService,
-            tokenGeneratorService, 
+            tokenGeneratorService,
             vaultDbService,
             piDbService,
-            jiraDbService
+            jiraDbService,
+            timeTrackerService
         }
     }
 

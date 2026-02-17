@@ -8,6 +8,7 @@ const TABLE_PRODUCTIVITY_ITEMS = "productivity_items";
 const TABLE_VAULT_ITEMS = "vault_items";
 const TABLE_PI_ITEMS = "pi_items";
 const TABLE_JIRA_ITEMS = "jira_items";
+const TABLE_TIME_TRACKER_ITEMS = "time_tracker_items";
 
 let db: Database = null;
 export default function getDatabase() {
@@ -37,7 +38,10 @@ export default function getDatabase() {
 
         const createJiraTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_JIRA_ITEMS} (jiraKey TEXT PRIMARY KEY, title TEXT NOT NULL, target INTEGER NOT NULL, status INTEGER NOT NULL, type INTEGER NOT NULL, piRef TEXT NOT NULL, featureRef TEXT)`);
         createJiraTbl.run();
-    }   
+
+        const createTimeTrackerTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_TIME_TRACKER_ITEMS} (date TEXT PRIMARY KEY)`);
+        createTimeTrackerTbl.run();
+    }
 
 
     if (!db) {
@@ -55,4 +59,4 @@ export default function getDatabase() {
 
 
 
-export { TABLE_KANBAN_ITEMS, TABLE_PRODUCTIVITY_ITEMS, TABLE_VAULT_ITEMS, TABLE_PI_ITEMS, TABLE_JIRA_ITEMS };
+export { TABLE_KANBAN_ITEMS, TABLE_PRODUCTIVITY_ITEMS, TABLE_VAULT_ITEMS, TABLE_PI_ITEMS, TABLE_JIRA_ITEMS, TABLE_TIME_TRACKER_ITEMS };

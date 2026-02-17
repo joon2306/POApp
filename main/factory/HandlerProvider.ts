@@ -68,9 +68,9 @@ export default class HandlerProvider implements IProvider<IHandlerProviderRespon
 
     provide(): IHandlerProviderResponse {
         const { kanbanDbService, commsService, productivityService, copyService, tokenGeneratorService,
-            vaultDbService, piDbService, jiraDbService } = this.#serviceManagerProvider.provide();
+            vaultDbService, piDbService, jiraDbService, timeTrackerService } = this.#serviceManagerProvider.provide();
         const kanbanHandler = new TodoKanbanHandler(kanbanDbService, commsService, productivityService);
-        const productivityHandler = new ProductivityHandler(productivityService, commsService, kanbanDbService);
+        const productivityHandler = new ProductivityHandler(productivityService, commsService, kanbanDbService, timeTrackerService);
         const copyHandler = new CopyHandler(copyService, commsService);
         const tokenHandler = new TokenHandler(tokenGeneratorService, commsService);
         const vaultHandler = new VaultHandler(commsService, vaultDbService);

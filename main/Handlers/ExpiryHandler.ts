@@ -1,20 +1,22 @@
 import IKanbanDbService from "../service/IKanbanDbService";
 import IProductivityService from "../service/IProductivityService";
+import ITimeTrackerDbService from "../service/ITimeTrackerService";
 import getTimeUtils from "../utils/TimeUtils";
 import Handler from "./Handler";
 
 let instance: ExpiryHandler = null;
 export default class ExpiryHandler implements Handler {
 
-    #expired: { cleared: boolean, timestamp: number | null };
     #productivityService: IProductivityService;
     #kanbanDbService: IKanbanDbService;
+    #timeTrackerService: ITimeTrackerDbService;
 
-    constructor(productivityService: IProductivityService, kanbanDbService: IKanbanDbService) {
+    constructor(productivityService: IProductivityService,
+        kanbanDbService: IKanbanDbService, timeTrackerService: ITimeTrackerDbService) {
         if (instance === null) {
-            this.#expired = { cleared: false, timestamp: null };
             this.#productivityService = productivityService;
             this.#kanbanDbService = kanbanDbService;
+            this.#timeTrackerService = timeTrackerService;
             instance = this;
         }
         return instance;
@@ -22,17 +24,16 @@ export default class ExpiryHandler implements Handler {
 
 
     execute(): void {
-        const startOfDay = getTimeUtils().startOfDay;
-        if (this.#expired.cleared && this.#expired.timestamp > startOfDay) {
-            console.log("expired items have already been handled.");
+
+        console.log("timeTracker: ", this.#timeTrackerService);
+
+        if (this.#timeTrackerService.hasTracked()) {
             return;
         }
 
         this.#productivityService.handleExpired();
         this.#kanbanDbService.resetToDoCards();
-
-        this.#expired.cleared = true;
-        this.#expired.timestamp = Date.now();
+        this.#timeTrackerService.track();
 
     }
 
