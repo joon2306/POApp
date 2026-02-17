@@ -38,10 +38,21 @@ export default class KanbanDbService implements IKanbanDbService {
         }
     }
 
-    getInProgressCards(): KanbanDbItem[] {
+    getUpdatedCards(): KanbanDbItem[] {
         const { error, data: kanbanCards } = this.getAll();
-        return !error ? this.#kanbanTimeManager.updateInProgress(kanbanCards) : [];
+        if (error) {
+            console.error("Error fetching kanban cards: ", error);
+            return [];
+        }
+        const updatedInProgressCards = this.#kanbanTimeManager.updateInProgress(kanbanCards);
+        return kanbanCards.map(card => {
+            if (card.status === 2) {
+                return updatedInProgressCards.find(updatedCard => updatedCard.id === card.id);
+            }
+            return card;
+        });
     }
+
 
     create(kanbanItem: KanbanDbItem): GenericResponse<string> {
         try {

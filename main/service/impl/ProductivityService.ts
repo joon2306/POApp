@@ -43,7 +43,8 @@ export default class ProductivityService implements IProductivityService {
         return { timeConsumed, timeRemaining };
     }
 
-    #calculateProductivity(completedTasks: CompletedTask[], timeConsumed: number): Pick<Productivity, "taskProductivity" | "overallProductivity"> {
+    #calculateProductivity(completedTasks: CompletedTask[]): Pick<Productivity, "taskProductivity" | "overallProductivity"> {
+        const plannedProductivityBaseline = 4 * 60;
         const [sumTimePlanned, sumTimeSpent] = completedTasks.reduce((accumulator, completedTask) => {
             const timePlanned = completedTask.time;
             const timeSpent = completedTask.duration;
@@ -57,17 +58,21 @@ export default class ProductivityService implements IProductivityService {
             ? 0
             : sumTimePlanned / sumTimeSpent;
 
-        const overallProductivity = isNaN(sumTimeSpent / timeConsumed)
+        const completedTime = completedTasks.reduce((accumulator, completedTask) => accumulator + completedTask.time, 0);
+
+
+        const overallProductivity = isNaN(completedTime / plannedProductivityBaseline)
             ? 0
-            : sumTimeSpent / timeConsumed;
+            : completedTime / plannedProductivityBaseline;
 
         return { taskProductivity: NumberUtils.of(taskProductivity).toFixed(2), overallProductivity: NumberUtils.of(overallProductivity).toFixed(2) };
 
 
     }
 
-    get(inProgressCards: KanbanDbItem[]): Productivity {
+    get(kanbanCards: KanbanDbItem[]): Productivity {
         const { error: productivityErr, data: productivityItems } = this.#productivityDbService.getAll();
+        const inProgressCards = kanbanCards.filter(card => card.status === 2);
 
         const inProgressTasks: Task[] = inProgressCards
             .map(item => {
@@ -82,7 +87,7 @@ export default class ProductivityService implements IProductivityService {
         }) : [];
 
         const { timeConsumed, timeRemaining } = this.#getTimeSpent();
-        const { taskProductivity, overallProductivity } = this.#calculateProductivity(completedTasks, timeConsumed);
+        const { taskProductivity, overallProductivity } = this.#calculateProductivity(completedTasks);
         console.log("taskProductivity: ", taskProductivity);
         console.log("overall productivity: ", overallProductivity);
 
