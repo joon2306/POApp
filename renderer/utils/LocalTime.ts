@@ -1,5 +1,7 @@
 import NumberUtils from "./NumberUtils";
 
+const defaultTimeFormat = (h: number, m: number) => h === 0 ? `${m}m` : `${h}h ${m}m`;
+
 export default interface ILocalTime {
     format(customFormat: (h: number, m: number) => string);
 }
@@ -14,9 +16,9 @@ export class LocalTime implements ILocalTime {
         return instance;
     }
 
-    format(customFormat: (h: number, m: number) => string) {
-        if(this.#minutes === 0) {
-            return customFormat(0,0);
+    format(customFormat: (h: number, m: number) => string = defaultTimeFormat) {
+        if (this.#minutes === 0) {
+            return customFormat(0, 0);
         }
         if (!this.#minutes) {
             throw new Error("Minutes have not been added");
