@@ -11,8 +11,11 @@ export default class TimeTrackerService implements ITimeTrackerDbService {
 
     track(): void {
         try {
-            const stmt = this.db.prepare(`INSERT INTO ${TABLE_TIME_TRACKER_ITEMS} (date) VALUES (?)`);
-            stmt.run(this._getNow());
+            const today = this._getNow();
+            const insert = this.db.prepare(`INSERT INTO ${TABLE_TIME_TRACKER_ITEMS} (date) VALUES (?)`);
+            insert.run(today);
+            const cleanup = this.db.prepare(`DELETE FROM ${TABLE_TIME_TRACKER_ITEMS} WHERE date < ?`);
+            cleanup.run(today);
         } catch (error) {
             console.error("Error adding date to time tracker: ", error);
         }
