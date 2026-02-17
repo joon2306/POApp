@@ -2,6 +2,7 @@ import { COLOR_CONFIG } from "../components";
 import { KanbanType } from "../factory/KanbanFactory";
 import { Feature, JiraKey, SPRINT_OPTIONS } from "../types/Feature/Feature";
 import { KanbanCardType, PriorityLevel } from "../types/KanbanTypes";
+import { LocalTime } from "./LocalTime";
 import { Sprint } from "./PulseUtils";
 
 export const generateKanbanId = (cards: KanbanCardType[]): number => {
@@ -47,9 +48,26 @@ export const getTagColors = (type: KanbanType, priority: PriorityLevel,
     if (activeSprintTarget > sprintTarget) {
         return "critical";
     }
-    if (sprintTarget - activeSprintTarget  === 1) {
+    if (sprintTarget - activeSprintTarget === 1) {
         return "medium";
     }
 
     return "low";
+}
+
+export const getPlannedTime = (cards: KanbanCardType[]) => {
+    return cards.reduce((total, card) => {
+        if (card.status === 1 && card.priority === 4) {
+            return total + card.time;
+        }
+        return total;
+    }, 0);
+}
+
+
+
+export const getPlannedTimeStatus = (plannedTime: number): string => {
+    if (plannedTime < 180) return "#4CAF50";
+    if (plannedTime <= 240) return "#FFC107";
+    return "#F44336";
 }

@@ -73,9 +73,9 @@ export default class HandlerProvider implements IProvider<IHandlerProviderRespon
     provide(): IHandlerProviderResponse {
         const { kanbanDbService, commsService, productivityService, copyService, tokenGeneratorService,
             vaultDbService, piDbService, jiraDbService, plannedPiDbService, plannedFeatureDbService,
-            epicDbService, userStoryDbService } = this.#serviceManagerProvider.provide();
+            epicDbService, userStoryDbService, timeTrackerService } = this.#serviceManagerProvider.provide();
         const kanbanHandler = new TodoKanbanHandler(kanbanDbService, commsService, productivityService);
-        const productivityHandler = new ProductivityHandler(productivityService, commsService, kanbanDbService);
+        const productivityHandler = new ProductivityHandler(productivityService, commsService, kanbanDbService, timeTrackerService);
         const copyHandler = new CopyHandler(copyService, commsService);
         const tokenHandler = new TokenHandler(tokenGeneratorService, commsService);
         const vaultHandler = new VaultHandler(commsService, vaultDbService);
@@ -85,7 +85,7 @@ export default class HandlerProvider implements IProvider<IHandlerProviderRespon
         const plannedFeatureHandler = new PlannedFeatureHandler(commsService, plannedFeatureDbService);
         const epicHandler = new EpicHandler(epicDbService, commsService);
         const userStoryHandler = new UserStoryHandler(userStoryDbService, commsService);
-        
+
         return new HandlerProviderResponse([kanbanHandler, productivityHandler, copyHandler, tokenHandler,
             vaultHandler, piHandler, jiraHandler, plannedPiHandler, plannedFeatureHandler, epicHandler, userStoryHandler]);
     }

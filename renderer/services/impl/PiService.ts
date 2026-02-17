@@ -9,6 +9,7 @@ export default class PiService implements IPiService {
 
     #currentPiTitle: PiTitle;
     #piHelper: PiHelper;
+    #commsService: CommsService;
 
     #piHelperConfig: PiHelperConfig = {
         create: CommunicationEvents.createPi,
@@ -19,6 +20,8 @@ export default class PiService implements IPiService {
     constructor(commsService: CommsService) {
         if (instance === null) {
             this.#piHelper = new PiHelper(commsService, this.#piHelperConfig);
+            this.#commsService = commsService;
+            this.removeCurrent = this.removeCurrent.bind(this);
             instance = this;
         }
         return instance;

@@ -9,7 +9,7 @@ export default function CompletedCard({ productivity, timeFormat }: { productivi
     const [card, setCard] = useState<TaskCardType>(null);
 
     const getTime = (time: number): string => {
-        if(!time) {
+        if (!time) {
             return "";
         }
         return LocalTime.of(time).format(timeFormat)
@@ -21,6 +21,16 @@ export default function CompletedCard({ productivity, timeFormat }: { productivi
         }
         const totalDuration = completedTasks.reduce((accumulator, { duration }) => {
             return accumulator + duration;
+        }, 0);
+        return getTime(totalDuration);
+    }
+
+    const getTotalPlannedTime: (completedTasks: Task[]) => string = (completedTasks) => {
+        if (completedTasks.length === 0) {
+            return "0m";
+        }
+        const totalDuration = completedTasks.reduce((accumulator, { time }) => {
+            return accumulator + time;
         }, 0);
         return getTime(totalDuration);
     }
@@ -47,6 +57,7 @@ export default function CompletedCard({ productivity, timeFormat }: { productivi
         };
         const title = "Completed Tasks";
         const subTitle = `Total Time: ${getTotalTime(completedTasks)}`;
+        const subTitle2 = `Completed Planned: ${getTotalPlannedTime(completedTasks)}`;
         const header = `${completedTasks.length} completed`;
 
         const calculateEfficiency = (timeSpent: number, timePlanned: number): number => {
@@ -56,14 +67,14 @@ export default function CompletedCard({ productivity, timeFormat }: { productivi
         const getEfficiencyStatus = (efficiency: number): Status => {
             if (efficiency >= 100) {
                 return "EFFICIENT";
-            } else if (efficiency > 80 ) {
+            } else if (efficiency > 80) {
                 return "GOOD"
             }
             return "BAD";
         }
         const tasks: TaskCardTypeTask[] = completedTasks.map(completed => {
             const efficiency = calculateEfficiency(completed.duration, completed.time);
-            const efficiencyColor =color[getEfficiencyStatus(efficiency)];
+            const efficiencyColor = color[getEfficiencyStatus(efficiency)];
             return {
                 title: completed.title,
                 timePlanned: { text: getTime(completed.time) },
@@ -80,7 +91,8 @@ export default function CompletedCard({ productivity, timeFormat }: { productivi
             header,
             subTitle,
             tasks,
-            title
+            title,
+            subTitle2
         })
 
     }

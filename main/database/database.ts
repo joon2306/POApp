@@ -9,9 +9,10 @@ const TABLE_VAULT_ITEMS = "vault_items";
 const TABLE_PI_ITEMS = "pi_items";
 const TABLE_JIRA_ITEMS = "jira_items";
 const TABLE_PLANNED_PI_ITEMS = "planned_pi_items";
-const TABLE_PLANNED_FEATURE_ITEMS= "planned_feature_items";
+const TABLE_PLANNED_FEATURE_ITEMS = "planned_feature_items";
 const TABLE_EPICS = "epics";
 const TABLE_USER_STORIES = "user_stories";
+const TABLE_TIME_TRACKER_ITEMS = "time_tracker_items";
 
 let db: Database = null;
 export default function getDatabase() {
@@ -55,7 +56,10 @@ export default function getDatabase() {
         const createUserStoryTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_USER_STORIES} (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, storyPoint INTEGER, epicRef INTEGER, FOREIGN KEY (epicRef) REFERENCES epics (id) ON DELETE CASCADE)`);
         createUserStoryTbl.run();
 
-    }   
+    }
+    const createTimeTrackerTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_TIME_TRACKER_ITEMS} (date TEXT PRIMARY KEY)`);
+    createTimeTrackerTbl.run();
+
 
 
     if (!db) {
@@ -65,13 +69,16 @@ export default function getDatabase() {
             console.log("App is quitting, closing the database");
             db.close();
         })
+
+
+        return db;
+
     }
-
-    return db;
-
 }
 
 
 
-export { TABLE_KANBAN_ITEMS, TABLE_PRODUCTIVITY_ITEMS, TABLE_VAULT_ITEMS, TABLE_PI_ITEMS, TABLE_JIRA_ITEMS,
-    TABLE_PLANNED_PI_ITEMS, TABLE_PLANNED_FEATURE_ITEMS, TABLE_EPICS, TABLE_USER_STORIES };
+export {
+    TABLE_KANBAN_ITEMS, TABLE_PRODUCTIVITY_ITEMS, TABLE_VAULT_ITEMS, TABLE_PI_ITEMS, TABLE_JIRA_ITEMS,
+    TABLE_PLANNED_PI_ITEMS, TABLE_PLANNED_FEATURE_ITEMS, TABLE_EPICS, TABLE_USER_STORIES, TABLE_TIME_TRACKER_ITEMS
+};

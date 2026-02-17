@@ -21,7 +21,7 @@ export type HeaderSwimLane = {
   modifyCard: (arg: KanbanFormValue) => void,
   modalService: IModalService,
   type: KanbanType,
-  selectedFeature: SelectedFeature
+  selectedFeature: SelectedFeature,
 }
 
 export type KanbanCardType = {

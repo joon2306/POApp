@@ -7,7 +7,7 @@ import { useDroppable } from "../hooks/useDroppable";
 import { useKanbanCard } from "../hooks/useKanbanCard";
 import KanbanForm from "./Form/KanbanForm";
 import { ModalType } from "../types/ModalTypes";
-import { sortKanbanCards, getTagColors } from "../utils/KanbanUtils";
+import { sortKanbanCards, getTagColors, getPlannedTime, getPlannedTimeStatus } from "../utils/KanbanUtils";
 import MediatorEvents from "../constants/MediatorEvents";
 import Mediator from "../services/impl/Mediator";
 import { IModalService, useModalService } from "../services/impl/ModalService";
@@ -15,8 +15,9 @@ import { KanbanFactory, KanbanType } from "../factory/KanbanFactory";
 import { SelectedFeature } from "./PulseBoard/PulseRouter";
 import CommsService from "../services/impl/CommsService";
 import { Feature, SPRINT_OPTIONS } from "../types/Feature/Feature";
+import { LocalTime } from "../utils/LocalTime";
 
-export const COLOR_CONFIG: Record<string, {color: string, textColor: string}> = {
+export const COLOR_CONFIG: Record<string, { color: string, textColor: string }> = {
     low: {
         color: styles.bgLowPriority,
         textColor: styles.lowPriorityColor
@@ -39,7 +40,7 @@ export const COLOR_CONFIG: Record<string, {color: string, textColor: string}> = 
 const getKanbanForm = (isModify, handleSave, kanbanFormValue, modalService, type): ModalType => {
     return {
         title: isModify ? "Modify Kanban" : "Create Kanban",
-        content: <KanbanForm onValidSubmit={handleSave} kanbanFormValue={kanbanFormValue} type={type} isModify={isModify}/>,
+        content: <KanbanForm onValidSubmit={handleSave} kanbanFormValue={kanbanFormValue} type={type} isModify={isModify} />,
         buttons: [
             {
                 label: "Cancel",
@@ -82,6 +83,7 @@ export default function Kanban({ calculateHeight, type, selectedFeature }: {
     calculateHeight: () => number; type: KanbanType,
     selectedFeature?: SelectedFeature
 }) {
+    const isTodo = type === "TODO";
     const kanbanService = KanbanFactory.of(type).setComms(new CommsService()).setSelectedFeature(selectedFeature).build();
 
     const { handleDragStart, handleDrop, kanbanCards, updateHeight, deleteCard, saveCard, modifyCard, loadData } = useKanban(kanbanService, type);
@@ -108,7 +110,8 @@ export default function Kanban({ calculateHeight, type, selectedFeature }: {
     }, [mediator, modalService])
 
     return <>
-        <div className={`flex justify-around my-10`}>
+
+        <div className={`flex justify-around ${!isTodo ? "my-10" : ""}`}>
             {
                 Object.entries(KANBAN_SWIM_LANE_CONFIG).map(([k, { title, color }]) => (
                     <KanbanSwimLane
@@ -174,7 +177,7 @@ function
 function KanbanCard({ title, description, priority, status, setActiveCard, id, deleteCard, modifyCard, modalService, time, type, target, selectedFeature }: KanbanCardProp) {
     status = +status as unknown as KanbanStatus;
     priority = +priority as unknown as PriorityLevel;
-    
+
     const isTodo = type === "TODO";
 
     const getTagText = () => {
@@ -182,14 +185,14 @@ function KanbanCard({ title, description, priority, status, setActiveCard, id, d
             return PRIORITY_CONFIG[priority].text || "Low";
         }
 
-        return target > 0 ? SPRINT_OPTIONS[target - 1].label: "Invalid";
+        return target > 0 ? SPRINT_OPTIONS[target - 1].label : "Invalid";
     }
 
     const tagColor = getTagColors(type, priority, target as Feature["target"], selectedFeature?.activeSprint);
 
     const borderColor = status === 1 ? "border-pending-kanban" : status === 2 ? "border-inprogress-kanban" : "border-onhold-kanban";
 
-    const {color, textColor} = COLOR_CONFIG[tagColor];
+    const { color, textColor } = COLOR_CONFIG[tagColor];
 
 
 
@@ -245,9 +248,11 @@ function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, upd
     const applicableCards = sortKanbanCards(cards.filter(card => +card.status === +status));
     const divRef = useRef();
 
+    const isTodo = type === "TODO";
+
     return (
         <div className="flex flex-col">
-
+            {isTodo && <h1 className="py-5 font-bold  text-[black]" style={{ opacity: headerTitle === "Pending" ? 1 : 0 }}>Time Planned: <span style={{ color: getPlannedTimeStatus(getPlannedTime(applicableCards)) }}>{LocalTime.of(getPlannedTime(applicableCards)).format()}</span></h1>}
             <KanbanHeader title={headerTitle} status={status} saveCard={saveCard} modalService={modalService} type={type} />
             <Droppable onDrop={() => onDrop(status)} isBottom={false} calculateHeight={calculateHeight} divRef={divRef} updateHeight={updateHeight} />
             <div ref={divRef}>

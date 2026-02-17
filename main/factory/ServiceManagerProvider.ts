@@ -26,6 +26,8 @@ import IEpicDbService from "../service/IEpicDbService";
 import EpicDbService from "../service/impl/EpicDbService";
 import IUserStoryDbService from "../service/IUserStoryDbService";
 import UserStoryDbService from "../service/impl/UserStoryDbService";
+import TimeTrackerService from "../service/impl/TimeTrackerService";
+import ITimeTrackerDbService from "../service/ITimeTrackerService";
 
 type ServiceManagerProviderType = {
     productivityService: IProductivityService;
@@ -40,6 +42,8 @@ type ServiceManagerProviderType = {
     plannedFeatureDbService: IPlannedFeatureDbService;
     epicDbService: IEpicDbService;
     userStoryDbService: IUserStoryDbService;
+    timeTrackerService: ITimeTrackerDbService;
+
 }
 
 
@@ -61,30 +65,32 @@ export class ServiceManagerProvider implements IProvider<ServiceManagerProviderT
         const kanbanTimeManager = new KanbanTimeManager();
         const kanbanDbService = new KanbanDbService(this.#db, kanbanTimeManager);
         const commsService = new CommsService();
-        const exeService = new ExeService();       
+        const exeService = new ExeService();
         const copyService = new CopyService(exeService);
         const tokenGeneratorService = new TokenGeneratorService(exeService, copyService);
         const vaultDbService = new VaultDbService(this.#db);
         const piDbService = new PiDbService(this.#db, TABLE_PI_ITEMS);
         const plannedPiDbService = new PiDbService(this.#db, TABLE_PLANNED_PI_ITEMS)
         const jiraDbService = new JiraDbService(this.#db);
-        const plannedFeatureDbService  = new PlannedFeatureDbService(this.#db);
+        const plannedFeatureDbService = new PlannedFeatureDbService(this.#db);
         const epicDbService = new EpicDbService();
         const userStoryDbService = new UserStoryDbService();
+        const timeTrackerService = new TimeTrackerService(this.#db);
 
         return {
             productivityService,
             kanbanDbService,
             commsService,
             copyService,
-            tokenGeneratorService, 
+            tokenGeneratorService,
             vaultDbService,
             piDbService,
             jiraDbService,
             plannedPiDbService,
             plannedFeatureDbService,
             epicDbService,
-            userStoryDbService
+            userStoryDbService,
+            timeTrackerService
         }
     }
 

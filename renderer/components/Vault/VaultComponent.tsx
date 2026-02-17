@@ -4,13 +4,14 @@ import { BsFloppy } from 'react-icons/bs';
 import { MdOutlineCancel } from 'react-icons/md';
 import Input from "../Form/Input";
 import Card from "../Card";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import Vault from "../../models/Vault/Vault";
 import useVault from "../../hooks/useVault";
 import Form from "../Form";
 import useVaultForm, { useVaultFormType } from "../../hooks/useVaultForm";
 import useDelete from "../../hooks/useDelete";
 import useInsert from "../../hooks/useInsert";
+import { IoSearch } from "react-icons/io5";
 
 
 type BodyType = {
@@ -21,6 +22,8 @@ type BodyType = {
     activeVault: Vault;
     setActiveVault: (vault: Vault) => void;
     executeUniqueVAult: (id: string) => Promise<void>;
+    search: string;
+    handleSearch: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 type StoreBtnType = {
@@ -41,13 +44,14 @@ type StoreFormType = {
 }
 
 export default function VaultComponent() {
-    const { vaults, copy, add, deleteVault, activeVault, setActiveVault, executeUniqueVault } = useVault();
+    const { vaults, copy, add, deleteVault, activeVault, setActiveVault, executeUniqueVault, search, handleSearch } = useVault();
 
     return (
         <div className="m-5">
             <Header />
             <div className="border my-5"></div>
-            <Body vaults={vaults} copy={copy} add={add} deleteVault={deleteVault} activeVault={activeVault} setActiveVault={setActiveVault} executeUniqueVAult={executeUniqueVault} />
+            <Body vaults={vaults} copy={copy} add={add} deleteVault={deleteVault} activeVault={activeVault} setActiveVault={setActiveVault}
+                executeUniqueVAult={executeUniqueVault} search={search} handleSearch={handleSearch} />
         </div>
     )
 }
@@ -70,7 +74,7 @@ function EmptyContent(): React.ReactElement {
     )
 }
 
-function Body({ vaults, copy, add, deleteVault, activeVault, setActiveVault, executeUniqueVAult }: BodyType): React.ReactElement {
+function Body({ vaults, copy, add, deleteVault, activeVault, setActiveVault, executeUniqueVAult, search, handleSearch }: BodyType): React.ReactElement {
 
     const [toggle, setToggle] = useState<boolean>(false);
 
@@ -89,8 +93,14 @@ function Body({ vaults, copy, add, deleteVault, activeVault, setActiveVault, exe
     return (
         <>
 
-            {vaults && vaults.length > 0 && !toggle && <Button label="Add New Secret" onClick={doToggle} variant="primary" icon={{ Icon: BsFloppy }} />}
-            {vaults && vaults.length > 0 && toggle && <Button label="Cancel" onClick={doToggle} variant="danger" icon={{ Icon: MdOutlineCancel }} />}
+            <div className="flex justify-between">
+                {vaults && vaults.length > 0 && !toggle && <Button label="Add New Secret" onClick={doToggle} variant="primary" icon={{ Icon: BsFloppy }} />}
+                {vaults && vaults.length > 0 && toggle && <Button label="Cancel" onClick={doToggle} variant="danger" icon={{ Icon: MdOutlineCancel }} />}
+                {vaults && vaults.length > 0 && !toggle && <div>
+                    <Input title="search" error={false} errorMessage="NA" value={search} onChange={handleSearch} icon={{ Icon: IoSearch }}></Input>
+                </div>}
+
+            </div>
 
             <div>
                 {(toggle || vaults && vaults.length === 0) &&
