@@ -16,6 +16,7 @@ type useVaultType = {
     executeUniqueVault(id: string): Promise<void>;
     search: string;
     handleSearch: (e: ChangeEvent<HTMLInputElement>) => void;
+    isEmpty: boolean;
 }
 
 export default function useVault(): useVaultType {
@@ -30,6 +31,7 @@ export default function useVault(): useVaultType {
     const vaultService = useMemo(() => new VaultService(uniqueVaultService, tokenService, commsService), []);
     const copyService = useMemo(() => new CopyService(commsService), []);
     const [search, setSearch] = useState<string>("");
+    const [isEmpty, setIsEmpty] = useState<boolean>(false);
 
     const copy = copyService.copy;
 
@@ -61,7 +63,12 @@ export default function useVault(): useVaultType {
     }, []);
 
     const loadVaults = useCallback(() => {
-        vaultService.get().then(vaults => setAllVaults(vaults));
+        vaultService.get().then(vaults => {
+            setAllVaults(vaults);
+            if (!vaults || vaults.length === 0) {
+                setIsEmpty(true);
+            }
+        });
     }, [vaultService]);
 
     useEffect(() => {
@@ -75,5 +82,5 @@ export default function useVault(): useVaultType {
         }
     }, [count, loadVaults])
 
-    return { vaults, copy, add, deleteVault, activeVault, setActiveVault, executeUniqueVault, search, handleSearch };
+    return { vaults, copy, add, deleteVault, activeVault, setActiveVault, executeUniqueVault, search, handleSearch, isEmpty };
 }

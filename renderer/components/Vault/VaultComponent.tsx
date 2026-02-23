@@ -12,6 +12,7 @@ import useVaultForm, { useVaultFormType } from "../../hooks/useVaultForm";
 import useDelete from "../../hooks/useDelete";
 import useInsert from "../../hooks/useInsert";
 import { IoSearch } from "react-icons/io5";
+import { isEmptyObj } from "openai/core";
 
 
 type BodyType = {
@@ -24,6 +25,7 @@ type BodyType = {
     executeUniqueVAult: (id: string) => Promise<void>;
     search: string;
     handleSearch: (e: ChangeEvent<HTMLInputElement>) => void;
+    isEmpty: boolean;
 }
 
 type StoreBtnType = {
@@ -44,14 +46,15 @@ type StoreFormType = {
 }
 
 export default function VaultComponent() {
-    const { vaults, copy, add, deleteVault, activeVault, setActiveVault, executeUniqueVault, search, handleSearch } = useVault();
+    const { vaults, copy, add, deleteVault, activeVault, setActiveVault, executeUniqueVault,
+        search, handleSearch, isEmpty } = useVault();
 
     return (
         <div className="m-5">
             <Header />
             <div className="border my-5"></div>
             <Body vaults={vaults} copy={copy} add={add} deleteVault={deleteVault} activeVault={activeVault} setActiveVault={setActiveVault}
-                executeUniqueVAult={executeUniqueVault} search={search} handleSearch={handleSearch} />
+                executeUniqueVAult={executeUniqueVault} search={search} handleSearch={handleSearch} isEmpty={isEmpty} />
         </div>
     )
 }
@@ -74,7 +77,8 @@ function EmptyContent(): React.ReactElement {
     )
 }
 
-function Body({ vaults, copy, add, deleteVault, activeVault, setActiveVault, executeUniqueVAult, search, handleSearch }: BodyType): React.ReactElement {
+function Body({ vaults, copy, add, deleteVault, activeVault, setActiveVault, executeUniqueVAult
+    , search, handleSearch, isEmpty }: BodyType): React.ReactElement {
 
     const [toggle, setToggle] = useState<boolean>(false);
 
@@ -94,23 +98,23 @@ function Body({ vaults, copy, add, deleteVault, activeVault, setActiveVault, exe
         <>
 
             <div className="flex justify-between">
-                {vaults && vaults.length > 0 && !toggle && <Button label="Add New Secret" onClick={doToggle} variant="primary" icon={{ Icon: BsFloppy }} />}
-                {vaults && vaults.length > 0 && toggle && <Button label="Cancel" onClick={doToggle} variant="danger" icon={{ Icon: MdOutlineCancel }} />}
-                {vaults && vaults.length > 0 && !toggle && <div>
+                {isEmpty && !toggle && <Button label="Add New Secret" onClick={doToggle} variant="primary" icon={{ Icon: BsFloppy }} />}
+                {isEmpty && toggle && <Button label="Cancel" onClick={doToggle} variant="danger" icon={{ Icon: MdOutlineCancel }} />}
+                {!isEmpty && !toggle && <div>
                     <Input title="search" error={false} errorMessage="NA" value={search} onChange={handleSearch} icon={{ Icon: IoSearch }}></Input>
                 </div>}
 
             </div>
 
             <div>
-                {(toggle || vaults && vaults.length === 0) &&
+                {(toggle || vaults && vaults.length === 0 && isEmpty) &&
                     <div className="mt-5">
                         <Card Content={StoredForm} height={{ large: "auto", medium: "auto" }} width={{ large: "auto", medium: "auto" }} contentProps={{ add: handleAdd, activeVault, setActiveVault }} />
                     </div>
                 }
                 <h1 className="text-2xl font-bold mt-5 text-[black]">Your Stored Items</h1>
 
-                {vaults && vaults.length > 0 &&
+                {!isEmpty &&
                     <div className="mt-10 grid md:grid-cols-4 lg:grid-cols-6 gap-10">
                         {
                             vaults.map((vault, index) => (
@@ -123,7 +127,7 @@ function Body({ vaults, copy, add, deleteVault, activeVault, setActiveVault, exe
                     </div>
                 }
                 {
-                    !vaults || vaults.length === 0 && (
+                    isEmpty && (
                         <div className="mt-5">
                             <Card height={{ large: "75px", medium: "75px" }} width={{ large: "auto", medium: "auto" }} Content={EmptyContent} />
                         </div>
