@@ -1,7 +1,6 @@
 import IKanbanDbService from "../service/IKanbanDbService";
 import IProductivityService from "../service/IProductivityService";
 import ITimeTrackerDbService from "../service/ITimeTrackerService";
-import getTimeUtils from "../utils/TimeUtils";
 import Handler from "./Handler";
 
 let instance: ExpiryHandler = null;
@@ -24,8 +23,6 @@ export default class ExpiryHandler implements Handler {
 
 
     execute(): void {
-
-        console.log("timeTracker: ", this.#timeTrackerService);
 
         if (this.#timeTrackerService.hasTracked()) {
             return;

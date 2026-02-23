@@ -28,13 +28,11 @@ export default class KanbanTimeManager implements IKanbanTimeManager {
 
     getExpiredToDoKanbans(kanbanCards: KanbanDbItem[]) {
         return kanbanCards.map(item => {
-            if (item.start && item.start < this.#startOfDay) {
-                item.start = 0;
-                item.duration = 0;
-                if (item.status === IN_PROGRESS) {
-                    item.status = PENDING;
-                }
-            } 
+            item.start = 0;
+            item.duration = 0;
+            if (item.status === IN_PROGRESS) {
+                item.status = PENDING;
+            }
             return item;
         });
     }
@@ -56,7 +54,7 @@ export default class KanbanTimeManager implements IKanbanTimeManager {
         const originalDuration = kanbanItem.duration ?? 0;
         console.log("original duration: ", originalDuration);
         console.log("difference in min: ", this.#getDifferenceInMinutes(kanbanItem.start, Date.now()))
-        return (kanbanItem.start !== 0 ? this.#getDifferenceInMinutes(kanbanItem.start, Date.now()): 0) + originalDuration;
+        return (kanbanItem.start !== 0 ? this.#getDifferenceInMinutes(kanbanItem.start, Date.now()) : 0) + originalDuration;
     }
 
     handleChangeOfState = (prevItem: KanbanDbItem, currentItem: KanbanDbItem) => {
@@ -80,11 +78,6 @@ export default class KanbanTimeManager implements IKanbanTimeManager {
         const startTime = kanbanItem.start;
         if (!startTime) {
             console.log(`kanban ${kanbanItem.title} did not start. It won't be considered for productivity calcultation`);
-            return;
-        }
-
-        if (startTime < this.#startOfDay) {
-            console.log(`invalid item to be considered for productivity calculation`);
             return;
         }
 

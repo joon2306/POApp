@@ -54,12 +54,16 @@ export default class ProductivityService implements IProductivityService {
             return { taskProductivity: 0, overallProductivity: 0 };
         }
 
-        const taskProductivity = isNaN(sumTimePlanned / sumTimeSpent)
-            ? 0
-            : sumTimePlanned / sumTimeSpent;
+        // const taskProductivity = isNaN(sumTimePlanned / sumTimeSpent)
+        //     ? 0
+        //     : sumTimePlanned / sumTimeSpent;
 
         const completedTime = completedTasks.reduce((accumulator, completedTask) => accumulator + completedTask.time, 0);
+        const timeSpent = completedTasks.reduce((accumulator, completedTask) => accumulator + completedTask.duration, 0);
 
+        const taskProductivity = isNaN(timeSpent / completedTime)
+            ? 0
+            : timeSpent / completedTime;
 
         const overallProductivity = isNaN(completedTime / plannedProductivityBaseline)
             ? 0
