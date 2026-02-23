@@ -98,8 +98,8 @@ function Body({ vaults, copy, add, deleteVault, activeVault, setActiveVault, exe
         <>
 
             <div className="flex justify-between">
-                {isEmpty && !toggle && <Button label="Add New Secret" onClick={doToggle} variant="primary" icon={{ Icon: BsFloppy }} />}
-                {isEmpty && toggle && <Button label="Cancel" onClick={doToggle} variant="danger" icon={{ Icon: MdOutlineCancel }} />}
+                {!toggle && <Button label="Add New Secret" onClick={doToggle} variant="primary" icon={{ Icon: BsFloppy }} />}
+                {toggle && <Button label="Cancel" onClick={doToggle} variant="danger" icon={{ Icon: MdOutlineCancel }} />}
                 {!isEmpty && !toggle && <div>
                     <Input title="search" error={false} errorMessage="NA" value={search} onChange={handleSearch} icon={{ Icon: IoSearch }}></Input>
                 </div>}
