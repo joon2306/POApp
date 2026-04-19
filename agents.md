@@ -615,3 +615,5 @@ Feature 3 — Completed User Stories
 Complete a few user stories (delete them from kanban).
 Go back to PulseBoard. Hover over the feature card and press "C".
 The app should navigate to a full-screen list view showing completed stories with their Jira key, title, and original target sprint (not a modal, not a kanban — a dedicated routed view).
+Feature 4 - Blocked reasons
+While reasons for late completion are captured, reasons for blocked reasons should also be captured. We need to add a new section beloe late completions in retrospective dashboard to track blocked reasons. Blocked reasons need to be tracked for dependencies as well. So need to modify for dependency kanban to add blocked reason when a ticket is blocked. When a dependency is completed it shall be added to completed user stories as well but has a label in completed board (press C on a feature) to differentiate between dependency and user story. if a user story or dependency has completed, its blocked reason should be added to the completed board as well.

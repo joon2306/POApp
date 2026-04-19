@@ -26,13 +26,22 @@ type SprintRow = {
 }
 
 export default function PulseDashboard({ pulses, activeSprint, piTitle }: PulseDashboardProps) {
+    const [allReasons, setAllReasons] = useState<ModificationReason[]>([]);
+
+    useEffect(() => {
+        if (!piTitle) return;
+        const service = new ModificationReasonService();
+        service.getByPiRef(piTitle).then(setAllReasons);
+    }, [piTitle]);
+
     return (
         <div className="mt-10 border-t pt-8">
             <h2 className="text-xl font-bold text-[#000000] mb-6">Retrospective Dashboard</h2>
             <div className="grid grid-cols-1 gap-6">
                 <HealthSummary pulses={pulses} />
                 <SprintProgress pulses={pulses} />
-                <LateCompletions piTitle={piTitle} />
+                <LateCompletions reasons={allReasons.filter(r => r.type === "LATE_COMPLETION")} />
+                <BlockedReasons reasons={allReasons.filter(r => r.type === "BLOCKED")} />
             </div>
         </div>
     );
@@ -133,25 +142,15 @@ const CATEGORY_LABELS: Record<string, string> = {
     OTHER: "Other",
 };
 
-function LateCompletions({ piTitle }: { piTitle: string }) {
-    const [lateCompletions, setLateCompletions] = useState<ModificationReason[]>([]);
+const formatDate = (ts: number) =>
+    new Date(ts).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 
-    useEffect(() => {
-        if (!piTitle) return;
-        const service = new ModificationReasonService();
-        service.getByPiRef(piTitle).then(reasons => {
-            setLateCompletions(reasons.filter(r => r.type === "LATE_COMPLETION"));
-        });
-    }, [piTitle]);
-
-    const formatDate = (ts: number) =>
-        new Date(ts).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
-
+function LateCompletions({ reasons }: { reasons: ModificationReason[] }) {
     return (
         <div>
             <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-1">Late Completions</h3>
-            <p className="text-xs text-gray-400 mb-3">{lateCompletions.length} late completion{lateCompletions.length !== 1 ? "s" : ""} recorded</p>
-            {lateCompletions.length === 0 ? (
+            <p className="text-xs text-gray-400 mb-3">{reasons.length} late completion{reasons.length !== 1 ? "s" : ""} recorded</p>
+            {reasons.length === 0 ? (
                 <p className="text-sm text-gray-500 italic">No late completions recorded.</p>
             ) : (
                 <div className="border rounded-lg overflow-hidden">
@@ -167,12 +166,49 @@ function LateCompletions({ piTitle }: { piTitle: string }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {lateCompletions.map((r, i) => (
+                            {reasons.map((r, i) => (
                                 <tr key={i} className="border-t">
                                     <td className="px-4 py-2 font-mono text-xs text-gray-700">{r.jiraKey}</td>
                                     <td className="px-4 py-2 text-gray-700 max-w-xs truncate">{r.reason}</td>
                                     <td className="px-4 py-2 text-gray-600">{r.category ? CATEGORY_LABELS[r.category] ?? r.category : "—"}</td>
                                     <td className="px-4 py-2 text-gray-600">{r.previousValue ?? "—"}</td>
+                                    <td className="px-4 py-2 text-gray-600">{r.activeSprint ?? "—"}</td>
+                                    <td className="px-4 py-2 text-gray-500 text-xs">{r.timestamp ? formatDate(r.timestamp) : "—"}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+        </div>
+    );
+}
+
+function BlockedReasons({ reasons }: { reasons: ModificationReason[] }) {
+    return (
+        <div>
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-1">Blocked Reasons</h3>
+            <p className="text-xs text-gray-400 mb-3">{reasons.length} blocked item{reasons.length !== 1 ? "s" : ""} recorded</p>
+            {reasons.length === 0 ? (
+                <p className="text-sm text-gray-500 italic">No blocked items recorded.</p>
+            ) : (
+                <div className="border rounded-lg overflow-hidden">
+                    <table className="w-full text-sm">
+                        <thead className="bg-gray-50">
+                            <tr>
+                                <th className="text-left px-4 py-2 font-semibold text-gray-600">Jira Key</th>
+                                <th className="text-left px-4 py-2 font-semibold text-gray-600">Reason</th>
+                                <th className="text-left px-4 py-2 font-semibold text-gray-600">Category</th>
+                                <th className="text-left px-4 py-2 font-semibold text-gray-600">Sprint When Blocked</th>
+                                <th className="text-left px-4 py-2 font-semibold text-gray-600">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {reasons.map((r, i) => (
+                                <tr key={i} className="border-t">
+                                    <td className="px-4 py-2 font-mono text-xs text-gray-700">{r.jiraKey}</td>
+                                    <td className="px-4 py-2 text-gray-700 max-w-xs truncate">{r.reason}</td>
+                                    <td className="px-4 py-2 text-gray-600">{r.category ? CATEGORY_LABELS[r.category] ?? r.category : "—"}</td>
                                     <td className="px-4 py-2 text-gray-600">{r.activeSprint ?? "—"}</td>
                                     <td className="px-4 py-2 text-gray-500 text-xs">{r.timestamp ? formatDate(r.timestamp) : "—"}</td>
                                 </tr>

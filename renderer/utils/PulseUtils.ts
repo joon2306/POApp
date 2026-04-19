@@ -55,6 +55,10 @@ class StateMapper {
         }
 
         if (this.feature.userStories.length === 0 && this.feature.completedStories.length > 0) {
+            // Active dependencies remain — feature cannot be considered complete
+            if (this.feature.dependencies.length > 0) {
+                return "INCONSISTENT";
+            }
             return "COMPLETED";
         }
 

@@ -122,6 +122,7 @@ export default function Kanban({ calculateHeight, type, selectedFeature }: {
 }) {
     const isTodo = type === "TODO";
     const isUserStory = type === "USER_STORY";
+    const isDependency = type === "DEPENDENCY";
     const kanbanService = KanbanFactory.of(type).setComms(new CommsService()).setSelectedFeature(selectedFeature).build();
 
     const { handleDragStart, handleDrop, kanbanCards, updateHeight, deleteCard, saveCard, modifyCard, loadData, resolveDropData, executeDrop } = useKanban(kanbanService, type);
@@ -150,7 +151,7 @@ export default function Kanban({ calculateHeight, type, selectedFeature }: {
 
     // Wrapped handleDrop that intercepts On Hold drops for user stories
     const wrappedHandleDrop = (status: number) => {
-        if (isUserStory && +status === 3) {
+        if ((isUserStory || isDependency) && +status === 3) {
             // On Hold drop — ask for reason
             const dropData = resolveDropData(status);
             if (!dropData) {
@@ -170,8 +171,9 @@ export default function Kanban({ calculateHeight, type, selectedFeature }: {
                 modalService.closeModal();
             };
 
+            const itemLabel = isUserStory ? "user story" : "dependency";
             const modal = getReasonModal(
-                "Why is this user story being blocked?",
+                `Why is this ${itemLabel} being blocked?`,
                 modalService,
                 onConfirm
             );
