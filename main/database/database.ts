@@ -9,6 +9,7 @@ const TABLE_VAULT_ITEMS = "vault_items";
 const TABLE_PI_ITEMS = "pi_items";
 const TABLE_JIRA_ITEMS = "jira_items";
 const TABLE_TIME_TRACKER_ITEMS = "time_tracker_items";
+const TABLE_MODIFICATION_REASONS = "modification_reasons";
 
 let db: Database = null;
 export default function getDatabase() {
@@ -41,6 +42,22 @@ export default function getDatabase() {
 
         const createTimeTrackerTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_TIME_TRACKER_ITEMS} (date TEXT PRIMARY KEY)`);
         createTimeTrackerTbl.run();
+
+        const createModificationReasonsTbl = db.prepare(
+            `CREATE TABLE IF NOT EXISTS ${TABLE_MODIFICATION_REASONS} (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                jiraKey TEXT NOT NULL,
+                reason TEXT NOT NULL,
+                category TEXT,
+                type TEXT NOT NULL,
+                previousValue TEXT,
+                newValue TEXT,
+                activeSprint TEXT,
+                timestamp INTEGER NOT NULL,
+                piRef TEXT NOT NULL
+            )`
+        );
+        createModificationReasonsTbl.run();
     }
 
 
@@ -59,4 +76,4 @@ export default function getDatabase() {
 
 
 
-export { TABLE_KANBAN_ITEMS, TABLE_PRODUCTIVITY_ITEMS, TABLE_VAULT_ITEMS, TABLE_PI_ITEMS, TABLE_JIRA_ITEMS, TABLE_TIME_TRACKER_ITEMS };
+export { TABLE_KANBAN_ITEMS, TABLE_PRODUCTIVITY_ITEMS, TABLE_VAULT_ITEMS, TABLE_PI_ITEMS, TABLE_JIRA_ITEMS, TABLE_TIME_TRACKER_ITEMS, TABLE_MODIFICATION_REASONS };

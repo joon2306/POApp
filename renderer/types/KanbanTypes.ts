@@ -18,7 +18,7 @@ export type HeaderSwimLane = {
   updateHeight: number,
   deleteCard: (id: string) => void,
   saveCard: (arg: KanbanFormValue) => void,
-  modifyCard: (arg: KanbanFormValue) => void,
+  modifyCard: (arg: KanbanFormValue, originalTarget?: number) => void,
   modalService: IModalService,
   type: KanbanType,
   selectedFeature: SelectedFeature,
@@ -41,7 +41,7 @@ export type KanbanResponse<T> = {
 export interface KanbanCardProp extends KanbanCardType {
   setActiveCard: (value: string) => void,
   deleteCard: (id: string) => void,
-  modifyCard: (arg: KanbanFormValue) => void,
+  modifyCard: (arg: KanbanFormValue, originalTarget?: number) => void,
   modalService: IModalService,
   type: KanbanType,
   selectedFeature: SelectedFeature

@@ -112,10 +112,10 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
                 return [activeSprint, pi.title];
             })
                 .then(([activeSprint, piTitle]: [Sprint | "Inactive", PiTitle]) => {
-                    if (activeSprint === "Inactive") {
+                    if (!piTitle) {
                         return [];
                     }
-                    return pulseService.getAll(activeSprint, piTitle)
+                    return pulseService.getAll(activeSprint as Sprint, piTitle)
                 })
                 .then(response => {
                     if (search !== "") {

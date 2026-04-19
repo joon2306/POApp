@@ -183,6 +183,7 @@ function PulseCard({ handleChange, piTitle, setShow, deletePulse, setRoute, setS
     useInsert({ isHovered, callback: insertCallback, args: [] });
     useDelete({ isHovered, callback: deleteCallback, arg: null });
     useKeyboard({ isHovered, callback: () => changeRoute(ROUTES.DEPENDENCY), keyInput: "d" });
+    useKeyboard({ isHovered, callback: () => changeRoute(ROUTES.COMPLETED_STORIES), keyInput: "c" });
 
     const state = StateColors[pulse.state];
 

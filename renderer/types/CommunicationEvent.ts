@@ -1,5 +1,3 @@
-import { get } from "http";
-
 const CommunicationEvents = Object.freeze({
     getTodoKanbanCards: "todo-cards",
     saveTodoKanbanCard: "save-todo-card",
@@ -27,7 +25,9 @@ const CommunicationEvents = Object.freeze({
     deleteJira: "deleteJira",
     getJiraByPi: "getJiraByPi",
     getJiraByFeature: "getJiraByFeature",
-    completeJira: "completeJira"
+    completeJira: "completeJira",
+    saveModificationReason: "saveModificationReason",
+    getModificationReasonsByPi: "getModificationReasonsByPi"
 });
 
 export default CommunicationEvents;

@@ -26,11 +26,17 @@ export const SPRINT_OPTIONS = [
 ]
 
 
+export type CompletedStory = {
+    jiraKey: JiraKey;
+    title: string;
+    target: target;
+}
+
 export type Feature = {
     title: string;
     target: target;
     featureKey: JiraKey;
     userStories: Array<JiraTicket>;
     dependencies: Array<JiraTicket>;
-    completedStories: Array<JiraKey>;
+    completedStories: Array<CompletedStory>;
 }

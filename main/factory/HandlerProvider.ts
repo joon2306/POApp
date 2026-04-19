@@ -1,6 +1,7 @@
 import CopyHandler from "../Handlers/CopyHandler";
 import Handler from "../Handlers/Handler";
 import JiraHandler from "../Handlers/JiraHandler";
+import ModificationReasonHandler from "../Handlers/ModificationReasonHandler";
 import PiHandler from "../Handlers/PiHandler";
 import ProductivityHandler from "../Handlers/ProductivityHandler";
 import TodoKanbanHandler from "../Handlers/TodoKanbanHandler";
@@ -68,7 +69,7 @@ export default class HandlerProvider implements IProvider<IHandlerProviderRespon
 
     provide(): IHandlerProviderResponse {
         const { kanbanDbService, commsService, productivityService, copyService, tokenGeneratorService,
-            vaultDbService, piDbService, jiraDbService, timeTrackerService } = this.#serviceManagerProvider.provide();
+            vaultDbService, piDbService, jiraDbService, timeTrackerService, modificationReasonDbService } = this.#serviceManagerProvider.provide();
         const kanbanHandler = new TodoKanbanHandler(kanbanDbService, commsService, productivityService);
         const productivityHandler = new ProductivityHandler(productivityService, commsService, kanbanDbService, timeTrackerService);
         const copyHandler = new CopyHandler(copyService, commsService);
@@ -76,8 +77,9 @@ export default class HandlerProvider implements IProvider<IHandlerProviderRespon
         const vaultHandler = new VaultHandler(commsService, vaultDbService);
         const piHandler = new PiHandler(commsService, piDbService, jiraDbService);
         const jiraHandler = new JiraHandler(commsService, jiraDbService);
+        const modificationReasonHandler = new ModificationReasonHandler(commsService, modificationReasonDbService);
         return new HandlerProviderResponse([kanbanHandler, productivityHandler, copyHandler, tokenHandler,
-            vaultHandler, piHandler, jiraHandler]);
+            vaultHandler, piHandler, jiraHandler, modificationReasonHandler]);
     }
 
 }

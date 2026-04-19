@@ -227,3 +227,391 @@ PO_APP/
 6. **Search**: Filters features by key, title, or sprint target.
 7. **Completion Flow**: When a US is "deleted" from the kanban, it's set to `COMPLETED` status (status=4) in `jira_items` via `completeJira` event (calls `JiraDbService.setIncomplete` — misleading name, actually sets to COMPLETED). Completed stories appear in `PulseService.getAll()` as `completedStories` array on the Feature.
 
+````
+implementation plan to solve problem about pulse board described above:
+
+PulseBoard Enhancements — Solution Design
+Three features to make the PulseBoard usable: (1) reason tracking on US modifications, (2) a retrospective dashboard, and (3) a view for completed user stories.
+
+Feature 1: Modification Reason Tracking
+Triggers that require a reason
+Trigger	Condition	Type
+Sprint target change	US is modified and 
+target
+ value changed	TARGET_CHANGE
+Blocked	US is dragged to On Hold (status 3)	BLOCKED
+Late completion	US is completed (deleted) and activeSprint > target	LATE_COMPLETION
+Backend Changes
+[NEW] 
+ModificationReason.ts
+typescript
+export type ModificationReasonType = 'TARGET_CHANGE' | 'BLOCKED' | 'LATE_COMPLETION';
+export type ModificationReasonCategory =
+  | 'SCOPE_CHANGE'
+  | 'DEPENDENCY_BLOCKED'
+  | 'UNDERESTIMATED'
+  | 'RESOURCE_ISSUE'
+  | 'REQUIREMENT_CHANGE'
+  | 'OTHER';
+export type ModificationReasonItem = {
+  id?: number;
+  jiraKey: string;
+  reason: string;
+  category?: ModificationReasonCategory;
+  type: ModificationReasonType;
+  previousValue?: string;
+  newValue?: string;
+  activeSprint?: string;
+  timestamp: number;
+  piRef: string;
+}
+[MODIFY] 
+database.ts
+Add new table constant + creation:
+
+typescript
+const TABLE_MODIFICATION_REASONS = "modification_reasons";
+// Inside createTables():
+const createModificationReasonsTbl = db.prepare(
+  `CREATE TABLE IF NOT EXISTS ${TABLE_MODIFICATION_REASONS} (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    jiraKey TEXT NOT NULL,
+    reason TEXT NOT NULL,
+    category TEXT,
+    type TEXT NOT NULL,
+    previousValue TEXT,
+    newValue TEXT,
+    activeSprint TEXT,
+    timestamp INTEGER NOT NULL,
+    piRef TEXT NOT NULL
+  )`
+);
+createModificationReasonsTbl.run();
+// Export:
+export { ..., TABLE_MODIFICATION_REASONS };
+[NEW] 
+IModificationReasonDbService.ts
+typescript
+import GenericResponse from "../model/GenericResponse";
+import { ModificationReasonItem } from "../model/ModificationReason";
+export default interface IModificationReasonDbService {
+  create(item: ModificationReasonItem): GenericResponse<string>;
+  getByPiRef(piRef: string): GenericResponse<ModificationReasonItem[]>;
+}
+[NEW] 
+ModificationReasonDbService.ts
+Singleton service implementing IModificationReasonDbService. Uses better-sqlite3 with TABLE_MODIFICATION_REASONS. Follows the same 
+GenericResponse
+ pattern as existing services.
+
+[NEW] 
+ModificationReasonHandler.ts
+New handler implementing 
+Handler
+. Registers two IPC listeners:
+
+saveModificationReason → calls 
+create()
+getModificationReasonsByPi → calls 
+getByPiRef()
+[MODIFY] 
+ServiceManagerProvider.ts
+Add modificationReasonDbService: IModificationReasonDbService to the 
+ServiceManagerProviderType
+ and instantiate ModificationReasonDbService in 
+provide()
+.
+
+[MODIFY] 
+HandlerProvider.ts
+Instantiate ModificationReasonHandler with the new service and add it to the handlers array.
+
+Frontend Changes
+[MODIFY] 
+CommunicationEvent.ts
+Add two new events:
+
+typescript
+saveModificationReason: "saveModificationReason",
+getModificationReasonsByPi: "getModificationReasonsByPi",
+[NEW] 
+ModificationReason.ts
+typescript
+export type ModificationReasonType = 'TARGET_CHANGE' | 'BLOCKED' | 'LATE_COMPLETION';
+export type ModificationReasonCategory =
+  | 'SCOPE_CHANGE'
+  | 'DEPENDENCY_BLOCKED'
+  | 'UNDERESTIMATED'
+  | 'RESOURCE_ISSUE'
+  | 'REQUIREMENT_CHANGE'
+  | 'OTHER';
+export const REASON_CATEGORIES = [
+  { value: 'SCOPE_CHANGE', label: 'Scope Change' },
+  { value: 'DEPENDENCY_BLOCKED', label: 'Dependency Took Too Long' },
+  { value: 'UNDERESTIMATED', label: 'Underestimated Complexity' },
+  { value: 'RESOURCE_ISSUE', label: 'Resource Issue' },
+  { value: 'REQUIREMENT_CHANGE', label: 'Requirement Change' },
+  { value: 'OTHER', label: 'Other' },
+];
+export type ModificationReason = {
+  jiraKey: string;
+  reason: string;
+  category?: ModificationReasonCategory;
+  type: ModificationReasonType;
+  previousValue?: string;
+  newValue?: string;
+  activeSprint?: string;
+  piRef: string;
+}
+[NEW] 
+IModificationReasonService.ts
+typescript
+import { ModificationReason } from "../types/ModificationReason";
+export default interface IModificationReasonService {
+  save(reason: ModificationReason): void;
+  getByPiRef(piRef: string): Promise<ModificationReason[]>;
+}
+[NEW] 
+ModificationReasonService.ts
+Singleton service using 
+CommsService
+ to send/receive via the two new IPC events.
+
+[NEW] 
+ReasonModal.tsx
+A reusable React component rendered inside the global modal. Contains:
+
+A title describing why the reason is being asked (e.g., "Why is the sprint target changing?")
+A textarea for free-text reason (required)
+A dropdown for optional category (from REASON_CATEGORIES)
+Internal state management, calls onConfirm(reason, category) callback on submit
+typescript
+type ReasonModalProps = {
+  title: string;
+  onConfirm: (reason: string, category?: ModificationReasonCategory) => void;
+}
+[MODIFY] 
+Kanban.tsx
+Three interception points (only when type === "USER_STORY"):
+
+1. Sprint target change on modify: In 
+KanbanCard
+, the 
+handleSave
+ callback compares kanbanFormValue.target (old) with the new 
+target
+. If different, instead of calling 
+modifyCard
+ directly, it opens a ReasonModal via modalService. On confirm, it saves the reason via ModificationReasonService then calls 
+modifyCard
+.
+
+2. Drop to On Hold: In useKanban.handleDrop, when status === 3 and current type is USER_STORY, the drop needs to trigger a reason modal. Since 
+useKanban
+ doesn't have modal access, we'll lift the On Hold interception into 
+Kanban.tsx
+ by passing a wrapped 
+handleDrop
+ to the swim lanes. The wrapper checks if the target status is On Hold, shows ReasonModal, and on confirm saves reason + proceeds.
+
+3. Late completion: In 
+KanbanCard
+, the existing delete flow (via useKanbanCard → hover + Delete key) will be enhanced. When type === "USER_STORY", before calling 
+deleteCard
+, we check if activeSprint > card.target (using selectedFeature.activeSprint and 
+SprintMapper
+). If late, show ReasonModal. On confirm, save reason + call 
+deleteCard
+.
+
+[MODIFY] 
+useKanban.ts
+Modify 
+handleDrop
+ to accept an optional callback parameter so that 
+Kanban.tsx
+ can intercept and inject the reason modal before proceeding. Alternatively, expose activeCard state and the raw drop logic so the component can wrap it.
+
+Feature 2: Retrospective Dashboard
+Frontend Changes
+[NEW] 
+PulseDashboard.tsx
+A dashboard section rendered below the feature cards grid in 
+PulseBoard.tsx
+ → 
+Body
+ component.
+
+IMPORTANT
+
+The dashboard receives the full unfiltered pulses array — the search filter must NOT affect this section.
+
+Displays:
+
+Feature Health Summary: counts of features by state (On Track / Completed / Behind Schedule / Blocked)
+Late Completions: count of late-completed US + list of recent reasons
+Sprint Progress: simple table/bar showing US completed vs total per sprint
+Props:
+
+typescript
+type PulseDashboardProps = {
+  pulses: Pulse[];          // always the full unfiltered list
+  activeSprint: Sprint;
+  piTitle: string;
+}
+Health summary data is derived from already-available pulses array (state is already computed). Late completion data requires fetching modification reasons via ModificationReasonService.getByPiRef().
+
+[MODIFY] 
+PulseBoard.tsx
+Add <PulseDashboard> at the end of the 
+Body
+ component, after the feature cards grid. Only rendered when piTitle exists. Crucially, the component receives all pulses (not the search-filtered subset). The 
+Body
+ component will maintain a separate allPulses state alongside the search-filtered pulses.
+
+Feature 3: View Completed User Stories
+Type Changes
+[MODIFY] 
+Feature.ts
+Add a new type and change completedStories:
+
+typescript
+export type CompletedStory = {
+  jiraKey: JiraKey;
+  title: string;
+  target: target;
+}
+export type Feature = {
+  title: string;
+  target: target;
+  featureKey: JiraKey;
+  userStories: Array<JiraTicket>;
+  dependencies: Array<JiraTicket>;
+  completedStories: Array<CompletedStory>;  // Changed from Array<JiraKey>
+}
+Service Changes
+[MODIFY] 
+PulseService.ts
+In 
+getAll()
+, change the completedStories mapping from:
+
+typescript
+completedStories: userStories
+  .filter(s => s.status === JIRA_STATUS.COMPLETED && s.featureRef === feature.jiraKey)
+  .map(s => s.jiraKey)
+to:
+
+typescript
+completedStories: userStories
+  .filter(s => s.status === JIRA_STATUS.COMPLETED && s.featureRef === feature.jiraKey)
+  .map(s => ({ jiraKey: s.jiraKey, title: s.title, target: s.target }))
+Routing & Component Changes
+[MODIFY] 
+PulseRouter.tsx
+Add a new route for completed stories:
+
+typescript
+export const ROUTES = {
+    DEFAULT: 0,
+    USER_STORY: 1,
+    DEPENDENCY: 2,
+    COMPLETED_STORIES: 3   // NEW
+}
+Add routing case:
+
+typescript
+{route === ROUTES.COMPLETED_STORIES &&
+  <CompletedStories selectedFeature={selectedFeature} />}
+[NEW] 
+CompletedStories.tsx
+A full-screen list/table view (not a kanban, not a modal) showing all completed user stories for a feature. Navigated to via 
+PulseRouter
+ when "c" is pressed.
+
+Props:
+
+typescript
+type CompletedStoriesProps = {
+  selectedFeature: SelectedFeature;
+}
+Fetches completed stories via CommsService.sendRequest(getJiraByFeature, USER_STORY, featureRef) and filters for status COMPLETED. Displays a styled table with columns: Jira Key, Title, Target Sprint.
+
+[MODIFY] 
+PulseBoard.tsx
+In 
+PulseCard
+, add a useKeyboard hook for "c" key that navigates to the completed stories route:
+
+typescript
+useKeyboard({
+  isHovered,
+  callback: () => changeRoute(ROUTES.COMPLETED_STORIES),
+  keyInput: "c"
+});
+[MODIFY] 
+PulseUtils.ts
+ (minor)
+No actual code change needed — pulse.completedStories.length still works with CompletedStory[] instead of JiraKey[]. Noting for awareness.
+
+Summary of All File Changes
+Action	File	Feature
+NEW	main/model/ModificationReason.ts	F1
+MODIFY	
+main/database/database.ts
+F1
+NEW	main/service/IModificationReasonDbService.ts	F1
+NEW	main/service/impl/ModificationReasonDbService.ts	F1
+NEW	main/Handlers/ModificationReasonHandler.ts	F1
+MODIFY	
+main/factory/ServiceManagerProvider.ts
+F1
+MODIFY	
+main/factory/HandlerProvider.ts
+F1
+MODIFY	
+renderer/types/CommunicationEvent.ts
+F1
+NEW	renderer/types/ModificationReason.ts	F1
+NEW	renderer/services/IModificationReasonService.ts	F1
+NEW	renderer/services/impl/ModificationReasonService.ts	F1
+NEW	renderer/components/ReasonModal.tsx	F1
+MODIFY	
+renderer/components/Kanban.tsx
+F1
+MODIFY	
+renderer/hooks/useKanban.ts
+F1
+NEW	renderer/components/PulseBoard/PulseDashboard.tsx	F2
+MODIFY	
+renderer/components/PulseBoard/PulseBoard.tsx
+F2, F3
+MODIFY	
+renderer/types/Feature/Feature.ts
+F3
+MODIFY	
+renderer/services/impl/PulseService.ts
+F3
+MODIFY	
+renderer/components/PulseBoard/PulseRouter.tsx
+F3
+NEW	renderer/components/PulseBoard/CompletedStories.tsx	F3
+Verification Plan
+Manual Testing
+Since this is an Electron desktop app with no existing tests for these areas, manual testing via npm run dev is the primary verification method.
+
+Pre-condition: Run npm run dev to start the app. Create or use an existing PI with features and user stories.
+
+Feature 1 — Reason tracking
+Open a feature's US kanban. Create a US with target Sprint 1.
+Sprint target change: Double-click the US → change target to Sprint 3 → on submit, a reason modal should appear asking "Why is the sprint target changing?". Enter a reason + select a category → confirm. Verify the US target updates and no errors in console.
+Block (On Hold): Drag the US to On Hold → a reason modal should appear asking "Why is this user story being blocked?". Enter reason → confirm. Verify card moves to On Hold.
+Late completion: Ensure the active sprint is beyond the US's target sprint (e.g., active Sprint 3, US target Sprint 1). Delete the US → a reason modal should appear asking "Why was this user story completed late?". Enter reason → confirm. Verify the US is completed.
+Feature 2 — Retrospective Dashboard
+On the PulseBoard, ensure a PI is active with features. Below the feature cards grid, a dashboard section should appear.
+Verify it shows counts: features on track, behind schedule, blocked, completed.
+Add some modification reasons (from Feature 1 testing). Verify late completions count updates.
+Feature 3 — Completed User Stories
+Complete a few user stories (delete them from kanban).
+Go back to PulseBoard. Hover over the feature card and press "C".
+The app should navigate to a full-screen list view showing completed stories with their Jira key, title, and original target sprint (not a modal, not a kanban — a dedicated routed view).

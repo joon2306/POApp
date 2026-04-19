@@ -30,17 +30,14 @@ export const useKanban = (kanbanService: IKanbanService, type: KanbanType) => {
         return [Number(first), rest];
     }
 
-
-    const handleDrop = (status: number) => {
-        setUpdateHeight(updateHeight + 1);
+    const resolveDropData = (status: number): { selectedCard: KanbanCardType; previousStatus: number } | null => {
         if (!activeCard) {
-            return;
+            return null;
         }
 
-
-        const [cardStatus, cardId] = extractParts(activeCard)
+        const [cardStatus, cardId] = extractParts(activeCard);
         if (cardStatus === status) {
-            return;
+            return null;
         }
         const selectedCard = kanbanCards.find(card => {
             if (!isTodo) {
@@ -49,11 +46,26 @@ export const useKanban = (kanbanService: IKanbanService, type: KanbanType) => {
             return +card.id === +cardId;
         });
         if (!selectedCard) {
+            return null;
+        }
+        return { selectedCard, previousStatus: cardStatus };
+    };
+
+    const handleDrop = (status: number) => {
+        setUpdateHeight(updateHeight + 1);
+        const dropData = resolveDropData(status);
+        if (!dropData) {
             return;
         }
-        selectedCard.status = +status as unknown as KanbanStatus;
-        kanbanService.modifyKanbanCard(selectedCard, selectedCard.status);
 
+        dropData.selectedCard.status = +status as unknown as KanbanStatus;
+        kanbanService.modifyKanbanCard(dropData.selectedCard, dropData.selectedCard.status);
+    }
+
+    const executeDrop = (status: number, card: KanbanCardType) => {
+        setUpdateHeight(updateHeight + 1);
+        card.status = +status as unknown as KanbanStatus;
+        kanbanService.modifyKanbanCard(card, card.status);
     }
 
     const handleDragStart = (cardId: string) => {
@@ -89,6 +101,6 @@ export const useKanban = (kanbanService: IKanbanService, type: KanbanType) => {
 
 
 
-    return { handleDrop, handleDragStart, kanbanCards, updateHeight, deleteCard, saveCard, modifyCard, loadData };
+    return { handleDrop, handleDragStart, kanbanCards, updateHeight, deleteCard, saveCard, modifyCard, loadData, resolveDropData, executeDrop };
 
 }

@@ -37,9 +37,9 @@ export const getTagColors = (type: KanbanType, priority: PriorityLevel,
         }
     }
 
-    const activeSprintTarget = SPRINT_OPTIONS.find(option => option.label === activeSprint).value;
+    const activeSprintTarget = SPRINT_OPTIONS.find(option => option.label === activeSprint)?.value;
     if (!activeSprintTarget) {
-        return "critical";
+        return "low";
     }
 
     if (sprintTarget === activeSprintTarget) {

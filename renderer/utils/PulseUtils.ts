@@ -6,7 +6,7 @@ type FeatureTarget = Pulse["target"];
 
 export type Sprint = "Sprint 1" | "Sprint 2" | "Sprint 3" | "Sprint 4" | "Sprint 5" | "Sprint IP" | "Inactive";
 
-class SprintMapper {
+export class SprintMapper {
     public static readonly SPRINT_MAP: Record<number, Sprint> = {
         1: "Sprint 1",
         2: "Sprint 2",
@@ -20,6 +20,15 @@ class SprintMapper {
 
     getSprint(): Sprint {
         return SprintMapper.SPRINT_MAP[this.featureTarget];
+    }
+
+    static toNumber(sprint: Sprint): number {
+        const entry = Object.entries(SprintMapper.SPRINT_MAP).find(([_, value]) => value === sprint);
+        return entry ? parseInt(entry[0]) : 0;
+    }
+
+    static toString(sprint: Sprint): string {
+        return sprint;
     }
 
 }

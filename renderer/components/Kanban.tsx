@@ -16,6 +16,10 @@ import { SelectedFeature } from "./PulseBoard/PulseRouter";
 import CommsService from "../services/impl/CommsService";
 import { Feature, SPRINT_OPTIONS } from "../types/Feature/Feature";
 import { LocalTime } from "../utils/LocalTime";
+import ReasonModal from "./ReasonModal";
+import ModificationReasonService from "../services/impl/ModificationReasonService";
+import { ModificationReasonCategory, ModificationReasonType } from "../types/ModificationReason";
+import { SprintMapper } from "../utils/PulseUtils";
 
 export const COLOR_CONFIG: Record<string, { color: string, textColor: string }> = {
     low: {
@@ -78,17 +82,52 @@ const showErrorModal = (errorMessage: string, modalService: IModalService): Moda
 
 }
 
+const getReasonModal = (
+    title: string,
+    modalService: IModalService,
+    onConfirm: (reason: string, category?: ModificationReasonCategory) => void
+): ModalType => {
+    return {
+        title: "Reason Required",
+        content: <ReasonModal title={title} onConfirm={onConfirm} />,
+        buttons: [
+            {
+                label: "Cancel",
+                onClick: modalService.closeModal,
+                variant: "secondary"
+            },
+            {
+                label: "Confirm",
+                onClick: () => {
+                    const form = document.querySelector('form');
+                    if (form) {
+                        form.requestSubmit();
+                    } else {
+                        // Trigger confirm via the ReasonModal's internal submit
+                        const confirmBtn = document.querySelector('[data-reason-confirm]') as HTMLButtonElement;
+                        if (confirmBtn) confirmBtn.click();
+                    }
+                },
+                variant: "primary"
+            }
+        ],
+        closeOnBackdrop: false
+    };
+}
+
 
 export default function Kanban({ calculateHeight, type, selectedFeature }: {
     calculateHeight: () => number; type: KanbanType,
     selectedFeature?: SelectedFeature
 }) {
     const isTodo = type === "TODO";
+    const isUserStory = type === "USER_STORY";
     const kanbanService = KanbanFactory.of(type).setComms(new CommsService()).setSelectedFeature(selectedFeature).build();
 
-    const { handleDragStart, handleDrop, kanbanCards, updateHeight, deleteCard, saveCard, modifyCard, loadData } = useKanban(kanbanService, type);
+    const { handleDragStart, handleDrop, kanbanCards, updateHeight, deleteCard, saveCard, modifyCard, loadData, resolveDropData, executeDrop } = useKanban(kanbanService, type);
     const modalService = useModalService();
     const mediator = useMemo(() => new Mediator(), []);
+    const modificationReasonService = useMemo(() => new ModificationReasonService(), []);
 
     useEffect(() => {
         const unsubscribe = mediator.subscribe(MediatorEvents.GENERIC_KANBAN_ERROR, (errorMessage: string) => {
@@ -107,7 +146,116 @@ export default function Kanban({ calculateHeight, type, selectedFeature }: {
                 updateCardsUnsubscribe.unsubscribe();
             }
         }
-    }, [mediator, modalService])
+    }, [mediator])
+
+    // Wrapped handleDrop that intercepts On Hold drops for user stories
+    const wrappedHandleDrop = (status: number) => {
+        if (isUserStory && +status === 3) {
+            // On Hold drop — ask for reason
+            const dropData = resolveDropData(status);
+            if (!dropData) {
+                return;
+            }
+
+            const onConfirm = (reason: string, category?: ModificationReasonCategory) => {
+                modificationReasonService.save({
+                    jiraKey: dropData.selectedCard.title,
+                    reason,
+                    category,
+                    type: 'BLOCKED' as ModificationReasonType,
+                    activeSprint: selectedFeature?.activeSprint ? SprintMapper.toString(selectedFeature.activeSprint) : undefined,
+                    piRef: selectedFeature?.piRef || ""
+                });
+                executeDrop(status, dropData.selectedCard);
+                modalService.closeModal();
+            };
+
+            const modal = getReasonModal(
+                "Why is this user story being blocked?",
+                modalService,
+                onConfirm
+            );
+            modalService.openModal(modal);
+        } else {
+            handleDrop(status);
+        }
+    };
+
+    // Wrapped deleteCard that checks for late completion on user stories
+    const wrappedDeleteCard = (id: string) => {
+        if (!isUserStory) {
+            deleteCard(id);
+            return;
+        }
+
+        const card = kanbanCards.find(c => c.title === id);
+        if (!card) {
+            deleteCard(id);
+            return;
+        }
+
+        const activeSprint = selectedFeature?.activeSprint;
+        const cardTarget = card.target;
+
+        // Check if late completion: active sprint > card target sprint
+        if (activeSprint && cardTarget && SprintMapper.toNumber(activeSprint) > cardTarget) {
+            const onConfirm = (reason: string, category?: ModificationReasonCategory) => {
+                modificationReasonService.save({
+                    jiraKey: card.title,
+                    reason,
+                    category,
+                    type: 'LATE_COMPLETION' as ModificationReasonType,
+                    previousValue: SPRINT_OPTIONS[cardTarget - 1]?.label ?? `Sprint ${cardTarget}`,
+                    newValue: SprintMapper.toString(activeSprint),
+                    activeSprint: SprintMapper.toString(activeSprint),
+                    piRef: selectedFeature?.piRef || ""
+                });
+                deleteCard(id);
+                modalService.closeModal();
+            };
+
+            const modal = getReasonModal(
+                `This user story was planned for ${SPRINT_OPTIONS[cardTarget - 1]?.label ?? `Sprint ${cardTarget}`} but is being completed in ${SprintMapper.toString(activeSprint)}. Why was it completed late?`,
+                modalService,
+                onConfirm
+            );
+            modalService.openModal(modal);
+        } else {
+            deleteCard(id);
+        }
+    };
+
+    // Wrapped modifyCard that checks for sprint target changes on user stories
+    const wrappedModifyCard = (arg: KanbanFormValue, originalTarget?: number) => {
+        if (!isUserStory || originalTarget === undefined || originalTarget === arg.target) {
+            modifyCard(arg);
+            modalService.closeModal();
+            return;
+        }
+
+        // Sprint target changed — ask for reason
+        const onConfirm = (reason: string, category?: ModificationReasonCategory) => {
+            modificationReasonService.save({
+                jiraKey: arg.id as string,
+                reason,
+                category,
+                type: 'TARGET_CHANGE' as ModificationReasonType,
+                previousValue: SPRINT_OPTIONS[originalTarget - 1]?.label ?? `Sprint ${originalTarget}`,
+                newValue: SPRINT_OPTIONS[(arg.target as number) - 1]?.label ?? `Sprint ${arg.target}`,
+                activeSprint: selectedFeature?.activeSprint ? SprintMapper.toString(selectedFeature.activeSprint) : undefined,
+                piRef: selectedFeature?.piRef || ""
+            });
+            modifyCard(arg);
+            modalService.closeModal();
+        };
+
+        const modal = getReasonModal(
+            `Why is the sprint target changing from ${SPRINT_OPTIONS[originalTarget - 1]?.label ?? `Sprint ${originalTarget}`} to ${SPRINT_OPTIONS[(arg.target as number) - 1]?.label ?? `Sprint ${arg.target}`}?`,
+            modalService,
+            onConfirm
+        );
+        modalService.openModal(modal);
+    };
 
     return <>
 
@@ -121,12 +269,12 @@ export default function Kanban({ calculateHeight, type, selectedFeature }: {
                         status={k as unknown as KanbanStatus}
                         cards={kanbanCards}
                         setActiveCard={handleDragStart}
-                        onDrop={handleDrop}
+                        onDrop={wrappedHandleDrop}
                         updateHeight={updateHeight}
                         calculateHeight={calculateHeight}
-                        deleteCard={deleteCard}
+                        deleteCard={wrappedDeleteCard}
                         saveCard={saveCard}
-                        modifyCard={modifyCard}
+                        modifyCard={wrappedModifyCard}
                         modalService={modalService}
                         type={type}
                         selectedFeature={selectedFeature}
@@ -198,9 +346,9 @@ function KanbanCard({ title, description, priority, status, setActiveCard, id, d
 
     const { setIsHovered } = useKanbanCard(deleteCard, id);
 
-    const handleSave = ({ description, title, priority, time, target }: KanbanFormValue) => {
-        modifyCard({ description, title, priority, id, time, target });
-        modalService.closeModal();
+    const handleSave = ({ description, title: newTitle, priority, time, target: newTarget }: KanbanFormValue) => {
+        const originalTarget = target;
+        modifyCard({ description, title: newTitle, priority, id, time, target: newTarget }, originalTarget);
     }
 
     const kanbanFormValue: KanbanFormValue = {

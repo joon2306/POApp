@@ -22,6 +22,8 @@ import IJiraDbService from "../service/IJiraDbService";
 import JiraDbService from "../service/impl/JiraDbService";
 import TimeTrackerService from "../service/impl/TimeTrackerService";
 import ITimeTrackerDbService from "../service/ITimeTrackerService";
+import IModificationReasonDbService from "../service/IModificationReasonDbService";
+import ModificationReasonDbService from "../service/impl/ModificationReasonDbService";
 
 type ServiceManagerProviderType = {
     productivityService: IProductivityService;
@@ -33,6 +35,7 @@ type ServiceManagerProviderType = {
     piDbService: IPiDbService;
     jiraDbService: IJiraDbService;
     timeTrackerService: ITimeTrackerDbService;
+    modificationReasonDbService: IModificationReasonDbService;
 
 }
 
@@ -62,6 +65,7 @@ export class ServiceManagerProvider implements IProvider<ServiceManagerProviderT
         const piDbService = new PiDbService(this.#db);
         const jiraDbService = new JiraDbService(this.#db);
         const timeTrackerService = new TimeTrackerService(this.#db);
+        const modificationReasonDbService = new ModificationReasonDbService(this.#db);
 
         return {
             productivityService,
@@ -72,7 +76,8 @@ export class ServiceManagerProvider implements IProvider<ServiceManagerProviderT
             vaultDbService,
             piDbService,
             jiraDbService,
-            timeTrackerService
+            timeTrackerService,
+            modificationReasonDbService
         }
     }
 
