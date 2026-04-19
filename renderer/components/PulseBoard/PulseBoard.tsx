@@ -22,6 +22,7 @@ import { ROUTES, SelectedFeature } from "./PulseRouter";
 import useKeyboard from "../../hooks/useKeyboard";
 import Validator from "../../utils/Validator";
 import { IoSearch } from "react-icons/io5";
+import PulseDashboard from "./PulseDashboard";
 
 type Row = {
     title: string;
@@ -30,6 +31,7 @@ type Row = {
 
 type Body = {
     pulses: Pulse[];
+    allPulses: Pulse[];
     piTitle: string;
     piDate: Date;
     deletePi: () => void;
@@ -68,14 +70,14 @@ export default function PulseBoard({ setRoute, setSelectedFeature }: {
 
     const DeleteConfirmation = <>Are you sure you want to delete?</>
 
-    const { pulses, piTitle, activeSprint, deletePi, savePulse, piDate,
+    const { pulses, allPulses, piTitle, activeSprint, deletePi, savePulse, piDate,
         deletePulse, search, handleSearch }: usePulse = usePulse(pulseService, piService, DeleteConfirmation);
 
     return (
         <div className={`${piTitle ? "m-5" : "flex items-center justify-center w-full h-full"}`}>
             <Header piTitle={piTitle} activeSprint={activeSprint} />
             {piTitle && <div className="border my-5"></div>}
-            <Body pulses={pulses} savePulse={savePulse} piTitle={piTitle} deletePi={deletePi}
+            <Body pulses={pulses} allPulses={allPulses} savePulse={savePulse} piTitle={piTitle} deletePi={deletePi}
                 piDate={piDate} deletePulse={deletePulse} setRoute={setRoute} setSelectedFeature={setSelectedFeature}
                 activeSprint={activeSprint} search={search} handleSearch={handleSearch} />
         </div>
@@ -108,7 +110,7 @@ function Header({ piTitle, activeSprint }: Header) {
 
 function Body(props: Body) {
 
-    const { pulses, piTitle, deletePi, savePulse, piDate, deletePulse, setRoute, setSelectedFeature,
+    const { pulses, allPulses, piTitle, deletePi, savePulse, piDate, deletePulse, setRoute, setSelectedFeature,
         activeSprint, search, handleSearch } = props;
 
     const [show, setShow] = useState<boolean>(false);
@@ -157,6 +159,10 @@ function Body(props: Body) {
                     })
                 }
             </div>
+
+            {piTitle && (
+                <PulseDashboard pulses={allPulses} activeSprint={activeSprint} piTitle={piTitle} />
+            )}
         </div>
     )
 }

@@ -18,7 +18,7 @@ export default class ModificationReasonService implements IModificationReasonSer
     }
 
     save(reason: ModificationReason): void {
-        this.#commsService.sendRequest(CommunicationEvents.saveModificationReason, reason);
+        this.#commsService.sendRequest(CommunicationEvents.saveModificationReason, { ...reason, timestamp: Date.now() });
     }
 
     async getByPiRef(piRef: string): Promise<ModificationReason[]> {

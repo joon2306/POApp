@@ -11,6 +11,7 @@ import { PiTitle } from "../types/Feature/Pi";
 
 export type usePulse = {
     pulses: Array<Pulse>;
+    allPulses: Array<Pulse>;
     activeSprint: Sprint;
     piTitle: string;
     piDate: Date;
@@ -24,6 +25,7 @@ export type usePulse = {
 export function usePulse(pulseService: IPulseService, piService: IPiService, DeleteElement: ReactNode): usePulse {
 
     const [pulses, setPulses] = useState<Array<Pulse>>([]);
+    const [allPulses, setAllPulses] = useState<Array<Pulse>>([]);
     const [activeSprint, setActiveSprint] = useState<Sprint>("Inactive");
     const [piTitle, setPiTitle] = useState<string>("");
     const [piDate, setPiDate] = useState<Date>(null);
@@ -95,6 +97,8 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
                     pulses = filterPulses(pulses, val);
                     setPulses(pulses);
                 });
+        } else {
+            setPulses(allPulses);
         }
     }
 
@@ -118,6 +122,7 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
                     return pulseService.getAll(activeSprint as Sprint, piTitle)
                 })
                 .then(response => {
+                    setAllPulses(response);
                     if (search !== "") {
                         response = filterPulses(response, search);
                     }
@@ -133,6 +138,6 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
 
 
 
-    return { pulses, activeSprint, piTitle, piDate, deletePi, savePulse, deletePulse, search, handleSearch };
+    return { pulses, allPulses, activeSprint, piTitle, piDate, deletePi, savePulse, deletePulse, search, handleSearch };
 
 }

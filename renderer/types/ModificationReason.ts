@@ -25,5 +25,6 @@ export type ModificationReason = {
   previousValue?: string;
   newValue?: string;
   activeSprint?: string;
+  timestamp?: number;
   piRef: string;
 }
