@@ -61,6 +61,10 @@ export default class JiraDbService implements IJiraDbService {
 
     create(arg: JiraItem): GenericResponse<string> {
         try {
+            const { data: existing } = this.getByJirakey(arg.jiraKey);
+            if (existing) {
+                return this.modify({ ...arg, status: JIRA_STATUS.PENDING });
+            }
             const stmt = this.#db.prepare(`INSERT INTO ${TABLE_JIRA_ITEMS} (jiraKey, title, target, status, type, piRef, featureRef) VALUES (? , ?, ?, ?, ?, ?, ?)`);
             stmt.run(arg.jiraKey, arg.title, arg.target, arg.status, arg.type, arg.piRef, arg.featureRef);
             console.log(JiraDbService.SUCCESSFUL_MESSAGES.create);

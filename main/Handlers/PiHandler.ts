@@ -3,6 +3,7 @@ import { PiItem, PiResponse } from "../model/PiItem";
 import IJiraDbService from "../service/IJiraDbService";
 import CommsService from "../service/impl/CommsService";
 import IPiDbService from "../service/IPiDbService";
+import IModificationReasonDbService from "../service/IModificationReasonDbService";
 import Handler from "./Handler";
 
 let instance: PiHandler = null;
@@ -11,11 +12,15 @@ export default class PiHandler implements Handler {
     #commsService: CommsService;
     #dbService: IPiDbService;
     #jiraDbService: IJiraDbService;
+    #modificationReasonDbService: IModificationReasonDbService;
 
-    constructor(commsService: CommsService, dbService: IPiDbService, jiraDbService: IJiraDbService) {
+    constructor(commsService: CommsService, dbService: IPiDbService, jiraDbService: IJiraDbService, modificationReasonDbService: IModificationReasonDbService) {
         if (instance === null) {
             this.#commsService = commsService;
             this.#dbService = dbService;
+            this.#jiraDbService = jiraDbService;
+            this.#modificationReasonDbService = modificationReasonDbService;
+            instance = this;
         }
         return instance;
     }
@@ -45,7 +50,8 @@ export default class PiHandler implements Handler {
         this.#commsService.getRequest(CommunicationEvents.deletePi, ([title]: string[]) => {
             this.#dbService.delete(title);
             this.#jiraDbService.deleteByPiRef(title);
-    });
+            this.#modificationReasonDbService.deleteByPiRef(title);
+        });
     }
 
     execute() {

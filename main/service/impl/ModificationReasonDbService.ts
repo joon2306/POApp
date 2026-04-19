@@ -47,4 +47,15 @@ export default class ModificationReasonDbService implements IModificationReasonD
             return this.#emptyList;
         }
     }
+
+    deleteByPiRef(piRef: string): GenericResponse<string> {
+        try {
+            const stmt = this.#db.prepare(`DELETE FROM ${TABLE_MODIFICATION_REASONS} WHERE piRef = ?`);
+            stmt.run(piRef);
+            return { data: "successfully deleted modification reasons", error: false };
+        } catch (err) {
+            console.error("failure to delete modification reasons by piRef: ", err);
+            return { data: null, error: true };
+        }
+    }
 }
