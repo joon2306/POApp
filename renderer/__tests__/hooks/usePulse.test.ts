@@ -30,10 +30,10 @@ const makePi = (): Pi => ({
     },
 });
 
-const makePulse = (key: number, state: Pulse['state'] = 'NORMAL'): Pulse => ({
+const makePulse = (key: number, state: Pulse['state'] = 'NORMAL', target: Pulse['target'] = 1): Pulse => ({
     featureKey: `ADTCUST-${key}` as `ADTCUST-${number}`,
     title: `Feature ${key}`,
-    target: 1,
+    target,
     userStories: [],
     completedStories: [],
     dependencies: [],
@@ -103,7 +103,6 @@ describe('usePulse — allPulses', () => {
             makePulse(2),
             makePulse(3),
         ];
-        // First call (initial load) returns all 3; second call (triggered by handleSearch) also returns all 3
         mockGetAll.mockResolvedValue(fullList);
 
         const { result } = renderHook(() =>
@@ -130,6 +129,59 @@ describe('usePulse — allPulses', () => {
 
         // allPulses is still the complete list from the last full load
         expect(result.current.allPulses).toHaveLength(3);
+        expect(mockGetAll).toHaveBeenCalledTimes(1);
+    });
+
+    it('searches planned pulses when an unplanned pulse is present without throwing', async () => {
+        const fullList = [
+            makePulse(748),
+            makePulse(8311, 'NORMAL', 0),
+        ];
+        mockGetAll.mockResolvedValue(fullList);
+
+        const { result } = renderHook(() =>
+            usePulse(mockPulseService, mockPiService, deleteElement)
+        );
+        await act(async () => { });
+
+        await act(async () => {
+            result.current.handleSearch({
+                target: { value: '748' },
+            } as React.ChangeEvent<HTMLInputElement>);
+        });
+
+        expect(result.current.pulses).toHaveLength(1);
+        expect(result.current.pulses[0].featureKey).toBe('ADTCUST-748');
+    });
+
+    it('allows unplanned pulses to be searched by their displayed target label', async () => {
+        const fullList = [
+            makePulse(748),
+            makePulse(8311, 'NORMAL', 0),
+        ];
+        mockGetAll.mockResolvedValue(fullList);
+
+        const { result } = renderHook(() =>
+            usePulse(mockPulseService, mockPiService, deleteElement)
+        );
+        await act(async () => { });
+
+        await act(async () => {
+            result.current.handleSearch({
+                target: { value: 'unplanned' },
+            } as React.ChangeEvent<HTMLInputElement>);
+        });
+
+        expect(result.current.pulses).toHaveLength(1);
+        expect(result.current.pulses[0].featureKey).toBe('ADTCUST-8311');
+
+        await act(async () => {
+            result.current.handleSearch({
+                target: { value: '' },
+            } as React.ChangeEvent<HTMLInputElement>);
+        });
+
+        expect(result.current.pulses).toHaveLength(2);
     });
 
     it('allPulses is empty while no PI is active', async () => {
@@ -165,7 +217,6 @@ describe('usePulse — allPulses', () => {
                 piDate: { value: new Date().toString(), error: false, errorMessage: '' },
                 featureKey: { value: 'ADTCUST-2', error: false, errorMessage: '' },
                 featureTitle: { value: 'Feature 2', error: false, errorMessage: '' },
-                featureTarget: { value: '1', error: false, errorMessage: '' },
             });
         });
 

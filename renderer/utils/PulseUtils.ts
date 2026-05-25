@@ -5,9 +5,11 @@ import { Pulse, State } from "../types/Pulse/Pulse";
 type FeatureTarget = Pulse["target"];
 
 export type Sprint = "Sprint 1" | "Sprint 2" | "Sprint 3" | "Sprint 4" | "Sprint 5" | "Sprint IP" | "Inactive";
+type PlannedSprint = Exclude<Sprint, "Inactive">;
+export type FeatureTargetLabel = PlannedSprint | "UNPLANNED";
 
 export class SprintMapper {
-    public static readonly SPRINT_MAP: Record<number, Sprint> = {
+    public static readonly SPRINT_MAP: Record<number, PlannedSprint> = {
         1: "Sprint 1",
         2: "Sprint 2",
         3: "Sprint 3",
@@ -18,8 +20,8 @@ export class SprintMapper {
 
     constructor(private readonly featureTarget: FeatureTarget) { }
 
-    getSprint(): Sprint {
-        return SprintMapper.SPRINT_MAP[this.featureTarget];
+    getSprint(): FeatureTargetLabel {
+        return this.featureTarget === 0 ? "UNPLANNED" : SprintMapper.SPRINT_MAP[this.featureTarget];
     }
 
     static toNumber(sprint: Sprint): number {

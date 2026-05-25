@@ -84,6 +84,10 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
     }
 
     const filterPulses = (pulses: Pulse[], filterValue: string) => {
+        if (filterValue.trim() === "") {
+            return pulses;
+        }
+
         return pulses.filter(pulse => compareStr(pulse.featureKey, filterValue)
             || compareStr(pulse.title, filterValue) || compareStr(PulseUtils.getSprintTarget(pulse.target), filterValue));
     }
@@ -91,15 +95,7 @@ export function usePulse(pulseService: IPulseService, piService: IPiService, Del
     const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
         setSearch(val);
-        if (val.trim() !== "") {
-            pulseService.getAll(activeSprint, piTitle as PiTitle)
-                .then(pulses => {
-                    pulses = filterPulses(pulses, val);
-                    setPulses(pulses);
-                });
-        } else {
-            setPulses(allPulses);
-        }
+        setPulses(filterPulses(allPulses, val));
     }
 
     useEffect(() => {

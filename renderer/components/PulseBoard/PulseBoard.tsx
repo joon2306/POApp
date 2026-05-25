@@ -227,7 +227,7 @@ function Content(pulse: Pulse) {
 
             <Row title="TITLE" value={pulse.title} />
 
-            <Row title="TARGET" value={pulse.target !== 0 ? PulseUtils.getSprintTarget(pulse.target): "UNPLANNED"} /> 
+            <Row title="TARGET" value={PulseUtils.getSprintTarget(pulse.target)} />
 
             <div className="mt-5">
                 <ProgressBar color={StateColors[pulse.state].progressColor}
