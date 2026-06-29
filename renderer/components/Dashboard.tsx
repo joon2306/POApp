@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { IconType } from 'react-icons';
 import { MdOutlineViewKanban } from "react-icons/md";
+import CalendarBanner from './CalendarBanner';
 
 interface DashboardItem {
     title: string;
@@ -83,6 +84,7 @@ export default function Dashboard({ dashboardContent, activeDashboardBtn }: { da
                 </div>
 
                 <div className="flex-1 bg-white rounded-tl-[40px] rounded-bl-[40px] overflow-y-auto" ref={divRef}>
+                    <CalendarBanner />
                     {renderDashboardContent()}
                 </div>
             </div>

@@ -2,9 +2,10 @@ import path from 'path'
 import { app, ipcMain } from 'electron'
 import serve from 'electron-serve'
 import { createWindow } from './helpers'
-import HandlerProvider from './factory/HandlerProvider'
+import HandlerProvider, { IHandlerProviderResponse } from './factory/HandlerProvider'
 
 const isProd = process.env.NODE_ENV === 'production'
+let handlerProvider: IHandlerProviderResponse | null = null
 
 if (isProd) {
   serve({ directory: 'app' })
@@ -23,6 +24,10 @@ if (isProd) {
     },
   })
 
+  handlerProvider = (new HandlerProvider()).provide(() => mainWindow)
+  handlerProvider.executeAll()
+  handlerProvider.startBackgroundTasks()
+
   if (isProd) {
     await mainWindow.loadURL('app://./home')
   } else {
@@ -33,12 +38,10 @@ if (isProd) {
 })()
 
 app.on('window-all-closed', () => {
+  handlerProvider?.stopBackgroundTasks()
   app.quit()
 })
 
 ipcMain.on('message', async (event, arg) => {
   event.reply('message', `${arg} World!`)
 })
-
-const handlerProvider = (new HandlerProvider()).provide();
-handlerProvider.executeAll();

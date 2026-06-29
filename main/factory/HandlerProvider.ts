@@ -9,6 +9,9 @@ import TokenHandler from "../Handlers/TokenHandler";
 import VaultHandler from "../Handlers/VaultHandler";
 import IProvider from "./Provider";
 import { ServiceManagerProvider } from "./ServiceManagerProvider";
+import { BrowserWindow } from "electron";
+import CalendarHandler from "../Handlers/CalendarHandler";
+import BackgroundTask from "../manager/BackgroundTask";
 
 export interface IHandlerProviderResponse {
 
@@ -16,13 +19,17 @@ export interface IHandlerProviderResponse {
 
     executeAll(): void;
 
+    startBackgroundTasks(): void;
+
+    stopBackgroundTasks(): void;
+
 }
 
-class HandlerProviderResponse implements IHandlerProviderResponse {
+export class HandlerProviderResponse implements IHandlerProviderResponse {
 
     #handlersMap = new Map<string, Handler>;
 
-    constructor(handlers: Handler[]) {
+    constructor(handlers: Handler[], private readonly backgroundTasks: BackgroundTask[]) {
         this.#addHandlers(handlers);
     }
 
@@ -49,6 +56,14 @@ class HandlerProviderResponse implements IHandlerProviderResponse {
         this.#handlersMap.forEach((handler) => handler.execute());
     }
 
+    startBackgroundTasks() {
+        this.backgroundTasks.forEach(task => task.start());
+    }
+
+    stopBackgroundTasks() {
+        [...this.backgroundTasks].reverse().forEach(task => task.stop());
+    }
+
 
 
 
@@ -67,10 +82,17 @@ export default class HandlerProvider implements IProvider<IHandlerProviderRespon
         return instance;
     }
 
-    provide(): IHandlerProviderResponse {
+    provide(getWindow: () => BrowserWindow | null = () => null): IHandlerProviderResponse {
         const { kanbanDbService, commsService, productivityService, copyService, tokenGeneratorService,
-            vaultDbService, piDbService, jiraDbService, timeTrackerService, modificationReasonDbService } = this.#serviceManagerProvider.provide();
-        const kanbanHandler = new TodoKanbanHandler(kanbanDbService, commsService, productivityService);
+            vaultDbService, piDbService, jiraDbService, timeTrackerService, modificationReasonDbService,
+            calendarMeetingDbService, calendarStatusManager, backgroundTasks } = this.#serviceManagerProvider.provide(getWindow);
+        const kanbanHandler = new TodoKanbanHandler(
+            kanbanDbService,
+            commsService,
+            productivityService,
+            calendarMeetingDbService,
+            calendarStatusManager,
+        );
         const productivityHandler = new ProductivityHandler(productivityService, commsService, kanbanDbService, timeTrackerService);
         const copyHandler = new CopyHandler(copyService, commsService);
         const tokenHandler = new TokenHandler(tokenGeneratorService, commsService);
@@ -78,8 +100,9 @@ export default class HandlerProvider implements IProvider<IHandlerProviderRespon
         const piHandler = new PiHandler(commsService, piDbService, jiraDbService, modificationReasonDbService);
         const jiraHandler = new JiraHandler(commsService, jiraDbService);
         const modificationReasonHandler = new ModificationReasonHandler(commsService, modificationReasonDbService);
+        const calendarHandler = new CalendarHandler(commsService, calendarStatusManager);
         return new HandlerProviderResponse([kanbanHandler, productivityHandler, copyHandler, tokenHandler,
-            vaultHandler, piHandler, jiraHandler, modificationReasonHandler]);
+            vaultHandler, piHandler, jiraHandler, modificationReasonHandler, calendarHandler], backgroundTasks);
     }
 
 }

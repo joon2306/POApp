@@ -4,6 +4,8 @@ import ICommunicationService from "../service/ICommunicationService";
 import IKanbanDbService from "../service/IKanbanDbService";
 import IProductivityService from "../service/IProductivityService";
 import Handler from "./Handler";
+import ICalendarMeetingDbService from "../service/ICalendarMeetingDbService";
+import ICalendarStatusManager from "../service/ICalendarStatusManager";
 
 let instance: TodoKanbanHandler = null;
 
@@ -11,12 +13,22 @@ export default class TodoKanbanHandler implements Handler {
     #kanbanDbService: IKanbanDbService;
     #commsService: ICommunicationService;
     #productivityService: IProductivityService;
+    #calendarMeetingDbService: ICalendarMeetingDbService;
+    #calendarStatusManager: ICalendarStatusManager;
 
-    constructor(kanbanDbService: IKanbanDbService, commsService: ICommunicationService, productivityService: IProductivityService) {
+    constructor(
+        kanbanDbService: IKanbanDbService,
+        commsService: ICommunicationService,
+        productivityService: IProductivityService,
+        calendarMeetingDbService?: ICalendarMeetingDbService,
+        calendarStatusManager?: ICalendarStatusManager,
+    ) {
         if (instance === null) {
             this.#kanbanDbService = kanbanDbService;
             this.#commsService = commsService;
             this.#productivityService = productivityService;
+            this.#calendarMeetingDbService = calendarMeetingDbService;
+            this.#calendarStatusManager = calendarStatusManager;
 
         }
         return instance;
@@ -39,7 +51,9 @@ export default class TodoKanbanHandler implements Handler {
         const deleteCard = ([{ id }]: Array<{ id: number }>) => {
             const { error, data: deletedCard } = this.#kanbanDbService.delete(id);
             if (!error) {
-                this.#productivityService.add(deletedCard);
+                this.#calendarMeetingDbService?.resolveByKanbanItemId(id);
+                this.#calendarStatusManager?.refreshStatus();
+                if (deletedCard) this.#productivityService.add(deletedCard);
             }
         }
         this.#commsService.getRequest(CommunicationEvents.deleteTodoKanbanCard, ([{ id }]: Array<{ id: number }>) => {

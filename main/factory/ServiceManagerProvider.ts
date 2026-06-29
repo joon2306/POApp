@@ -24,6 +24,13 @@ import TimeTrackerService from "../service/impl/TimeTrackerService";
 import ITimeTrackerDbService from "../service/ITimeTrackerService";
 import IModificationReasonDbService from "../service/IModificationReasonDbService";
 import ModificationReasonDbService from "../service/impl/ModificationReasonDbService";
+import OutlookCalendarService from "../service/impl/OutlookCalendarService";
+import ICalendarMeetingDbService from "../service/ICalendarMeetingDbService";
+import CalendarMeetingDbService from "../service/impl/CalendarMeetingDbService";
+import { BrowserWindow } from "electron";
+import BackgroundTask from "../manager/BackgroundTask";
+import CalendarPollManager from "../manager/CalendarPollManager";
+import ICalendarStatusManager from "../service/ICalendarStatusManager";
 
 type ServiceManagerProviderType = {
     productivityService: IProductivityService;
@@ -36,6 +43,9 @@ type ServiceManagerProviderType = {
     jiraDbService: IJiraDbService;
     timeTrackerService: ITimeTrackerDbService;
     modificationReasonDbService: IModificationReasonDbService;
+    calendarMeetingDbService: ICalendarMeetingDbService;
+    calendarStatusManager: ICalendarStatusManager;
+    backgroundTasks: BackgroundTask[];
 
 }
 
@@ -52,7 +62,7 @@ export class ServiceManagerProvider implements IProvider<ServiceManagerProviderT
         }
         return this;
     }
-    provide(): ServiceManagerProviderType {
+    provide(getWindow: () => BrowserWindow | null = () => null): ServiceManagerProviderType {
         const productivityDbService = new ProductivityDbService(this.#db);
         const productivityService = new ProductivityService(productivityDbService);
         const kanbanTimeManager = new KanbanTimeManager();
@@ -66,6 +76,13 @@ export class ServiceManagerProvider implements IProvider<ServiceManagerProviderT
         const jiraDbService = new JiraDbService(this.#db);
         const timeTrackerService = new TimeTrackerService(this.#db);
         const modificationReasonDbService = new ModificationReasonDbService(this.#db);
+        const outlookCalendarService = new OutlookCalendarService();
+        const calendarMeetingDbService = new CalendarMeetingDbService(this.#db);
+        const calendarStatusManager = new CalendarPollManager(
+            outlookCalendarService,
+            calendarMeetingDbService,
+            getWindow,
+        );
 
         return {
             productivityService,
@@ -77,7 +94,10 @@ export class ServiceManagerProvider implements IProvider<ServiceManagerProviderT
             piDbService,
             jiraDbService,
             timeTrackerService,
-            modificationReasonDbService
+            modificationReasonDbService,
+            calendarMeetingDbService,
+            calendarStatusManager,
+            backgroundTasks: [calendarStatusManager]
         }
     }
 

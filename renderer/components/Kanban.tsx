@@ -9,6 +9,8 @@ import KanbanForm from "./Form/KanbanForm";
 import { ModalType } from "../types/ModalTypes";
 import { sortKanbanCards, getTagColors, getPlannedTime, getPlannedTimeStatus } from "../utils/KanbanUtils";
 import MediatorEvents from "../constants/MediatorEvents";
+import CommunicationEvents from "../types/CommunicationEvent";
+import { CalendarUpdate } from "../types/CalendarTypes";
 import Mediator from "../services/impl/Mediator";
 import { IModalService, useModalService } from "../services/impl/ModalService";
 import { KanbanFactory, KanbanType } from "../factory/KanbanFactory";
@@ -139,6 +141,11 @@ export default function Kanban({ calculateHeight, type, selectedFeature }: {
         const updateCardsUnsubscribe = mediator.subscribe(MediatorEvents.KANBAN_CARD_UPDATE, async () => {
             await loadData();
         });
+        const unsubscribeCalendar = isTodo
+            ? window.ipc.on(CommunicationEvents.calendarUpdate, (update: CalendarUpdate) => {
+                if (update.kanbanChanged) void loadData();
+            })
+            : null;
         return () => {
             if (unsubscribe instanceof Object) {
                 unsubscribe.unsubscribe();
@@ -146,6 +153,7 @@ export default function Kanban({ calculateHeight, type, selectedFeature }: {
             if (updateCardsUnsubscribe instanceof Object) {
                 updateCardsUnsubscribe.unsubscribe();
             }
+            unsubscribeCalendar?.();
         }
     }, [mediator])
 

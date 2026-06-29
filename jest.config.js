@@ -12,7 +12,8 @@ const customJestConfig = {
     '^@/(.*)$': '<rootDir>/renderer/$1',
     '\\.(css|less|sass|scss)$': 'identity-obj-proxy',
   },
-  testMatch: ['**/__tests__/**/*.(test|spec).(ts|tsx|js)'],
+  testMatch: ['<rootDir>/renderer/**/__tests__/**/*.(test|spec).(ts|tsx|js)'],
+  modulePathIgnorePatterns: ['<rootDir>/app/', '<rootDir>/dist/'],
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', {
       tsconfig: './renderer/tsconfig.json',

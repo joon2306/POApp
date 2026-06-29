@@ -27,7 +27,9 @@ const CommunicationEvents = Object.freeze({
     getJiraByFeature: "getJiraByFeature",
     completeJira: "completeJira",
     saveModificationReason: "saveModificationReason",
-    getModificationReasonsByPi: "getModificationReasonsByPi"
+    getModificationReasonsByPi: "getModificationReasonsByPi",
+    calendarGetStatus: "calendarGetStatus",
+    calendarUpdate: "calendarUpdate"
 });
 
 export default CommunicationEvents;

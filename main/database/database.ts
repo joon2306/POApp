@@ -10,6 +10,7 @@ const TABLE_PI_ITEMS = "pi_items";
 const TABLE_JIRA_ITEMS = "jira_items";
 const TABLE_TIME_TRACKER_ITEMS = "time_tracker_items";
 const TABLE_MODIFICATION_REASONS = "modification_reasons";
+const TABLE_CALENDAR_MEETINGS = "calendar_meetings";
 
 let db: Database = null;
 export default function getDatabase() {
@@ -58,6 +59,27 @@ export default function getDatabase() {
             )`
         );
         createModificationReasonsTbl.run();
+
+        const createCalendarMeetingsTbl = db.prepare(
+            `CREATE TABLE IF NOT EXISTS ${TABLE_CALENDAR_MEETINGS} (
+                sourceKey TEXT PRIMARY KEY,
+                kanbanItemId INTEGER,
+                outlookTitle TEXT NOT NULL,
+                organizer TEXT,
+                start INTEGER NOT NULL,
+                end INTEGER NOT NULL,
+                calendarDate TEXT NOT NULL,
+                cancelled INTEGER NOT NULL DEFAULT 0,
+                resolvedAt INTEGER,
+                lastSeenAt INTEGER NOT NULL
+            )`
+        );
+        createCalendarMeetingsTbl.run();
+        db.prepare(
+            `CREATE UNIQUE INDEX IF NOT EXISTS idx_calendar_kanban_item
+             ON ${TABLE_CALENDAR_MEETINGS}(kanbanItemId)
+             WHERE kanbanItemId IS NOT NULL`
+        ).run();
     }
 
 
@@ -76,4 +98,4 @@ export default function getDatabase() {
 
 
 
-export { TABLE_KANBAN_ITEMS, TABLE_PRODUCTIVITY_ITEMS, TABLE_VAULT_ITEMS, TABLE_PI_ITEMS, TABLE_JIRA_ITEMS, TABLE_TIME_TRACKER_ITEMS, TABLE_MODIFICATION_REASONS };
+export { TABLE_KANBAN_ITEMS, TABLE_PRODUCTIVITY_ITEMS, TABLE_VAULT_ITEMS, TABLE_PI_ITEMS, TABLE_JIRA_ITEMS, TABLE_TIME_TRACKER_ITEMS, TABLE_MODIFICATION_REASONS, TABLE_CALENDAR_MEETINGS };
