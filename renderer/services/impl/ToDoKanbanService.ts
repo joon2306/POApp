@@ -39,8 +39,8 @@ export class ToDoKanbanService implements IKanbanService {
         this.commsService.sendRequest(CommunicationEvents.deleteTodoKanbanCard, { id: +id });
     }
 
-    modifyKanbanCard({ title, description, priority, id, time }: KanbanFormValue, status: number | undefined) {
-        this.commsService.sendRequest(CommunicationEvents.modifyTodoKanbanCard, { title, description, priority, id, time, status });
+    modifyKanbanCard({ title, description, priority, id, time, order }: KanbanFormValue, status: number | undefined) {
+        this.commsService.sendRequest(CommunicationEvents.modifyTodoKanbanCard, { title, description, priority, id, time, order, status });
     }
 
     async addKanbanCard({ title, description, priority, time }: KanbanFormValue) {

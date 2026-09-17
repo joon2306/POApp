@@ -33,6 +33,7 @@ export type KanbanCardType = {
   status: KanbanStatus;
   time: number;
   target: number;
+  order?: number;
 };
 
 export type KanbanResponse<T> = {
@@ -104,7 +105,8 @@ export type KanbanFormValue = {
   priority: number,
   id: string,
   time: number,
-  target: number
+  target: number,
+  order?: number
 }
 
 export type KanbanFormType = {

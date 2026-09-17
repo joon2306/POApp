@@ -5,6 +5,7 @@ interface KanbanDbItem {
     priority: number;
     status: number;
     time: number;
+    order?: number;
     start?: number;
     duration?: number;
 }

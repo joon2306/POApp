@@ -28,7 +28,10 @@ jest.mock('../../services/impl/ToDoKanbanService', () => {
 // They are returned out of order and with distinct durations so the
 // "shortest time first" default can be distinguished from insertion order.
 
-const makeCard = (overrides: Partial<KanbanCardType>): KanbanCardType => ({
+// NOTE: `order` is not yet part of KanbanCardType — persisting a manual
+// drag-and-drop order to the DB requires adding it. Widened here so the
+// forthcoming-feature tests below can express the expected shape.
+const makeCard = (overrides: Partial<KanbanCardType> & { order?: number }): KanbanCardType => ({
     id: '1',
     title: 'Untitled',
     description: 'desc',
@@ -207,6 +210,59 @@ describe('Todo Kanban — Pending / Critical ordering', () => {
 
         // Simulate the periodic reload the Kanban performs (e.g. KANBAN_CARD_UPDATE).
         mockGetKanbanCards.mockResolvedValue(criticalPendingCards.map((c) => ({ ...c })));
+
+        await waitFor(() => {
+            expect(getPendingCardTitles()).toEqual([
+                'Longest Task',
+                'Shortest Task',
+                'Middle Task',
+            ]);
+        });
+    });
+
+    // Given pending critical items have been manually ordered by the user
+    // When that order is defined via drag and drop
+    // Then it is persisted to the database (not just kept in memory), so it
+    // survives a full app restart — i.e. the Todo Menu being closed and
+    // reopened, not merely a re-render of the mounted component.
+    it('saves the manually-defined order to the database and restores it after a full reload', async () => {
+        const { unmount } = renderTodoKanban();
+
+        await waitFor(() => {
+            expect(screen.getByText('Shortest Task')).toBeInTheDocument();
+        });
+
+        dragCard('Longest Task', 'Shortest Task');
+
+        await waitFor(() => {
+            expect(getPendingCardTitles()).toEqual([
+                'Longest Task',
+                'Shortest Task',
+                'Middle Task',
+            ]);
+        });
+
+        // The reorder must be written back to the database, not just held in
+        // renderer state — otherwise it would not survive an app restart.
+        await waitFor(() => {
+            expect(mockModifyKanbanCard).toHaveBeenCalledWith(
+                expect.objectContaining({ id: '1', order: 0 }),
+                undefined
+            );
+        });
+
+        // Simulate the Todo Menu being closed and reopened: the component is
+        // fully unmounted, so nothing survives except what was saved to the DB.
+        unmount();
+
+        // The database now returns the cards with their persisted order.
+        mockGetKanbanCards.mockResolvedValue([
+            makeCard({ id: '1', title: 'Longest Task', time: 90, order: 0 }),
+            makeCard({ id: '2', title: 'Shortest Task', time: 15, order: 1 }),
+            makeCard({ id: '3', title: 'Middle Task', time: 45, order: 2 }),
+        ]);
+
+        renderTodoKanban();
 
         await waitFor(() => {
             expect(getPendingCardTitles()).toEqual([

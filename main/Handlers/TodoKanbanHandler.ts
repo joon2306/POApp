@@ -62,8 +62,8 @@ export default class TodoKanbanHandler implements Handler {
     }
 
     #modifyCard() {
-        const modifyCard = ([{ id, title, description, priority, status, time }]: KanbanDbItem[]) => {
-            this.#kanbanDbService.modify({ id, title, description, priority, status, time });
+        const modifyCard = ([{ id, title, description, priority, status, time, order }]: KanbanDbItem[]) => {
+            this.#kanbanDbService.modify({ id, title, description, priority, status, time, order });
         }
         this.#commsService.getRequest(CommunicationEvents.modifyTodoKanbanCard, (kanbanCard: KanbanDbItem[]) => modifyCard(kanbanCard));
     }

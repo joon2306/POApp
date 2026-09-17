@@ -101,6 +101,17 @@ export const useKanban = (kanbanService: IKanbanService, type: KanbanType) => {
 
     const applyManualOrders = (cards: KanbanCardType[]) => {
         const sortedCards = sortKanbanCards([...cards]);
+        const persistedOrders = sortedCards.reduce<Record<number, KanbanCardType[]>>((groups, card) => {
+            if (card.order !== undefined) {
+                (groups[+card.status] ??= []).push(card);
+            }
+            return groups;
+        }, {});
+        Object.entries(persistedOrders).forEach(([status, orderedCards]) => {
+            manualOrders.current[+status] = orderedCards
+                .sort((left, right) => left.order - right.order)
+                .map(getCardKey);
+        });
         return Object.entries(manualOrders.current).reduce((result, [status, order]) => {
             const laneStatus = Number(status);
             const laneCards = result.filter(card => +card.status === laneStatus);
@@ -148,6 +159,9 @@ export const useKanban = (kanbanService: IKanbanService, type: KanbanType) => {
             reorderedLane.splice(sourceIndex, 1);
             reorderedLane.splice(insertionIndex, 0, sourceCard);
             manualOrders.current[+targetStatus] = reorderedLane.map(getCardKey);
+            reorderedLane.forEach((card, order) => {
+                kanbanService.modifyKanbanCard({ ...card, order }, undefined);
+            });
 
             let laneIndex = 0;
             return currentCards.map(card => +card.status === +targetStatus ? reorderedLane[laneIndex++] : card);

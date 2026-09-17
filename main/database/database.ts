@@ -25,8 +25,16 @@ export default function getDatabase() {
     }
 
     const createTables = () => {
-        const createKanbanTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_KANBAN_ITEMS} (id INTEGER PRIMARY KEY, title TEXT, description TEXT, priority INTEGER, status INTEGER, time INTEGER, start INTEGER, duration INTEGER)`);
+        const createKanbanTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_KANBAN_ITEMS} (id INTEGER PRIMARY KEY, title TEXT, description TEXT, priority INTEGER, status INTEGER, time INTEGER, start INTEGER, duration INTEGER, "order" INTEGER)`);
         createKanbanTbl.run();
+        try {
+            // tech-debt: to add this to table schema after next major release.
+            db.prepare(`ALTER TABLE ${TABLE_KANBAN_ITEMS} ADD COLUMN "order" INTEGER`).run();
+        } catch (error) {
+            if (!String(error).includes("duplicate column name")) {
+                throw error;
+            }
+        }
 
         const createProductivityTbl = db.prepare(`CREATE TABLE IF NOT EXISTS ${TABLE_PRODUCTIVITY_ITEMS} (id INTEGER PRIMARY KEY, title text, priority INTEGER, status INTEGER, time INTEGER, deleted INTEGER, duration INTEGER, start INTEGER)`);
         createProductivityTbl.run();
