@@ -7,7 +7,7 @@ import { useDroppable } from "../hooks/useDroppable";
 import { useKanbanCard } from "../hooks/useKanbanCard";
 import KanbanForm from "./Form/KanbanForm";
 import { ModalType } from "../types/ModalTypes";
-import { sortKanbanCards, getTagColors, getPlannedTime, getPlannedTimeStatus } from "../utils/KanbanUtils";
+import { getTagColors, getPlannedTime, getPlannedTimeStatus } from "../utils/KanbanUtils";
 import MediatorEvents from "../constants/MediatorEvents";
 import CommunicationEvents from "../types/CommunicationEvent";
 import { CalendarUpdate } from "../types/CalendarTypes";
@@ -127,7 +127,7 @@ export default function Kanban({ calculateHeight, type, selectedFeature }: {
     const isDependency = type === "DEPENDENCY";
     const kanbanService = KanbanFactory.of(type).setComms(new CommsService()).setSelectedFeature(selectedFeature).build();
 
-    const { handleDragStart, handleDrop, kanbanCards, updateHeight, deleteCard, saveCard, modifyCard, loadData, resolveDropData, executeDrop } = useKanban(kanbanService, type);
+    const { handleDragStart, handleDrop, kanbanCards, updateHeight, deleteCard, saveCard, modifyCard, loadData, resolveDropData, executeDrop, reorderCard } = useKanban(kanbanService, type);
     const modalService = useModalService();
     const mediator = useMemo(() => new Mediator(), []);
     const modificationReasonService = useMemo(() => new ModificationReasonService(), []);
@@ -141,7 +141,7 @@ export default function Kanban({ calculateHeight, type, selectedFeature }: {
         const updateCardsUnsubscribe = mediator.subscribe(MediatorEvents.KANBAN_CARD_UPDATE, async () => {
             await loadData();
         });
-        const unsubscribeCalendar = isTodo
+        const unsubscribeCalendar = isTodo && window.ipc?.on
             ? window.ipc.on(CommunicationEvents.calendarUpdate, (update: CalendarUpdate) => {
                 if (update.kanbanChanged) void loadData();
             })
@@ -279,6 +279,7 @@ export default function Kanban({ calculateHeight, type, selectedFeature }: {
                         status={k as unknown as KanbanStatus}
                         cards={kanbanCards}
                         setActiveCard={handleDragStart}
+                        reorderCard={reorderCard}
                         onDrop={wrappedHandleDrop}
                         updateHeight={updateHeight}
                         calculateHeight={calculateHeight}
@@ -332,7 +333,7 @@ function
 }
 
 
-function KanbanCard({ title, description, priority, status, setActiveCard, id, deleteCard, modifyCard, modalService, time, type, target, selectedFeature }: KanbanCardProp) {
+function KanbanCard({ title, description, priority, status, setActiveCard, reorderCard, id, deleteCard, modifyCard, modalService, time, type, target, selectedFeature }: KanbanCardProp) {
     status = +status as unknown as KanbanStatus;
     priority = +priority as unknown as PriorityLevel;
 
@@ -375,7 +376,15 @@ function KanbanCard({ title, description, priority, status, setActiveCard, id, d
 
     return (
         <div className="w-[175px] lg:w-[200px] mb-3 text-[10px] cursor-pointer" onDoubleClick={() => modalService.openModal(modal)} draggable="true"
-            onDragStart={() => setActiveCard(`${status}-${id}`)} onDragEnd={() => setActiveCard(null)} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+            onDragOver={(event) => event.preventDefault()}
+            onDragEnter={() => reorderCard(String(id), status)}
+            onDrop={(event) => reorderCard(String(id), status, event.dataTransfer?.getData("text/plain"))}
+            onDragStart={(event) => {
+                const dragId = type === "TODO" ? String(id) : title;
+                event.dataTransfer?.setData("text/plain", dragId);
+                setActiveCard(`${status}-${id}`);
+            }}
+            onDragEnd={() => setActiveCard(null)} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
             <div className={`border ${borderColor} rounded-lg p-6 max-w-sm  
                   hover:border-blue-500 hover:ring-4 hover:ring-blue-500/50 
                   transition duration-300 ease-in-out`}>
@@ -401,9 +410,10 @@ function KanbanCard({ title, description, priority, status, setActiveCard, id, d
 }
 
 
-function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, updateHeight, calculateHeight, deleteCard, saveCard, modifyCard, modalService, type, selectedFeature }: HeaderSwimLane) {
+function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, reorderCard, onDrop, updateHeight, calculateHeight, deleteCard, saveCard, modifyCard, modalService, type, selectedFeature }: HeaderSwimLane) {
 
-    const applicableCards = sortKanbanCards(cards.filter(card => +card.status === +status));
+    
+    const applicableCards = cards.filter(card => +card.status === +status);
     const divRef = useRef();
 
     const isTodo = type === "TODO";
@@ -418,7 +428,7 @@ function KanbanSwimLane({ headerTitle, status, cards, setActiveCard, onDrop, upd
                 {
                     applicableCards.map((card, index) => (
                         <div key={card.id}>
-                            <KanbanCard description={card.description} priority={card.priority} title={card.title} status={status} setActiveCard={setActiveCard} id={card.id}
+                            <KanbanCard description={card.description} priority={card.priority} title={card.title} status={status} setActiveCard={setActiveCard} reorderCard={reorderCard} id={card.id}
                                 deleteCard={deleteCard} modifyCard={modifyCard} modalService={modalService} time={card.time} type={type} target={card.target} selectedFeature={selectedFeature} />
                         </div>
                     ))

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { KanbanCardType, KanbanFormValue, KanbanStatus } from "../types/KanbanTypes";
 import { IKanbanService } from "../services/IKanbanService";
 import { sortKanbanCards } from "../utils/KanbanUtils";
@@ -11,6 +11,7 @@ export const useKanban = (kanbanService: IKanbanService, type: KanbanType) => {
     const [kanbanCards, setKanbanCards] = useState<KanbanCardType[]>([]);
     const [updateHeight, setUpdateHeight] = useState(0);
     const [updateCards, setUpdateCards] = useState(0);
+    const manualOrders = useRef<Record<number, string[]>>({});
 
     const isTodo = type === "TODO";
 
@@ -86,13 +87,76 @@ export const useKanban = (kanbanService: IKanbanService, type: KanbanType) => {
     };
 
     const modifyCard = (arg: KanbanFormValue) => {
+        if (isTodo && arg.id !== undefined) {
+            const existingCard = kanbanCards.find(card => String(card.id) === String(arg.id));
+            if (existingCard && existingCard.priority !== arg.priority) {
+                delete manualOrders.current[+existingCard.status];
+            }
+        }
         kanbanService.modifyKanbanCard(arg, undefined);
         setUpdateCards(updateCards + 1);
     }
+
+    const getCardKey = (card: KanbanCardType) => isTodo ? String(card.id) : card.title;
+
+    const applyManualOrders = (cards: KanbanCardType[]) => {
+        const sortedCards = sortKanbanCards([...cards]);
+        return Object.entries(manualOrders.current).reduce((result, [status, order]) => {
+            const laneStatus = Number(status);
+            const laneCards = result.filter(card => +card.status === laneStatus);
+            if (laneCards.length === 0) {
+                return result;
+            }
+
+            const byKey = new Map(laneCards.map(card => [getCardKey(card), card]));
+            const orderedLane = order
+                .map(key => byKey.get(key))
+                .filter((card): card is KanbanCardType => Boolean(card));
+            const orderedKeys = new Set(orderedLane.map(getCardKey));
+            orderedLane.push(...laneCards.filter(card => !orderedKeys.has(getCardKey(card))));
+
+            let laneIndex = 0;
+            return result.map(card => +card.status === laneStatus ? orderedLane[laneIndex++] : card);
+        }, sortedCards);
+    };
+
+    const reorderCard = (targetId: string, targetStatus: number, sourceId?: string) => {
+        if (!activeCard) {
+            return;
+        }
+
+        const [sourceStatus, activeSourceId] = extractParts(activeCard);
+        const sourceKey = String(sourceId || activeSourceId);
+        if (+sourceStatus !== +targetStatus || sourceKey === String(targetId)) {
+            return;
+        }
+
+        setKanbanCards(currentCards => {
+            const laneCards = currentCards.filter(card => +card.status === +targetStatus);
+            const sourceCard = laneCards.find(card => getCardKey(card) === sourceKey);
+            const targetIndex = laneCards.findIndex(card => getCardKey(card) === String(targetId));
+            if (!sourceCard || targetIndex < 0) {
+                return currentCards;
+            }
+
+            const sourceIndex = laneCards.indexOf(sourceCard);
+            const insertionIndex = sourceIndex < targetIndex ? targetIndex - 1 : targetIndex;
+            if (sourceIndex === insertionIndex) {
+                return currentCards;
+            }
+            const reorderedLane = [...laneCards];
+            reorderedLane.splice(sourceIndex, 1);
+            reorderedLane.splice(insertionIndex, 0, sourceCard);
+            manualOrders.current[+targetStatus] = reorderedLane.map(getCardKey);
+
+            let laneIndex = 0;
+            return currentCards.map(card => +card.status === +targetStatus ? reorderedLane[laneIndex++] : card);
+        });
+    };
+
     const loadData = async () => {
         const cards = await kanbanService.getKanbanCards();
-        const sortedCards = sortKanbanCards(cards);
-        setKanbanCards(sortedCards);
+        setKanbanCards(applyManualOrders(cards));
     };
 
     useEffect(() => {
@@ -101,6 +165,6 @@ export const useKanban = (kanbanService: IKanbanService, type: KanbanType) => {
 
 
 
-    return { handleDrop, handleDragStart, kanbanCards, updateHeight, deleteCard, saveCard, modifyCard, loadData, resolveDropData, executeDrop };
+    return { handleDrop, handleDragStart, kanbanCards, updateHeight, deleteCard, saveCard, modifyCard, loadData, resolveDropData, executeDrop, reorderCard };
 
 }

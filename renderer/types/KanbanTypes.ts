@@ -13,6 +13,7 @@ export type HeaderSwimLane = {
   status: KanbanStatus,
   cards: KanbanCardType[],
   setActiveCard: (index: string) => void,
+  reorderCard: (targetId: string, status: number, sourceId?: string) => void,
   onDrop: (status: number) => void,
   calculateHeight : (height: any) => number,
   updateHeight: number,
@@ -40,6 +41,7 @@ export type KanbanResponse<T> = {
 }
 export interface KanbanCardProp extends KanbanCardType {
   setActiveCard: (value: string) => void,
+  reorderCard: (targetId: string, status: number, sourceId?: string) => void,
   deleteCard: (id: string) => void,
   modifyCard: (arg: KanbanFormValue, originalTarget?: number) => void,
   modalService: IModalService,
